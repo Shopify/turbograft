@@ -3,7 +3,7 @@
   "before_tests": "browserify test/test_bundle.coffee -o test/test_bundle.js -t coffeeify",
   "src_files": [
     "lib/**/*.coffee",
-    "lib/**/*.js"
+    "lib/**/*.js",
     "test/**/*.coffee",
     "test/**/*.js"
   ],
