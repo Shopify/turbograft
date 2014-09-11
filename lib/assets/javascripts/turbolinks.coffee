@@ -34,6 +34,15 @@ transitionCacheFor = (url) ->
 enableTransitionCache = (enable = true) ->
   transitionCacheEnabled = enable
 
+pushState = (state, title, url) ->
+  window.history.pushState(state, title, url)
+replaceState = (state, title, url) ->
+  window.history.replaceState(state, title, url)
+
+window.Turbolinks = ->
+Turbolinks.replaceState = replaceState
+Turbolinks.pushState = pushState
+
 fetchReplacement = (url, partialReplace, onLoadFunction, replaceContents) ->
   triggerEvent 'page:fetch', url: url.absolute
 
@@ -47,7 +56,8 @@ fetchReplacement = (url, partialReplace, onLoadFunction, replaceContents) ->
     loadPage(url, xhr, partialReplace, onLoadFunction, replaceContents)
 
   xhr.onloadend = -> xhr = null
-  xhr.onerror   = -> document.location.href = url.absolute
+  xhr.onerror   = ->
+    document.location.href = url.absolute
 
   xhr.send()
 
@@ -174,19 +184,19 @@ removeNoscriptTags = (node) ->
 
 reflectNewUrl = (url) ->
   if (url = new ComponentUrl url).absolute isnt referer
-    window.history.pushState { turbolinks: true, url: url.absolute }, '', url.absolute
+    Turbolinks.pushState { turbolinks: true, url: url.absolute }, '', url.absolute
 
 reflectRedirectedUrl = (xhr) ->
   if location = xhr.getResponseHeader 'X-XHR-Redirected-To'
     location = new ComponentUrl location
     preservedHash = if location.hasNoHash() then document.location.hash else ''
-    window.history.replaceState currentState, '', location.href + preservedHash
+    Turbolinks.replaceState currentState, '', location.href + preservedHash
 
 rememberReferer = ->
   referer = document.location.href
 
 rememberCurrentUrl = ->
-  window.history.replaceState { turbolinks: true, url: document.location.href }, '', document.location.href
+  Turbolinks.replaceState { turbolinks: true, url: document.location.href }, '', document.location.href
 
 rememberCurrentState = ->
   currentState = window.history.state
@@ -469,7 +479,6 @@ else
 #   Turbolinks.enableTransitionCache()
 #   Turbolinks.allowLinkExtensions('md')
 #   Turbolinks.supported
-window.Turbolinks = ->
 window.Turbolinks.visit = visit
 window.Turbolinks.pagesCached = pagesCached
 window.Turbolinks.enableTransitionCache = enableTransitionCache
