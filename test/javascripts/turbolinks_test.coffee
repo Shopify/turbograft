@@ -35,7 +35,7 @@ describe 'Turbolinks', ->
 
   describe '#visit', ->
     describe 'with partial page replacement', ->
-      it 'uses the result of an XHR', ->
+      it 'uses just the part of the response body we supply', ->
 
         server = sinon.fakeServer.create()
         server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
@@ -62,6 +62,20 @@ describe 'Turbolinks', ->
 
     describe 'without partial page replacement', ->
       it 'uses entire response body', ->
+        server = sinon.fakeServer.create()
+        server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
+
+        Turbolinks.visit "/some_request", false, ['turbo-area']
+        server.respond()
+
+        assert.equal "Hi there!", document.title
+        assert document.body.textContent.indexOf("YOLO") > 0
+        assert document.body.textContent.indexOf("Hi bob") > 0
+        assert @pushStateStub.calledOnce
+        assert @pushStateStub.calledWith({turbolinks: true, url: url_for("/some_request")}, "", url_for("/some_request"))
+        assert.equal 0, @replaceStateStub.callCount
+
+      it 'ignores any partial refresh keys we might accidentally supply', ->
         server = sinon.fakeServer.create()
         server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
 
