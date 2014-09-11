@@ -1,9 +1,9 @@
 require "turbomodules/version"
-require 'turbolinks/xhr_headers'
-require 'turbolinks/xhr_url_for'
-require 'turbolinks/cookies'
-require 'turbolinks/x_domain_blocker'
-require 'turbolinks/redirection'
+require 'turbomodules/xhr_headers'
+require 'turbomodules/xhr_url_for'
+require 'turbomodules/cookies'
+require 'turbomodules/x_domain_blocker'
+require 'turbomodules/redirection'
 
 module Turbomodules
   class Engine < ::Rails::Engine
