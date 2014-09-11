@@ -6,5 +6,7 @@ test/dummy/log/*.log
 test/dummy/tmp/
 node_modules/
 test/test_bundle.js
+lib/turbolinks.js
+lib/turbomodules.js
 *.gem
 *.orig
