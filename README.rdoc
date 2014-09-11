@@ -1,3 +1,7 @@
 = Turbomodules
 
 This project rocks and uses MIT-LICENSE.
+
+= Dev
+
+1. `npm install -g testling`

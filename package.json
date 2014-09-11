@@ -1,0 +1,22 @@
+{
+  "name": "turbomodules",
+  "version": "0.0.0",
+  "description": "= Turbomodules",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "testling test/bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Shopify/turbomodules.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Shopify/turbomodules/issues"
+  },
+  "homepage": "https://github.com/Shopify/turbomodules"
+}
