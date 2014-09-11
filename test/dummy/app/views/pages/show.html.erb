@@ -1,0 +1,5 @@
+<h1>Page <%= @id %></h1>
+
+<p>Here's a link: <%= link_to "next", page_path(@next_id, @url_opts), @link_opts %></p>
+
+<p>Back to the <%= link_to "beginning", page_path(1, @url_opts), @link_opts %></p>

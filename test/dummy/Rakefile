@@ -1,21 +1,7 @@
-begin
-  require 'bundler/setup'
-rescue LoadError
-  puts 'You must `gem install bundler` and `bundle install` to run rake tasks'
-end
+#!/usr/bin/env rake
+# Add your own tasks in files placed in lib/tasks ending in .rake,
+# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
 
-require 'rdoc/task'
+require File.expand_path('../config/application', __FILE__)
 
-RDoc::Task.new(:rdoc) do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = 'Turbomodules'
-  rdoc.options << '--line-numbers'
-  rdoc.rdoc_files.include('README.rdoc')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end
-
-
-
-
-Bundler::GemHelper.install_tasks
-
+Dummy::Application.load_tasks
