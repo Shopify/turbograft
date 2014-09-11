@@ -108,14 +108,14 @@ describe 'Turbolinks', ->
         server.respond()
         assert globalStub.calledOnce
 
-      it 'script tags are evaluated even if they have [data-turbolinks-eval="false"]', ->
+      it 'script tags are not evaluated if they have [data-turbolinks-eval="false"]', ->
         window.globalStub = stub()
         server = sinon.fakeServer.create()
         server.respondWith([200, { "Content-Type": "text/html" }, script_response_turbolinks_eval_false]);
 
         Turbolinks.visit "/some_request", true, ['turbo-area']
         server.respond()
-        assert globalStub.calledOnce
+        assert.equal 0, globalStub.callCount
 
     describe 'without partial page replacement', ->
       it 'uses entire response body', ->
