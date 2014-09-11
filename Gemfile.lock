@@ -56,7 +56,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.5)
+  bundler
   minitest-reporters
   rake
   teaspoon
