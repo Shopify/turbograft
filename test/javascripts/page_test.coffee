@@ -4,6 +4,6 @@ describe 'Page', ->
 
   describe '#visit', ->
     it 'will call Turbolinks#visit without any options', ->
-      visit = spy(Turbolinks, "visit")
+      visit = sinon.sandbox.stub(Turbolinks, "visit")
       Page.visit("http://example.com")
       assert visit.calledOnce

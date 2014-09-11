@@ -11,6 +11,7 @@
     "lib/turbomodules.js",
     "node_modules/sinon/lib/sinon.js",
     "node_modules/sinon/lib/sinon/match.js",
+    "node_modules/sinon/lib/sinon/sandbox.js",
     "node_modules/sinon/lib/sinon/call.js",
     "node_modules/sinon/lib/sinon/spy.js",
     "node_modules/sinon/lib/sinon/mock.js",
