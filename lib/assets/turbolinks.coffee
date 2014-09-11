@@ -469,4 +469,10 @@ else
 #   Turbolinks.enableTransitionCache()
 #   Turbolinks.allowLinkExtensions('md')
 #   Turbolinks.supported
-window.Turbolinks = { visit, pagesCached, enableTransitionCache, allowLinkExtensions: Link.allowExtensions, supported: browserSupportsTurbolinks, loadPage }
+window.Turbolinks = ->
+window.Turbolinks.visit = visit
+window.Turbolinks.pagesCached = pagesCached
+window.Turbolinks.enableTransitionCache = enableTransitionCache
+window.Turbolinks.allowLinkExtensions = Link.allowExtensions
+window.Turbolinks.supported = browserSupportsTurbolinks
+window.Turbolinks.loadPage = loadPage
