@@ -4,6 +4,9 @@ describe 'Turbolinks', ->
     $nodule = $("<div>").attr("id", "turbo-area").attr("refresh", "turbo-area")
     return $nodule[0]
 
+  url_for = (slug) ->
+    window.location.origin + slug
+
   beforeEach ->
     @replaceStateStub = stub(Turbolinks, "replaceState")
     @pushStateStub = stub(Turbolinks, "pushState")
@@ -31,18 +34,33 @@ describe 'Turbolinks', ->
     assert Turbolinks
 
   describe '#visit', ->
+    describe 'with partial page replacement', ->
+      it 'uses the result of an XHR', ->
 
-    it 'performs a partial page replacement with remote XHR contents', ->
+        server = sinon.fakeServer.create()
+        server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
 
-      server = sinon.fakeServer.create()
-      server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
+        Turbolinks.visit "/some_request", true, ['turbo-area']
+        server.respond()
 
-      some_stub = stub()
-      Turbolinks.visit "/some_request", true, ['turbo-area'], some_stub
-      server.respond()
+        assert.equal "Hi there!", document.title
+        assert.equal -1, document.body.textContent.indexOf("YOLO")
+        assert document.body.textContent.indexOf("Hi bob") > 0
+        assert @pushStateStub.calledOnce
+        assert @pushStateStub.calledWith({turbolinks: true, url: url_for("/some_request")}, "", url_for("/some_request"))
+        assert.equal 0, @replaceStateStub.callCount
 
-      assert.equal "Hi there!", document.title
-      assert.equal -1, document.body.textContent.indexOf("YOLO")
-      assert document.body.textContent.indexOf("Hi bob") > 0
-      assert.equal 1, @pushStateStub.callCount
-      assert.equal 0, @replaceStateStub.callCount
+      it 'calls a user-supplied callback', ->
+        server = sinon.fakeServer.create()
+        server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
+
+        your_callback = stub()
+        Turbolinks.visit "/some_request", true, ['turbo-area'], your_callback
+        server.respond()
+
+        assert your_callback.calledOnce
+
+    describe 'without partial page replacement', ->
+      it 'does stuff', ->
+        assert true
+
