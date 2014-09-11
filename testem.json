@@ -1,0 +1,14 @@
+{
+  "framework": "mocha",
+  "before_tests": "browserify test/test_bundle.coffee -o test/test_bundle.js -t coffeeify",
+  "src_files": [
+    "test/**/*.coffee",
+    "test/**/*.js"
+  ],
+  "serve_files": [
+    "node_modules/sinon/lib/sinon.js",
+    "node_modules/chai/chai.js",
+    "test/test_helper.js",
+    "test/test_bundle.js"
+  ]
+}

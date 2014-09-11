@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "compile-tests": "browserify test/test_bundle.coffee -o test/test_bundle.js -t coffeeify"
+    "compile-tests": "testem ci"
   },
   "repository": {
     "type": "git",
