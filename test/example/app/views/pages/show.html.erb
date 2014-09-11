@@ -1,0 +1,5 @@
+<h1>Page <%= @id %></h1>
+<p><%= link_to "back", :back %> | <%= link_to "next", page_path(@next_id) %></p>
+<p>Back to the <%= link_to "beginning", page_path(1) %></p>
+
+<a href="/html_with_noscript.html">Perform a full refresh</a>
