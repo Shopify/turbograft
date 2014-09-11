@@ -61,6 +61,17 @@ describe 'Turbolinks', ->
         assert your_callback.calledOnce
 
     describe 'without partial page replacement', ->
-      it 'does stuff', ->
-        assert true
+      it 'uses entire response body', ->
+        server = sinon.fakeServer.create()
+        server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
+
+        Turbolinks.visit "/some_request", false, ['turbo-area']
+        server.respond()
+
+        assert.equal "Hi there!", document.title
+        assert document.body.textContent.indexOf("YOLO") > 0
+        assert document.body.textContent.indexOf("Hi bob") > 0
+        assert @pushStateStub.calledOnce
+        assert @pushStateStub.calledWith({turbolinks: true, url: url_for("/some_request")}, "", url_for("/some_request"))
+        assert.equal 0, @replaceStateStub.callCount
 
