@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Nicholas Simmons", "Tyler Mercier", "Anthony Cameron", "Patrick Donovan"]
   spec.email         = ["tylermercier@gmail.com"]
   spec.summary       = "Insert Turbomodules summary."
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.description   = %q{Write a longer description. Optional.}
   spec.homepage      = "https://github.com/Shopify/turbomodules"
   spec.license       = "MIT"
 
