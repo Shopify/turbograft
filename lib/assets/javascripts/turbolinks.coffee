@@ -1,5 +1,3 @@
-transitionCacheEnabled  = false
-
 currentState            = null
 loadedAssets            = null
 
@@ -25,14 +23,6 @@ installJqueryAjaxSuccessPageUpdateTrigger = ->
     jQuery(document).on 'ajaxSuccess', (event, xhr, settings) ->
       return unless jQuery.trim xhr.responseText
       triggerEvent 'page:update'
-
-installHistoryChangeHandler = (event) ->
-  if event.state?.turbolinks
-    if cachedPage = pageCache.get((new ComponentUrl(event.state.url)).absolute)
-      cacheCurrentPage()
-      fetchHistory cachedPage
-    else
-      visit event.target.location.href
 
 # Handle bug in Firefox 26/27 where history.state is initially undefined
 historyStateIsDefined =
@@ -234,15 +224,16 @@ window.Click = Click
 
 # TODO: decide on the public API
 class Turbolinks
+  @usePageCache = false
 
   fetch = (url, partialReplace = false, replaceContents = [], callback) ->
     url = new ComponentUrl url
 
     rememberReferer()
-    cacheCurrentPage() if transitionCacheEnabled
+    cacheCurrentPage() if @usePageCache
     reflectNewUrl url
 
-    if transitionCacheEnabled and cachedPage = transitionCacheFor(url.absolute)
+    if @usePageCache and cachedPage = transitionCacheFor(url.absolute)
       fetchHistory cachedPage
       fetchReplacement url, partialReplace, null, replaceContents
     else
@@ -254,9 +245,6 @@ class Turbolinks
   transitionCacheFor = (url) ->
     cachedPage = pageCache.get(url)
     cachedPage if cachedPage and !cachedPage.transitionCacheDisabled
-
-  enableTransitionCache = (enable = true) ->
-    transitionCacheEnabled = enable
 
   @pushState: (state, title, url) ->
     window.history.pushState(state, title, url)
@@ -449,6 +437,14 @@ class Turbolinks
   extractTitleAndBody = (doc) ->
     title = doc.querySelector 'title'
     [ title?.textContent, removeNoscriptTags(doc.body), CSRFToken.get(doc).token, 'runScripts' ]
+
+  installHistoryChangeHandler = (event) ->
+    if event.state?.turbolinks
+      if cachedPage = pageCache.get((new ComponentUrl(event.state.url)).absolute)
+        cacheCurrentPage()
+        fetchHistory cachedPage
+      else
+        @visit event.target.location.href
 
   browserCompatibleDocumentParser = ->
     createDocumentUsingParser = (html) ->

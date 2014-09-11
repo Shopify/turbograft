@@ -33,6 +33,9 @@ describe 'Turbolinks', ->
   it 'is defined', ->
     assert Turbolinks
 
+  it 'can access the property usePageCache', ->
+    assert.equal false, Turbolinks.usePageCache
+
   describe '#visit', ->
     describe 'with partial page replacement', ->
       it 'uses just the part of the response body we supply', ->
