@@ -1,3 +1,5 @@
+window.Page = {}
+
 Page.visit = (url, opts={}) ->
   if opts.reload
     window.location = url
