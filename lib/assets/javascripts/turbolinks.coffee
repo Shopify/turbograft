@@ -1,11 +1,5 @@
 xhr                     = null
 
-
-# Delay execution of function long enough to miss the popstate event
-# some browsers fire on the initial page load.
-bypassOnLoadPopstate = (fn) ->
-  setTimeout fn, 500
-
 installDocumentReadyPageEventTriggers = ->
   document.addEventListener 'DOMContentLoaded', ( ->
     triggerEvent 'page:change'
@@ -443,6 +437,11 @@ class Turbolinks
         fetchHistory cachedPage
       else
         @visit event.target.location.href
+
+  # Delay execution of function long enough to miss the popstate event
+  # some browsers fire on the initial page load.
+  bypassOnLoadPopstate = (fn) ->
+    setTimeout fn, 500
 
   browserCompatibleDocumentParser = ->
     createDocumentUsingParser = (html) ->
