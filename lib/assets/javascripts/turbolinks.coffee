@@ -97,7 +97,6 @@ class PageCache
   length: ->
     Object.keys(storage).length
 
-pageCache = new PageCache()
 window.PageCache = PageCache
 
 class CSRFToken
@@ -225,12 +224,13 @@ window.Click = Click
 # TODO: decide on the public API
 class Turbolinks
   @usePageCache = false
+  @pageCache = new PageCache()
 
   fetch = (url, partialReplace = false, replaceContents = [], callback) ->
     url = new ComponentUrl url
 
     rememberReferer()
-    cacheCurrentPage() if @usePageCache
+    @cacheCurrentPage() if @usePageCache
     reflectNewUrl url
 
     if @usePageCache and cachedPage = transitionCacheFor(url.absolute)
@@ -288,10 +288,10 @@ class Turbolinks
     triggerEvent 'page:restore'
 
 
-  cacheCurrentPage = ->
+  @cacheCurrentPage: ->
     currentStateUrl = new ComponentUrl currentState.url
 
-    pageCache.set currentStateUrl.absolute,
+    @pageCache.set currentStateUrl.absolute,
       url:                      currentStateUrl.relative,
       body:                     document.body,
       title:                    document.title,
@@ -440,8 +440,8 @@ class Turbolinks
 
   installHistoryChangeHandler = (event) ->
     if event.state?.turbolinks
-      if cachedPage = pageCache.get((new ComponentUrl(event.state.url)).absolute)
-        cacheCurrentPage()
+      if cachedPage = @pageCache.get((new ComponentUrl(event.state.url)).absolute)
+        @cacheCurrentPage()
         fetchHistory cachedPage
       else
         @visit event.target.location.href

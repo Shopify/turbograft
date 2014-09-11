@@ -36,6 +36,16 @@ describe 'Turbolinks', ->
   it 'can access the property usePageCache', ->
     assert.equal false, Turbolinks.usePageCache
 
+  it 'has a PageCache object', ->
+    assert Turbolinks.pageCache
+    assert.equal 0, Turbolinks.pageCache.length()
+
+  describe '#cacheCurrentPage', ->
+    it 'stores some data about our current page', ->
+      assert.equal 0, Turbolinks.pageCache.length()
+      Turbolinks.cacheCurrentPage()
+      assert.equal 1, Turbolinks.pageCache.length()
+
   describe '#visit', ->
     describe 'with partial page replacement', ->
       it 'uses just the part of the response body we supply', ->
