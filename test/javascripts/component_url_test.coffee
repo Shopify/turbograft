@@ -16,3 +16,17 @@ describe 'ComponentUrl', ->
       assert.equal 90, url.port
       assert.equal "/foo/bar", url.pathname
       assert.equal "#yolo", url.hash
+
+  describe 'withoutHash', ->
+    it 'returns the URL without the hash', ->
+      url = new ComponentUrl("http://yo.lo#shipit")
+      assert.equal "http://yo.lo/", url.withoutHash()
+
+  describe 'hasNoHash', ->
+    it 'returns true when there is no hash', ->
+      url = new ComponentUrl("http://example.com")
+      assert url.hasNoHash()
+
+    it 'returns false when there is a hash', ->
+      url = new ComponentUrl("http://example.com#test")
+      assert !url.hasNoHash()
