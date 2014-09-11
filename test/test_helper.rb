@@ -1,22 +1,10 @@
-# Configure Rails Envinronment
-ENV["RAILS_ENV"] = "test"
+require 'minitest/autorun'
+require 'minitest/reporters'
 
-require File.expand_path("../dummy/config/environment.rb",  __FILE__)
-require "rails/test_help"
+Minitest::Reporters.use!(Minitest::Reporters::DefaultReporter.new(color: true))
 
-ActionMailer::Base.delivery_method = :test
-ActionMailer::Base.perform_deliveries = true
-ActionMailer::Base.default_url_options[:host] = "test.com"
+ENV['RACK_ENV'] = 'test'
 
-Rails.backtrace_cleaner.remove_silencers!
-
-# Configure capybara for integration testing
-require "capybara/rails"
-Capybara.default_driver   = :rack_test
-Capybara.default_selector = :css
-
-# Run any available migration
-ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
-
-# Load support files
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
+Dir[File.dirname(__FILE__) + '/../lib/*.rb'].each do |file|
+  require File.basename(file, File.extname(file))
+end

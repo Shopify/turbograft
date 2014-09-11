@@ -1,7 +1,7 @@
 require 'test_helper'
 
-class TurbomodulesTest < ActiveSupport::TestCase
-  test "truth" do
+describe 'TurbomodulesTest' do
+  it 'truth' do
     assert_kind_of Module, Turbomodules
   end
 end

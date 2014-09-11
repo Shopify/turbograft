@@ -1,10 +1,4 @@
-source "http://rubygems.org"
+source 'https://rubygems.org'
 
-gem "rails", "4.1.5"
-gem "capybara", ">= 0.4.0"
-gem "sqlite3"
-gem "teaspoon"
-
-# To use debugger (ruby-debug for Ruby 1.8.7+, ruby-debug19 for Ruby 1.9.2+)
-# gem 'ruby-debug'
-# gem 'ruby-debug19'
+# Specify your gem's dependencies in turbomodules.gemspec
+gemspec
