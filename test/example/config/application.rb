@@ -5,7 +5,7 @@ require 'rails/all'
 Bundler.require
 require "turbomodules"
 
-module Dummy
+module Example
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
