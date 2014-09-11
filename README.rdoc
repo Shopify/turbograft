@@ -4,4 +4,5 @@ This project rocks and uses MIT-LICENSE.
 
 = Dev
 
-1. `npm install -g testling`
+1. `npm install`
+2. `npm install -g testling`

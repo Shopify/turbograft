@@ -18,5 +18,10 @@
   "bugs": {
     "url": "https://github.com/Shopify/turbomodules/issues"
   },
-  "homepage": "https://github.com/Shopify/turbomodules"
+  "homepage": "https://github.com/Shopify/turbomodules",
+  "devDependencies": {
+    "chai": "~1.9.1",
+    "sinon": "~1.10.3",
+    "mocha": "~1.21.4"
+  }
 }
