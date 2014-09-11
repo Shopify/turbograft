@@ -5,7 +5,7 @@ require 'turbomodules/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "turbomodules"
-  spec.version       = Turbomodules::VERSION
+  spec.version       = TurboModules::VERSION
   spec.authors       = ["Nicholas Simmons", "Tyler Mercier", "Anthony Cameron", "Patrick Donovan"]
   spec.email         = ["tylermercier@gmail.com"]
   spec.summary       = "Insert Turbomodules summary."
