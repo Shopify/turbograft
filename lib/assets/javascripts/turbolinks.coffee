@@ -1,5 +1,3 @@
-pageCache               = {}
-cacheSize               = 10
 transitionCacheEnabled  = false
 
 currentState            = null
@@ -10,6 +8,49 @@ referer                 = null
 createDocument          = null
 xhr                     = null
 
+class PageCache
+  storage = {}
+  simultaneousAdditionOffset = 0
+  constructor: (@cacheSize = 10) ->
+    storage = {}
+    return this
+
+  get: (key) ->
+    storage[key]
+
+  set: (key, value) ->
+    if typeof value != "object"
+      throw "Developer error: You must store objects in this cache"
+
+    value['cachedAt'] = new Date().getTime() + (simultaneousAdditionOffset+=1)
+
+    storage[key] = value
+    @constrain()
+
+  setCacheSize: (newSize) ->
+    if /^[\d]+$/.test(newSize)
+      @cacheSize = parseInt(newSize, 10)
+      @constrain()
+    else
+      throw "Developer error: Invalid parameter '#{newSize}' for PageCache; must be integer"
+
+  constrain: ->
+    pageCacheKeys = Object.keys storage
+
+    cacheTimesRecentFirst = pageCacheKeys.map (url) =>
+      storage[url].cachedAt
+    .sort (a, b) -> b - a
+
+    for key in pageCacheKeys when storage[key].cachedAt <= cacheTimesRecentFirst[@cacheSize]
+      triggerEvent 'page:expire', storage[key]
+      delete storage[key]
+
+  length: ->
+    Object.keys(storage).length
+
+pageCache = new PageCache()
+
+window.PageCache = PageCache
 
 fetch = (url, partialReplace = false, replaceContents = [], callback) ->
   url = new ComponentUrl url
@@ -28,7 +69,7 @@ fetch = (url, partialReplace = false, replaceContents = [], callback) ->
     , replaceContents
 
 transitionCacheFor = (url) ->
-  cachedPage = pageCache[url]
+  cachedPage = pageCache.get(url)
   cachedPage if cachedPage and !cachedPage.transitionCacheDisabled
 
 enableTransitionCache = (enable = true) ->
@@ -82,30 +123,14 @@ fetchHistory = (cachedPage) ->
 cacheCurrentPage = ->
   currentStateUrl = new ComponentUrl currentState.url
 
-  pageCache[currentStateUrl.absolute] =
+  pageCache.set currentStateUrl.absolute,
     url:                      currentStateUrl.relative,
     body:                     document.body,
     title:                    document.title,
     positionY:                window.pageYOffset,
     positionX:                window.pageXOffset,
-    cachedAt:                 new Date().getTime(),
     transitionCacheDisabled:  document.querySelector('[data-no-transition-cache]')?
 
-  constrainPageCacheTo cacheSize
-
-pagesCached = (size = cacheSize) ->
-  cacheSize = parseInt(size) if /^[\d]+$/.test size
-
-constrainPageCacheTo = (limit) ->
-  pageCacheKeys = Object.keys pageCache
-
-  cacheTimesRecentFirst = pageCacheKeys.map (url) ->
-    pageCache[url].cachedAt
-  .sort (a, b) -> b - a
-
-  for key in pageCacheKeys when pageCache[key].cachedAt <= cacheTimesRecentFirst[limit]
-    triggerEvent 'page:expire', pageCache[key]
-    delete pageCache[key]
 
 changePage = (title, body, csrfToken, runScripts, partialReplace, replaceContents = []) ->
   document.title = title if title
@@ -428,7 +453,7 @@ installJqueryAjaxSuccessPageUpdateTrigger = ->
 
 installHistoryChangeHandler = (event) ->
   if event.state?.turbolinks
-    if cachedPage = pageCache[(new ComponentUrl(event.state.url)).absolute]
+    if cachedPage = pageCache.get((new ComponentUrl(event.state.url)).absolute)
       cacheCurrentPage()
       fetchHistory cachedPage
     else
@@ -474,13 +499,10 @@ else
 
 # Public API
 #   Turbolinks.visit(url)
-#   Turbolinks.pagesCached()
-#   Turbolinks.pagesCached(20)
 #   Turbolinks.enableTransitionCache()
 #   Turbolinks.allowLinkExtensions('md')
 #   Turbolinks.supported
 window.Turbolinks.visit = visit
-window.Turbolinks.pagesCached = pagesCached
 window.Turbolinks.enableTransitionCache = enableTransitionCache
 window.Turbolinks.allowLinkExtensions = Link.allowExtensions
 window.Turbolinks.supported = browserSupportsTurbolinks
