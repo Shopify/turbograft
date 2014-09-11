@@ -1,0 +1,8 @@
+<noscript>Please enable JavaScript!</noscript>
+<div>Some text</div>
+<script>
+  $("body").append("<div class='eval-true'>Hi there, from a script!</div>");
+</script>
+<script data-turbolinks-eval="false">
+  $("body").append("<div class='eval-false'>Not going to see me, turbolinks will ignore</div>");
+</script>

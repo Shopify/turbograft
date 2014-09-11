@@ -1,0 +1,77 @@
+<section>
+  <div id="page-header" refresh="page">
+    <h1>Page <span id='page-number'><%= @id %></span></h1>
+    <p>Click the links below to perform a full page refresh:</p>
+    <p><%= link_to "back", :back %> | <%= link_to "next", page_path(@next_id) %></p>
+    <p>Back to the <%= link_to "beginning", page_path(1) %></p>
+  </div>
+
+  <%= link_to "Perform a full refresh", html_with_noscript_pages_path %>
+</section>
+<section>
+  <h1>Partial page refresh</h1>
+
+  <p>Here's a fieldset, vaguely representing some client state.  Enter some values.</p>
+  <fieldset>
+    <div class="field">
+      <%= label_tag :name, "Name" %>
+      <%= text_field_tag :name %>
+    </div>
+    <div class="field">
+      <%= label_tag :nickname, "Nickname" %>
+      <%= text_field_tag :nickname %>
+    </div>
+  </fieldset>
+
+  <p>Now click this link to partially refresh only the header of this page.</p>
+  <a href="#" id="partial-refresh-page" refresh="page" onclick="event.preventDefault(); Page.refresh({
+    url: '<%= page_path(@next_id) %>',
+    onlyKeys: ['page']
+  });">Go to next page via partial refresh</a>
+
+  <div id='section-a' refresh='section-a' style="padding: 1em; margin: 1em; background: <%= random_light_rgb() %>;">
+    <h3>Section A</h3>
+    You can refresh any section of the page you like, provided there is an ID and a refresh key.
+    This section provides a random number from the server:
+    <span id="random-number-a"><%= rand(1000) %></span>
+  </div>
+  <div id='section-b' refresh='section-b' style="padding: 1em; margin: 1em; background: <%= random_light_rgb() %>;">
+    <h3>Section B</h3>
+    <span id="random-number-b"><%= rand(1000) %></span>
+  </div>
+  <% @id ||= 1 %>
+
+  <div class="buttons">
+    <button id='refresh-a' href="<%= page_path(@id) %>" onclick="event.preventDefault(); Page.refresh({
+    url: '<%= page_path(@id) %>',
+    onlyKeys: ['section-a']
+    });">Refresh Section A</button>
+    <button id='refresh-b' href="<%= page_path(@id) %>" onclick="event.preventDefault(); Page.refresh({
+    url: '<%= page_path(@id) %>',
+    onlyKeys: ['section-b']
+    });">Refresh Section B</button>
+    <button id='refresh-a-and-b' href="<%= page_path(@id) %>" onclick="event.preventDefault(); Page.refresh({
+    url: '<%= page_path(@id) %>',
+    onlyKeys: ['section-a', 'section-b']
+    });">Refresh Section A and B</button>
+
+    <button href="<%= page_path(@id) %>" partial-graft refresh="section-a section-b">Partial Graft Helper: A and B</button>
+  </div>
+</section>
+
+<section>
+  <h1><code>refresh-never</code></h1>
+  <div>
+    <p>If you add the <code>refresh-never</code> attribute to a node, it will only show up in the <code>body</code> of the document once.  This is useful when you want to include and initialize a tracking script just once inside the body, and never have it fire again.</p>
+  </div>
+  <div refresh-never>
+    <p>I should never be refreshed.  I will disappear after a full page refresh.</p>
+  </div>
+</section>
+
+<section>
+  <h1>Encountering HTTP Errors:</h1>
+  <%= link_to "I will throw an error 500", error_500_pages_path %>
+  <%= link_to "I will throw an error 404", error_404_pages_path %>
+  <p>Hitting the back button, you will see this page again.</p>
+</section>
