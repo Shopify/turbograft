@@ -1,9 +1,3 @@
-currentState            = null
-loadedAssets            = null
-
-referer                 = null
-
-createDocument          = null
 xhr                     = null
 
 
@@ -223,6 +217,10 @@ window.Click = Click
 
 # TODO: decide on the public API
 class Turbolinks
+  createDocument = null
+  currentState = null
+  loadedAssets = null
+  referer = null
   @usePageCache = false
   @pageCache = new PageCache()
 
