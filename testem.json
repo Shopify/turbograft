@@ -10,6 +10,11 @@
   "serve_files": [
     "lib/turbomodules.js",
     "node_modules/sinon/lib/sinon.js",
+    "node_modules/sinon/lib/sinon/match.js",
+    "node_modules/sinon/lib/sinon/call.js",
+    "node_modules/sinon/lib/sinon/spy.js",
+    "node_modules/sinon/lib/sinon/mock.js",
+    "node_modules/sinon/lib/sinon/stub.js",
     "node_modules/chai/chai.js",
     "test/test_helper.js",
     "test/test_bundle.js"
