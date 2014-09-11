@@ -1,10 +1,3 @@
-# The glue between Turbolinks, the binding system, and module instantiation
-
-lastUrl = location.href
-previousContext = {}
-initModules = null
-reapplyQueue = []
-
 window.Page = (setup) ->
   initModules = setup || (-> {})
 
@@ -13,10 +6,6 @@ Page.visit = (url, opts={}) ->
     window.location = url
   else
     Turbolinks.visit(url)
-
-Page.processMessage = (data, event) ->
-  context = Bindings.context(document.querySelector('body'))
-  context.processMessage?(data, event) if context
 
 Page.refresh = (options = {}, callback) ->
   newUrl = if options.url
@@ -54,53 +43,3 @@ Page.replaceState = (path) ->
 
 Page.open = ->
   window.open(arguments...)
-
-Page.openPopup = (href, name, options) ->
-  defaultOptions =
-    width: 500
-    height: 500
-    directories: 'no'
-    location: 'no'
-    menubar: 'no'
-    resizeable: 'yes'
-    scrollbars: 'yes'
-    toolbar: 'no'
-    status: 'no'
-  options = _.defaults(options, defaultOptions)
-  optionsString = _.map(options, (v,k) -> "#{k}=#{v}").toString()
-  Page.open(href, name, optionsString)
-
-reset = (nodes) ->
-  previousContext = {} if location.href != lastUrl
-
-  if initModules?
-    newContext = initModules()
-    Bindings.reset(newContext)
-    Bindings.bind() unless nodes
-    initModules = null
-
-  if nodes
-    Bindings.bind(node) for node in nodes
-
-  for [instance, callback] in reapplyQueue
-    callback(instance)
-  reapplyQueue.length = 0
-
-  Bindings.refreshImmediately()
-  newContext.pageLoaded?() if newContext
-  return
-
-document.addEventListener 'DOMContentLoaded', -> reset()
-
-document.addEventListener 'page:load', (event) ->
-  reset(event.data)
-  lastUrl = location.href
-  return
-
-document.addEventListener 'page:before-partial-replace', (event) ->
-  nodes = event.data
-  Bindings.unbind(node) for node in nodes
-  return
-
-$(document).ajaxComplete ->
-  Bindings.refresh()
