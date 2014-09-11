@@ -10,7 +10,6 @@ describe 'Turbolinks', ->
     document.body.appendChild(createTurboNodule())
 
   afterEach ->
-    history.replaceState null, null, @original_url
     @pushStateStub.restore()
     @replaceStateStub.restore()
     document.getElementById("turbo-area").remove()
