@@ -1,1 +1,1 @@
-require("./javascripts/test_one.coffee")
+require("./javascripts/page.coffee")
