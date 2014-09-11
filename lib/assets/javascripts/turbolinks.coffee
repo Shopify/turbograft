@@ -49,8 +49,19 @@ class PageCache
     Object.keys(storage).length
 
 pageCache = new PageCache()
-
 window.PageCache = PageCache
+
+class CSRFToken
+  @get: (doc = document) ->
+    node:   tag = doc.querySelector 'meta[name="csrf-token"]'
+    token:  tag?.getAttribute? 'content'
+
+  @update: (latest) ->
+    current = @get()
+    if current.token? and latest? and current.token isnt latest
+      current.node.setAttribute 'content', latest
+
+window.CSRFToken = CSRFToken
 
 fetch = (url, partialReplace = false, replaceContents = [], callback) ->
   url = new ComponentUrl url
@@ -281,16 +292,6 @@ processResponse = (xhr, partial = false) ->
 extractTitleAndBody = (doc) ->
   title = doc.querySelector 'title'
   [ title?.textContent, removeNoscriptTags(doc.body), CSRFToken.get(doc).token, 'runScripts' ]
-
-CSRFToken =
-  get: (doc = document) ->
-    node:   tag = doc.querySelector 'meta[name="csrf-token"]'
-    token:  tag?.getAttribute? 'content'
-
-  update: (latest) ->
-    current = @get()
-    if current.token? and latest? and current.token isnt latest
-      current.node.setAttribute 'content', latest
 
 browserCompatibleDocumentParser = ->
   createDocumentUsingParser = (html) ->
