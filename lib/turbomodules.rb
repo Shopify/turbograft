@@ -5,7 +5,7 @@ require 'turbomodules/cookies'
 require 'turbomodules/x_domain_blocker'
 require 'turbomodules/redirection'
 
-module Turbomodules
+module TurboModules
   class Engine < ::Rails::Engine
     initializer :turbolinks do |config|
       ActiveSupport.on_load(:action_controller) do
