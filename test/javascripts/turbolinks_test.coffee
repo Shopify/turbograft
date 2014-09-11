@@ -44,6 +44,18 @@ describe 'Turbolinks', ->
     </html>
   """
 
+  script_response_turbolinks_eval_false = """
+    <!doctype html>
+    <html>
+      <head>
+        <title>Hi</title>
+      </head>
+      <body>
+        <script data-turbolinks-eval="false" id="turbo-area" refresh="turbo-area">globalStub()</script>
+      </body>
+    </html>
+  """
+
   it 'is defined', ->
     assert Turbolinks
 
@@ -87,10 +99,19 @@ describe 'Turbolinks', ->
 
         assert your_callback.calledOnce
 
-      it 'script tags are evaluated if they do not have [data-turbolinks-eval="false"]', ->
+      it 'script tags are evaluated when they are the subject of a partial replace', ->
         window.globalStub = stub()
         server = sinon.fakeServer.create()
         server.respondWith([200, { "Content-Type": "text/html" }, script_response]);
+
+        Turbolinks.visit "/some_request", true, ['turbo-area']
+        server.respond()
+        assert globalStub.calledOnce
+
+      it 'script tags are evaluated even if they have [data-turbolinks-eval="false"]', ->
+        window.globalStub = stub()
+        server = sinon.fakeServer.create()
+        server.respondWith([200, { "Content-Type": "text/html" }, script_response_turbolinks_eval_false]);
 
         Turbolinks.visit "/some_request", true, ['turbo-area']
         server.respond()
