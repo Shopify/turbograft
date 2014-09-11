@@ -8,6 +8,8 @@ describe 'Turbolinks', ->
     window.location.origin + slug
 
   beforeEach ->
+    $("script").attr("data-turbolinks-eval", false)
+    $("#mocha").attr("refresh-never", true)
     @replaceStateStub = stub(Turbolinks, "replaceState")
     @pushStateStub = stub(Turbolinks, "pushState")
     document.body.appendChild(createTurboNodule())
@@ -15,7 +17,7 @@ describe 'Turbolinks', ->
   afterEach ->
     @pushStateStub.restore()
     @replaceStateStub.restore()
-    document.getElementById("turbo-area").remove()
+    $("#turbo-area").remove()
 
   html_one = """
     <!doctype html>
@@ -26,6 +28,18 @@ describe 'Turbolinks', ->
       <body>
         <div>YOLO</div>
         <div id="turbo-area" refresh="turbo-area">Hi bob</div>
+      </body>
+    </html>
+  """
+
+  script_response = """
+    <!doctype html>
+    <html>
+      <head>
+        <title>Hi</title>
+      </head>
+      <body>
+        <script id="turbo-area" refresh="turbo-area">globalStub()</script>
       </body>
     </html>
   """
@@ -73,6 +87,15 @@ describe 'Turbolinks', ->
 
         assert your_callback.calledOnce
 
+      it 'script tags are evaluated if they do not have [data-turbolinks-eval="false"]', ->
+        window.globalStub = stub()
+        server = sinon.fakeServer.create()
+        server.respondWith([200, { "Content-Type": "text/html" }, script_response]);
+
+        Turbolinks.visit "/some_request", true, ['turbo-area']
+        server.respond()
+        assert globalStub.calledOnce
+
     describe 'without partial page replacement', ->
       it 'uses entire response body', ->
         server = sinon.fakeServer.create()
@@ -101,4 +124,3 @@ describe 'Turbolinks', ->
         assert @pushStateStub.calledOnce
         assert @pushStateStub.calledWith({turbolinks: true, url: url_for("/some_request")}, "", url_for("/some_request"))
         assert.equal 0, @replaceStateStub.callCount
-
