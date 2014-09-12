@@ -1,5 +1,5 @@
 {
-  "name": "graft",
+  "name": "turbograft",
   "version": "0.0.0",
   "description": "It's like turbolinks, but with partial page replacement and tests",
   "main": "index.js",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/Shopify/graft.git"
+    "url": "git://github.com/Shopify/turbograft.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Shopify/graft/issues"
+    "url": "https://github.com/Shopify/turbograft/issues"
   },
-  "homepage": "https://github.com/Shopify/graft",
+  "homepage": "https://github.com/Shopify/turbograft",
   "devDependencies": {
     "chai": "~1.9.1",
     "sinon": "~1.10.3",
