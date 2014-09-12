@@ -1,4 +1,4 @@
-class CSRFToken
+class window.CSRFToken
   @get: (doc = document) ->
     node:   tag = doc.querySelector 'meta[name="csrf-token"]'
     token:  tag?.getAttribute? 'content'
@@ -7,5 +7,3 @@ class CSRFToken
     current = @get()
     if current.token? and latest? and current.token isnt latest
       current.node.setAttribute 'content', latest
-
-window.CSRFToken = CSRFToken

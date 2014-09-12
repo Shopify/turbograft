@@ -3,7 +3,7 @@
 #
 # If an instance is created from a relative URL, the current document
 # is used to fill in the missing attributes (protocol, host, port).
-class ComponentUrl
+class window.ComponentUrl
   constructor: (@original = document.location.href) ->
     return @original if @original.constructor is ComponentUrl
     @_parse()
@@ -22,5 +22,3 @@ class ComponentUrl
     @origin += ":#{@port}" unless @port.length is 0
     @relative = [@pathname, @search, @hash].join ''
     @absolute = @href
-
-window.ComponentUrl = ComponentUrl
