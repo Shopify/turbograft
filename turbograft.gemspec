@@ -18,16 +18,13 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "coffee-rails"
-  spec.add_dependency "rails"
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"
-  spec.add_development_dependency "sass-rails"
+  spec.add_development_dependency "rails"
   spec.add_development_dependency "jquery-rails"
-  spec.add_development_dependency "uglifier"
   spec.add_development_dependency "minitest-reporters"
   spec.add_development_dependency "capybara"
-  spec.add_development_dependency "selenium-webdriver"
   spec.add_development_dependency "poltergeist"
   spec.add_development_dependency "teaspoon"
   spec.add_development_dependency "sqlite3"

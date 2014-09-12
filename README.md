@@ -28,12 +28,10 @@ Or install it yourself as:
 
     TODO
 
-
 ## Example App
 
     cd test/example
     bundle exec rails server
-
 
 ## Contributing
 
