@@ -29,4 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "teaspoon"
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "thin"
+  spec.add_development_dependency "byebug"
 end

@@ -2,7 +2,7 @@ require 'test_helper'
 require 'benchmark'
 
 class PageRequestTest < ActionDispatch::IntegrationTest
-  include Capybara
+  include Capybara::DSL
 
   test "visit page" do
     visit "/pages/1"
