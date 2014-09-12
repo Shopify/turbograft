@@ -55,10 +55,13 @@ describe 'Page', ->
 
     it 'calls Turbolinks#loadPage if an XHR is provided in opts.response', ->
       loadPageStub = stub(Turbolinks, "loadPage")
+      afterRefreshCallback = stub()
 
       Page.refresh
         response: "placeholder for an XHR"
         onlyKeys: ['a', 'b']
+      , afterRefreshCallback
 
       assert loadPageStub.calledOnce
+      assert loadPageStub.calledWith null, "placeholder for an XHR", true, afterRefreshCallback, ['a', 'b']
       loadPageStub.restore()
