@@ -1,4 +1,4 @@
-module TurboModules
+module Graft
   # Corrects the behavior of url_for (and link_to, which uses url_for) with the :back
   # option by using the X-XHR-Referer request header instead of the standard Referer
   # request header.

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    turbomodules (0.0.1)
+    graft (0.0.1)
       coffee-rails
       rails
 
@@ -157,6 +157,7 @@ DEPENDENCIES
   bundler
   byebug
   capybara
+  graft!
   jquery-rails
   minitest-reporters
   poltergeist
@@ -166,5 +167,4 @@ DEPENDENCIES
   sqlite3
   teaspoon
   thin
-  turbomodules!
   uglifier

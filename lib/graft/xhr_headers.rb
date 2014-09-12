@@ -1,4 +1,4 @@
-module TurboModules
+module Graft
   # Intercepts calls to _compute_redirect_to_location (used by redirect_to) for two purposes.
   #
   # 1. Corrects the behavior of redirect_to with the :back option by using the X-XHR-Referer

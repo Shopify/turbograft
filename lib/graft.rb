@@ -1,14 +1,14 @@
 require "rails"
 require "active_support"
 
-require "turbomodules/version"
-require "turbomodules/xhr_headers"
-require "turbomodules/xhr_url_for"
-require "turbomodules/cookies"
-require "turbomodules/x_domain_blocker"
-require "turbomodules/redirection"
+require "graft/version"
+require "graft/xhr_headers"
+require "graft/xhr_url_for"
+require "graft/cookies"
+require "graft/x_domain_blocker"
+require "graft/redirection"
 
-module TurboModules
+module Graft
   class Engine < ::Rails::Engine
     initializer :turbolinks do |config|
       ActiveSupport.on_load(:action_controller) do

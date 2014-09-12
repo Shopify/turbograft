@@ -1,4 +1,4 @@
-module TurboModules
+module Graft
   # Sets a request_method cookie containing the request method of the current request.
   # The Turbolinks script will not initialize if this cookie is set to anything other than GET.
   module Cookies

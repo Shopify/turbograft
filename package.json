@@ -1,7 +1,7 @@
 {
-  "name": "turbomodules",
+  "name": "graft",
   "version": "0.0.0",
-  "description": "= Turbomodules",
+  "description": "It's like turbolinks, but with partial page replacement and tests",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/Shopify/turbomodules.git"
+    "url": "git://github.com/Shopify/graft.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Shopify/turbomodules/issues"
+    "url": "https://github.com/Shopify/graft/issues"
   },
-  "homepage": "https://github.com/Shopify/turbomodules",
+  "homepage": "https://github.com/Shopify/graft",
   "devDependencies": {
     "chai": "~1.9.1",
     "sinon": "~1.10.3",
