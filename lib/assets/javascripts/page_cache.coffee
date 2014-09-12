@@ -1,4 +1,4 @@
-class PageCache
+class window.PageCache
   storage = {}
   simultaneousAdditionOffset = 0
   constructor: (@cacheSize = 10) ->
@@ -40,5 +40,3 @@ class PageCache
 
   length: ->
     Object.keys(storage).length
-
-window.PageCache = PageCache

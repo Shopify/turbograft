@@ -2,7 +2,7 @@
 # take control by inspecting both the event and the link. If it should,
 # the page change process is initiated. If not, control is passed back
 # to the browser for default functionality.
-class Click
+class window.Click
   @installHandlerLast: (event) ->
     unless event.defaultPrevented
       document.removeEventListener 'click', Click.handle, false
@@ -32,5 +32,3 @@ class Click
       @event.ctrlKey or
       @event.shiftKey or
       @event.altKey
-
-window.Click = Click

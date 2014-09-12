@@ -1,7 +1,7 @@
 # The Link class derives from the ComponentUrl class, but is built from an
 # existing link element.  Provides verification functionality for Turbolinks
 # to use in determining whether it should process the link when clicked.
-class Link extends ComponentUrl
+class window.Link extends ComponentUrl
   @HTML_EXTENSIONS: ['html']
 
   @allowExtensions: (extensions...) ->
@@ -39,5 +39,3 @@ class Link extends ComponentUrl
 
   _target: ->
     @link.target.length isnt 0
-
-window.Link = Link
