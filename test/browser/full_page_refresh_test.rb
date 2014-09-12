@@ -24,8 +24,12 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
 
   test "will execute scripts that do not have data-turbolinks-eval='false'" do
     click_link "Perform a full refresh"
-    assert page.has_content?("Hi there, from a script!")
-    refute page.has_content?("Not going to see me, turbolinks will ignore")
+    assert page.has_selector?("div.eval-true")
+  end
+
+  test "will not execute scripts that have data-turbolinks-eval='false'" do
+    click_link "Perform a full refresh"
+    refute page.has_selector?("div.eval-false")
   end
 
   test "will not keep any refresh-never nodes around" do
