@@ -54,17 +54,17 @@ class window.Turbolinks
   currentState = null
   loadedAssets = null
   referer = null
-  @usePageCache = false
-  @pageCache = new PageCache()
+  usePageCache = false
+  @pageCache = pageCache = new PageCache()
 
   fetch = (url, partialReplace = false, replaceContents = [], callback) ->
     url = new ComponentUrl url
 
     rememberReferer()
-    @cacheCurrentPage() if @usePageCache
+    Turbolinks.cacheCurrentPage() if usePageCache
     reflectNewUrl url
 
-    if @usePageCache and cachedPage = transitionCacheFor(url.absolute)
+    if usePageCache and cachedPage = transitionCacheFor(url.absolute)
       fetchHistory cachedPage
       fetchReplacement url, partialReplace, null, replaceContents
     else
@@ -126,7 +126,7 @@ class window.Turbolinks
   @cacheCurrentPage: ->
     currentStateUrl = new ComponentUrl currentState.url
 
-    @pageCache.set currentStateUrl.absolute,
+    pageCache.set currentStateUrl.absolute,
       url:                      currentStateUrl.relative,
       body:                     document.body,
       title:                    document.title,
@@ -282,11 +282,11 @@ class window.Turbolinks
 
   installHistoryChangeHandler = (event) ->
     if event.state?.turbolinks
-      if cachedPage = @pageCache.get((new ComponentUrl(event.state.url)).absolute)
-        @cacheCurrentPage()
+      if cachedPage = pageCache.get((new ComponentUrl(event.state.url)).absolute)
+        Turbolinks.cacheCurrentPage()
         fetchHistory cachedPage
       else
-        @visit event.target.location.href
+        Turbolinks.visit event.target.location.href
 
   # Delay execution of function long enough to miss the popstate event
   # some browsers fire on the initial page load.
