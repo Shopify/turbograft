@@ -1,7 +1,8 @@
 require File.expand_path('../boot', __FILE__)
 
-require 'rails/all'
+require "rails/all"
 require "turbomodules"
+require "jquery-rails"
 
 module Example
   class Application < Rails::Application
