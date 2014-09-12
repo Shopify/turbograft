@@ -14,6 +14,8 @@ describe 'Turbolinks', ->
     @pushStateStub = stub(Turbolinks, "pushState")
     document.body.appendChild(createTurboNodule())
 
+    Turbolinks.pageCache.clear()
+
   afterEach ->
     @pushStateStub.restore()
     @replaceStateStub.restore()

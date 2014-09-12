@@ -64,6 +64,9 @@ class PageCache
     storage[key] = value
     @constrain()
 
+  clear: ->
+    storage = {}
+
   setCacheSize: (newSize) ->
     if /^[\d]+$/.test(newSize)
       @cacheSize = parseInt(newSize, 10)

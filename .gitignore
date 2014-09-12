@@ -10,3 +10,4 @@ lib/turbolinks.js
 lib/turbomodules.js
 *.gem
 *.orig
+.all

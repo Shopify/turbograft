@@ -1,6 +1,6 @@
 {
   "framework": "mocha",
-  "before_tests": "browserify test/test_bundle.coffee -o test/test_bundle.js -t coffeeify; browserify lib/assets/javascripts/turbolinks.coffee lib/assets/javascripts/page.coffee -o lib/turbomodules.js -t coffeeify",
+  "before_tests": "make .pretestem",
   "src_files": [
     "lib/**/*.coffee",
     "lib/**/*.js",
