@@ -4,6 +4,7 @@ require "minitest/autorun"
 require "minitest/reporters"
 require "capybara"
 require "capybara/dsl"
+require 'capybara/poltergeist'
 
 require File.expand_path("../example/config/environment.rb",  __FILE__)
 require "rails/test_help"
