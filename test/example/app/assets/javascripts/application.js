@@ -12,7 +12,6 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require turbolinks
-//= require graft
+//= require turbograft
 //= require page
 //= require_tree .
