@@ -10,7 +10,8 @@ require File.expand_path('../example/config/environment.rb',  __FILE__)
 require 'rails/test_help'
 
 Capybara.app = Example::Application
-Capybara.default_driver = :rack_test
+Capybara.current_driver = :poltergeist #:rack_test, :selenium
+
 Minitest::Reporters.use!(Minitest::Reporters::DefaultReporter.new(color: true))
 
 Dir[File.dirname(__FILE__) + '/../lib/*.rb'].each do |file|
