@@ -10,6 +10,7 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
 
   test "will strip noscript tags" do
     click_link "Perform a full refresh"
+    refute page.has_selector?("noscript") # this test should pass, I think
     refute page.has_content?("Please enable JavaScript")
   end
 

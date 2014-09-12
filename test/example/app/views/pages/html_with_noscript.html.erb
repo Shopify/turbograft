@@ -1,8 +1,8 @@
 <noscript>Please enable JavaScript!</noscript>
 <div>Some text</div>
 <script>
-  var newDiv = document.createElement("div");
-  var newContent = document.createTextNode("Hi there, from a script!");
-  newDiv.appendChild(newContent);
-  document.body.appendChild(newDiv);
+  $("body").append("<div>Hi there, from a script!</div>");
+</script>
+<script data-turbolinks-eval="false">
+  $("body").append("<div>Not going to see me, turbolinks will ignore</div>");
 </script>
