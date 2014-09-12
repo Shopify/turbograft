@@ -7,9 +7,9 @@ class PageRequestTest < ActionDispatch::IntegrationTest
 
   test "url_for_with_xhr_referer :back hack" do
     visit "/pages/1"
-    assert_equal 'javascript:history.back()', find_link('Back Link')[:href]
+    assert_equal 'javascript:history.back()', find_link('back')[:href]
 
     click_link "next"
-    assert_match /pages\/1/, find_link('Back Link')[:href]
+    assert_match /pages\/1/, find_link('back')[:href]
   end
 end
