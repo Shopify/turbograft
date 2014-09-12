@@ -262,6 +262,8 @@ class Turbolinks
 
     xhr.send()
 
+    return
+
   loadPage = (url, xhr, partialReplace = false, onLoadFunction = (->), replaceContents = []) ->
     triggerEvent 'page:receive'
 
@@ -296,22 +298,25 @@ class Turbolinks
     document.title = title if title
     if replaceContents.length
       return refreshNodesWithKeys(replaceContents, body)
+    else
+      if partialReplace
+        deleteRefreshNeverNodes(body)
 
-    if partialReplace
-      deleteRefreshNeverNodes(body)
+      triggerEvent 'page:before-replace'
+      document.documentElement.replaceChild body, document.body
+      CSRFToken.update csrfToken if csrfToken?
+      executeScriptTags() if runScripts
+      currentState = window.history.state
+      triggerEvent 'page:change'
+      triggerEvent 'page:update'
 
-    triggerEvent 'page:before-replace'
-    document.documentElement.replaceChild body, document.body
-    CSRFToken.update csrfToken if csrfToken?
-    executeScriptTags() if runScripts
-    currentState = window.history.state
-    triggerEvent 'page:change'
-    triggerEvent 'page:update'
     return
 
   deleteRefreshNeverNodes = (body) ->
     for node in body.querySelectorAll('[refresh-never]')
       node.parentNode.removeChild(node)
+
+    return
 
   refreshNodesWithKeys = (keys, body) ->
     allNodesToBeRefreshed = []
