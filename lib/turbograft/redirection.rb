@@ -1,4 +1,4 @@
-module TurboModules
+module TurboGraft
   # Provides a means of using Turbolinks to perform redirects.  The server
   # will respond with a JavaScript call to Turbolinks.visit(url).
   module Redirection

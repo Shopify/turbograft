@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    turbomodules (0.0.1)
+    turbograft (0.0.1)
       coffee-rails
       rails
 
@@ -166,5 +166,5 @@ DEPENDENCIES
   sqlite3
   teaspoon
   thin
-  turbomodules!
+  turbograft!
   uglifier

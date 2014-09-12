@@ -1,8 +1,9 @@
 require File.expand_path('../boot', __FILE__)
 
 require "rails/all"
-require "turbomodules"
+require "turbograft"
 require "jquery-rails"
+require 'rails/all'
 
 module Example
   class Application < Rails::Application
@@ -54,6 +55,6 @@ module Example
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
-    Bundler.require :turbomodules
+    Bundler.require :turbograft
   end
 end
