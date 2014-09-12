@@ -339,7 +339,7 @@ class Turbolinks
       if newNode = body.querySelector("##{ nodeId }")
         existingNode.parentNode.replaceChild(newNode, existingNode)
 
-        if newNode.nodeName == 'SCRIPT'
+        if newNode.nodeName == 'SCRIPT' && newNode.getAttribute("data-turbolinks-eval") != "false"
           executeScriptTag(newNode)
         else
           refreshedNodes.push(newNode)
