@@ -275,6 +275,8 @@ class Turbolinks
     else
       document.location.href = url.absolute
 
+    return
+
   fetchHistory = (cachedPage) ->
     xhr?.abort()
     changePage cachedPage.title, cachedPage.body, false
@@ -293,6 +295,7 @@ class Turbolinks
       positionX:                window.pageXOffset,
       transitionCacheDisabled:  document.querySelector('[data-no-transition-cache]')?
 
+    return
 
   changePage = (title, body, csrfToken, runScripts, partialReplace, replaceContents = []) ->
     document.title = title if title
@@ -367,6 +370,7 @@ class Turbolinks
     { parentNode, nextSibling } = script
     parentNode.removeChild script
     parentNode.insertBefore copy, nextSibling
+    return
 
   removeNoscriptTags = (node) ->
     node.innerHTML = node.innerHTML.replace /<noscript[\S\s]*?<\/noscript>/ig, ''
@@ -375,12 +379,14 @@ class Turbolinks
   reflectNewUrl = (url) ->
     if (url = new ComponentUrl url).absolute isnt referer
       Turbolinks.pushState { turbolinks: true, url: url.absolute }, '', url.absolute
+    return
 
   reflectRedirectedUrl = (xhr) ->
     if location = xhr.getResponseHeader 'X-XHR-Redirected-To'
       location = new ComponentUrl location
       preservedHash = if location.hasNoHash() then document.location.hash else ''
       Turbolinks.replaceState currentState, '', location.href + preservedHash
+    return
 
   rememberReferer = ->
     referer = document.location.href
