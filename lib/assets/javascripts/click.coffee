@@ -15,8 +15,11 @@ class window.Click
     return if @event.defaultPrevented
     @_extractLink()
     if @_validForTurbolinks()
-      visit @link.href unless pageChangePrevented()
+      Turbolinks.visit @link.href unless @_pageChangePrevented()
       @event.preventDefault()
+
+  _pageChangePrevented: ->
+    !triggerEvent 'page:before-change'
 
   _extractLink: ->
     link = @event.target
