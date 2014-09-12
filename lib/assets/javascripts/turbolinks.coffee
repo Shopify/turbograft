@@ -100,7 +100,7 @@ class window.Turbolinks
     xhr.setRequestHeader 'X-XHR-Referer', referer
 
     xhr.onload = ->
-      loadPage(url, xhr, partialReplace, onLoadFunction, replaceContents)
+      Turbolinks.loadPage(url, xhr, partialReplace, onLoadFunction, replaceContents)
 
     xhr.onloadend = -> xhr = null
     xhr.onerror   = ->
@@ -110,7 +110,7 @@ class window.Turbolinks
 
     return
 
-  loadPage = (url, xhr, partialReplace = false, onLoadFunction = (->), replaceContents = []) ->
+  @loadPage: (url, xhr, partialReplace = false, onLoadFunction = (->), replaceContents = []) ->
     triggerEvent 'page:receive'
 
     if doc = processResponse(xhr, partialReplace)
