@@ -1,4 +1,4 @@
-module Graft
+module TurboGraft
   # Changes the response status to 403 Forbidden if all of these conditions are true:
   # - The current request originated from Turbolinks
   # - The request is being redirected to a different domain

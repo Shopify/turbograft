@@ -1,16 +1,16 @@
 require "rails"
 require "active_support"
 
-require "graft/version"
-require "graft/xhr_headers"
-require "graft/xhr_url_for"
-require "graft/cookies"
-require "graft/x_domain_blocker"
-require "graft/redirection"
+require "turbograft/version"
+require "turbograft/xhr_headers"
+require "turbograft/xhr_url_for"
+require "turbograft/cookies"
+require "turbograft/x_domain_blocker"
+require "turbograft/redirection"
 
-module Graft
+module TurboGraft
   class Engine < ::Rails::Engine
-    initializer :turbolinks do |config|
+    initializer :turbograft do |config|
       ActiveSupport.on_load(:action_controller) do
         ActionController::Base.class_eval do
           include XHRHeaders, Cookies, XDomainBlocker, Redirection

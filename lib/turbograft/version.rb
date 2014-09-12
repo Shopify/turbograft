@@ -1,3 +1,3 @@
-module Graft
+module TurboGraft
   VERSION = '0.0.1'
 end

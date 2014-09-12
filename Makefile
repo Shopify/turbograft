@@ -9,7 +9,7 @@ TEST_FILES=$(shell find test/javascripts/*.coffee)
 .pretestem: .all
 
 .app: $(APP_FILES)
-	browserify $(APP_FILES) -o lib/graft.js -t coffeeify
+	browserify $(APP_FILES) -o lib/turbograft.js -t coffeeify
 
 .test: $(TEST_FILES)
 	browserify $(TEST_FILES) -o test/test_bundle.js -t coffeeify
