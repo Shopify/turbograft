@@ -29,7 +29,7 @@ describe 'Page', ->
           baz: "bot"
 
       assert @visitStub.calledOnce
-      assert @visitStub.calledWith "/?foo=bar&baz=bot"
+      assert @visitStub.calledWith location.pathname + "?foo=bar&baz=bot"
 
     it 'ignores opts.queryParams if opts.url is present', ->
       Page.refresh
