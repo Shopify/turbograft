@@ -13,5 +13,4 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbograft
-//= require page
 //= require_tree .
