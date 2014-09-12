@@ -35,7 +35,7 @@ class window.PageCache
     .sort (a, b) -> b - a
 
     for key in pageCacheKeys when storage[key].cachedAt <= cacheTimesRecentFirst[@cacheSize]
-      #triggerEvent 'page:expire', storage[key] # TODO: fix this
+      triggerEvent 'page:expire', storage[key] # TODO: fix this global
       delete storage[key]
 
   length: ->

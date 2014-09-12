@@ -19,7 +19,7 @@ class window.Click
       @event.preventDefault()
 
   _pageChangePrevented: ->
-    !triggerEvent 'page:before-change'
+    !triggerEvent 'page:before-change' # TODO: fix this global
 
   _extractLink: ->
     link = @event.target
