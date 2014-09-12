@@ -1,8 +1,6 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
-
-Bundler.require
 require "turbomodules"
 
 module Example
@@ -54,6 +52,7 @@ module Example
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    Bundler.require :turbomodules
   end
 end
-
