@@ -4,8 +4,7 @@ Ruby gem for modulating your turbos
 
 ## Status
 [![Gem Version](https://badge.fury.io/rb/turbomodules.png)](http://badge.fury.io/rb/turbomodules)
-[![Build Status](https://secure.travis-ci.org/tylermercier/turbomodules.png)](http://travis-ci.org/tylermercier/turbomodules)
-[![Code Climate](https://codeclimate.com/github/tylermercier/turbomodules.png)](https://codeclimate.com/github/tylermercier/turbomodules)
+[![Build Status](https://secure.travis-ci.org/shopify/turbomodules.png)](http://travis-ci.org/tylermercier/turbomodules)
 
 ## Installation
 
