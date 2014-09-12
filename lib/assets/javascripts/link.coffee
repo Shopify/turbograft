@@ -32,7 +32,7 @@ class window.Link extends ComponentUrl
 
   _optOut: ->
     link = @link
-    until ignore or link is document
+    until ignore or link is document or link is null
       ignore = link.getAttribute('data-no-turbolink')?
       link = link.parentNode
     ignore
