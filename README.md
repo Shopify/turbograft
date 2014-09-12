@@ -1,21 +1,39 @@
-Turbomodules
------
+# TurboModules
 
-This project rocks and uses MIT-LICENSE.
+Ruby gem for modulating your turbos
 
-# Developing JavaScript
+## Status
+[![Gem Version](https://badge.fury.io/rb/turbomodules.png)](http://badge.fury.io/rb/turbomodules)
+[![Build Status](https://secure.travis-ci.org/tylermercier/turbomodules.png)](http://travis-ci.org/tylermercier/turbomodules)
+[![Code Climate](https://codeclimate.com/github/tylermercier/turbomodules.png)](https://codeclimate.com/github/tylermercier/turbomodules)
 
-## Install dependencies using npm
+## Installation
 
-1. `npm install`
-2. `npm install -g testem browserify coffee-script`
+Add this line to your application's Gemfile:
 
-## Building a 1-file Turbomodules package
+    gem 'turbomodules'
 
-1. `make .app`
-2. The concatenated file is available at `lib/turbomodules.js`
+And then execute:
 
-## Testing JavaScript
+    $ bundle
 
-- Run `testem ci` to run tests across many browsers
-- Run `testem` and visit the URL provided to debug tests in your preferred browser
+Or install it yourself as:
+
+    $ gem install turbomodules
+
+## Usage
+
+
+## Example App
+
+    cd test/example
+    bundle exec rails server
+
+
+## Contributing
+
+1. Fork it ( http://github.com/<my-github-username>/turbomodules/fork )
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
