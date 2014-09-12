@@ -61,8 +61,12 @@ describe 'Turbolinks', ->
   it 'is defined', ->
     assert Turbolinks
 
-  it 'can access the property usePageCache', ->
-    assert.equal false, Turbolinks.usePageCache
+  it 'can access the function usePageCache / pageCacheEnabled', ->
+    assert.equal false, Turbolinks.pageCacheEnabled()
+    Turbolinks.usePageCache(true)
+    assert.equal true, Turbolinks.pageCacheEnabled()
+    Turbolinks.usePageCache(false)
+    assert.equal false, Turbolinks.pageCacheEnabled()
 
   it 'has a PageCache object', ->
     assert Turbolinks.pageCache

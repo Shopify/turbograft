@@ -73,6 +73,12 @@ class window.Turbolinks
         callback?()
       , replaceContents
 
+  @pageCacheEnabled = ->
+    usePageCache
+
+  @usePageCache = (status) ->
+    usePageCache = status
+
   transitionCacheFor = (url) ->
     cachedPage = pageCache.get(url)
     cachedPage if cachedPage and !cachedPage.transitionCacheDisabled
