@@ -102,3 +102,34 @@ describe 'Link', ->
       link = new Link($a[0])
 
       assert !link._target()
+
+  describe '#shouldIgnore', ->
+    it 'ignores cross origin links', ->
+      $a = $("<a>").attr("href", "http://example.com")
+      link = new Link($a[0])
+
+      assert link.shouldIgnore()
+
+    it 'ignores anchored links', ->
+      $a = $("<a>").attr("href", "http://example.com#foobat")
+      link = new Link($a[0])
+
+      assert link.shouldIgnore()
+
+    it 'ignores non-HTML links', ->
+      $a = $("<a>").attr("href", "http://example.com/test.xml")
+      link = new Link($a[0])
+
+      assert link.shouldIgnore()
+
+    it 'ignores opt-out links', ->
+      $a = $("<a>").attr("href", "http://example.com#foobat").attr("data-no-turbolink", "false")
+      link = new Link($a[0])
+
+      assert link.shouldIgnore()
+
+    it 'ignores links with a target', ->
+      $a = $("<a>").attr("href", "/").attr("target", "_blank")
+      link = new Link($a[0])
+
+      assert link.shouldIgnore()
