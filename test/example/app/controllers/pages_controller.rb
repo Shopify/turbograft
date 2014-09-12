@@ -10,6 +10,8 @@ class PagesController < ApplicationController
     @next_id = @id.to_i + 1
   end
 
+  def html_with_noscript; end
+
   def new
     render json: "{}", location: 'http://www.notexample.com'
   end
