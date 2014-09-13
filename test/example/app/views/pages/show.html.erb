@@ -60,6 +60,6 @@
 </p>
 
 <div refresh-never>
-  <p>I should never be refreshed.  This only applies when doing a partial refresh, however.  Here's another random number: <span class="refresh-never-random-number"><%= rand(1000) %></span>
-  </p>
+  <p>If you add the <code>refresh-never</code> attribute to a node, it will only show up in the body of the document once.  This is useful when you want to include and initialize a tracking script just once inside the body, and never have it fire again.</p>
+  <p>I should never be refreshed.  I will disappear after a full page navigation.</p>
 </div>

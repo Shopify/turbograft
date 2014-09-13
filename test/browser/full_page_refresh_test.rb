@@ -33,7 +33,8 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
   end
 
   test "will not keep any refresh-never nodes around" do
-    click_link "Perform a full refresh"
+    assert page.has_selector?("[refresh-never]")
+    click_link "next"
     refute page.has_selector?("[refresh-never]")
   end
 end

@@ -147,8 +147,7 @@ class window.Turbolinks
     if replaceContents.length
       return refreshNodesWithKeys(replaceContents, body)
     else
-      if partialReplace
-        deleteRefreshNeverNodes(body)
+      deleteRefreshNeverNodes(body)
 
       triggerEvent 'page:before-replace'
       document.documentElement.replaceChild body, document.body
