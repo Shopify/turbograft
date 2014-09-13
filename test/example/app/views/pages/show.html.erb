@@ -41,19 +41,19 @@
 </div>
 <% @id ||= 1 %>
 <p>
-  <a id='refresh-a' href="#" onclick="event.preventDefault(); Page.refresh({
+  <a id='refresh-a' href="<%= page_path(@id) %>" onclick="event.preventDefault(); Page.refresh({
   url: '<%= page_path(@id) %>',
   onlyKeys: ['section-a']
 });">Refresh Section A</a>
 </p>
 <p>
-  <a id='refresh-b' href="#" onclick="event.preventDefault(); Page.refresh({
+  <a id='refresh-b' href="<%= page_path(@id) %>" onclick="event.preventDefault(); Page.refresh({
   url: '<%= page_path(@id) %>',
   onlyKeys: ['section-b']
 });">Refresh Section B</a>
 </p>
 <p>
-  <a id='refresh-a-and-b' href="#" onclick="event.preventDefault(); Page.refresh({
+  <a id='refresh-a-and-b' href="<%= page_path(@id) %>" onclick="event.preventDefault(); Page.refresh({
   url: '<%= page_path(@id) %>',
   onlyKeys: ['section-a', 'section-b']
 });">Refresh Section A and B</a>
