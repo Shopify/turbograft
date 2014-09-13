@@ -28,19 +28,19 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     assert random_a
     assert random_b
 
-    click_link "Refresh Section A"
+    click_button "Refresh Section A"
     assert page.has_content? "Page 1"
     assert_not_equal random_a, find('#random-number-a').text
     assert_equal random_b, find('#random-number-b').text
 
     random_a = find('#random-number-a').text
-    click_link "Refresh Section B"
+    click_button "Refresh Section B"
     assert page.has_content? "Page 1"
     assert_equal random_a, find('#random-number-a').text
     assert_not_equal random_b, find('#random-number-b').text
 
     random_b = find('#random-number-b').text
-    click_link "Refresh Section A and B"
+    click_button "Refresh Section A and B"
     assert page.has_content? "Page 1"
     assert_not_equal random_a, find('#random-number-a').text
     assert_not_equal random_b, find('#random-number-b').text
