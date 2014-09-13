@@ -2,7 +2,8 @@ class PagesController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
-    redirect_via_turbolinks_to page_path(1)
+    @id = 1
+    redirect_via_turbolinks_to page_path(@id)
   end
 
   def show
