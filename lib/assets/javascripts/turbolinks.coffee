@@ -62,7 +62,6 @@ class window.Turbolinks
 
     rememberReferer()
     Turbolinks.cacheCurrentPage() if usePageCache
-    reflectNewUrl url
 
     if usePageCache and cachedPage = transitionCacheFor(url.absolute)
       fetchHistory cachedPage
@@ -99,7 +98,10 @@ class window.Turbolinks
     xhr.setRequestHeader 'X-XHR-Referer', referer
 
     xhr.onload = ->
-      Turbolinks.loadPage(url, xhr, partialReplace, onLoadFunction, replaceContents)
+      if xhr.status >= 500
+        document.location.href = url.absolute
+      else
+        Turbolinks.loadPage(url, xhr, partialReplace, onLoadFunction, replaceContents)
 
     xhr.onloadend = -> xhr = null
     xhr.onerror   = ->
@@ -113,6 +115,7 @@ class window.Turbolinks
     triggerEvent 'page:receive'
 
     if doc = processResponse(xhr, partialReplace)
+      reflectNewUrl url
       nodes = changePage(extractTitleAndBody(doc)..., partialReplace, replaceContents)
       reflectRedirectedUrl(xhr)
       triggerEvent 'page:load', nodes
