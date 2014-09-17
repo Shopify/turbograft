@@ -8,7 +8,7 @@ In botony, one can take parts of a tree and splice it onto another tree.  The DO
 
 ## Status
 [![Gem Version](https://badge.fury.io/rb/turbograft.png)](http://badge.fury.io/rb/turbograft)
-[![Build Status](https://secure.travis-ci.org/shopify/turbograft.png)](http://travis-ci.org/tylermercier/turbograft)
+[![Build Status](https://secure.travis-ci.org/Shopify/turbograft.png)](http://travis-ci.org/Shopify/turbograft)
 
 ## Installation
 
