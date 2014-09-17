@@ -37,4 +37,18 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
     click_link "next"
     refute page.has_selector?("[refresh-never]")
   end
+
+  test "going to a URL that will error 500, and hitting the browser back button, we see the correct page (and not the 500)" do
+    click_link "I will throw an error 500"
+    assert_not_equal "Sample Turbograft Application", page.title
+    page.evaluate_script('window.history.back()')
+    assert_equal "Sample Turbograft Application", page.title
+  end
+
+  test "going to a URL that will error 404, and hitting the browser back button, we see the correct page (and not the 404)" do
+    click_link "I will throw an error 404"
+    assert_not_equal "Sample Turbograft Application", page.title
+    page.evaluate_script('window.history.back()')
+    assert_equal "Sample Turbograft Application", page.title
+  end
 end

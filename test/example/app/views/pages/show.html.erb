@@ -66,3 +66,10 @@
     <p>I should never be refreshed.  I will disappear after a full page refresh.</p>
   </div>
 </section>
+
+<section>
+  <h1>Encountering HTTP Errors:</h1>
+  <%= link_to "I will throw an error 500", error_500_pages_path %>
+  <%= link_to "I will throw an error 404", error_404_pages_path %>
+  <p>Hitting the back button, you will see this page again.</p>
+</section>

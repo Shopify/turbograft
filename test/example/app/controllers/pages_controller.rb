@@ -11,6 +11,14 @@ class PagesController < ApplicationController
     @next_id = @id.to_i + 1
   end
 
+  def error_500
+    render text: "Error 500!", status: 500
+  end
+
+  def error_404
+    render text: "Error 404!", status: 404
+  end
+
   def html_with_noscript; end
 
   def new
