@@ -45,4 +45,12 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     assert_not_equal random_a, find('#random-number-a').text
     assert_not_equal random_b, find('#random-number-b').text
   end
+
+  test "partial-graft helper works" do
+    random_a = find('#random-number-a').text
+    random_b = find('#random-number-b').text
+    click_button "Partial Graft Helper: A and B"
+    assert_not_equal random_a, find('#random-number-a').text
+    assert_not_equal random_b, find('#random-number-b').text
+  end
 end

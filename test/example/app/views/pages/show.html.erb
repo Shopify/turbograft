@@ -54,6 +54,8 @@
     url: '<%= page_path(@id) %>',
     onlyKeys: ['section-a', 'section-b']
     });">Refresh Section A and B</button>
+
+    <button href="<%= page_path(@id) %>" partial-graft refresh="section-a section-b">Partial Graft Helper: A and B</button>
   </div>
 </section>
 
