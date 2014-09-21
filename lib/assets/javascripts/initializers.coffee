@@ -1,9 +1,11 @@
-document.addEventListener 'click', (ev) ->
+partialGraftClickHandler = (ev) ->
   target = ev.target
   partialGraft = target.getAttribute("partial-graft")
+  return unless partialGraft?
   href = target.getAttribute("href")
   refresh = target.getAttribute("refresh")
-  return unless partialGraft != null && href != null && refresh != null
+  throw "TurboGraft developer error: href is not defined on node #{target}" if !href?
+  throw "TurboGraft developer error: refresh is not defined on node #{target}" if !refresh?
 
   keys = refresh.trim().split(" ")
 
@@ -11,4 +13,4 @@ document.addEventListener 'click', (ev) ->
     url: href,
     onlyKeys: keys
 
-, true
+document.addEventListener 'click', partialGraftClickHandler, true
