@@ -4,3 +4,4 @@ Thanks go out to:
 - Anthony Cameron ([qq99](https://github.com/qq99))
 - Tyler Mercier ([tylermercier](https://github.com/tylermercier))
 - Justin Li ([pushrax](https://github.com/pushrax))
+- Patrick Donovan ([patrickdonovan](https://github.com/patrickdonovan))
