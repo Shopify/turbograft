@@ -1,4 +1,4 @@
-window.Page = {}
+window.Page = {} if !window.Page
 
 Page.visit = (url, opts={}) ->
   if opts.reload
