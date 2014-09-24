@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    turbograft (0.0.2)
+    turbograft (0.0.4)
       coffee-rails
 
 GEM
