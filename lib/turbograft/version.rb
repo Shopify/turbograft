@@ -1,3 +1,3 @@
 module TurboGraft
-  VERSION = '0.0.2'
+  VERSION = '0.0.4'
 end
