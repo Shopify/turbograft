@@ -26,10 +26,9 @@ class PagesControllerTest < ActionController::TestCase
     assert_equal "http://test.host/pages/1", session[:_turbolinks_redirect_to]
   end
 
-  test "set_xhr_redirected_to clears session and sets X-XHR-Redirected-To" do
+  test "set_xhr_redirected_to sets X-XHR-Redirected-To" do
     get :index, {}, {_turbolinks_redirect_to: 'http://test.host/expected'}
     assert_response :ok
-    assert_nil session[:_turbolinks_redirect_to]
     assert_equal 'http://test.host/expected', response.headers['X-XHR-Redirected-To']
   end
 end
