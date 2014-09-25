@@ -31,4 +31,14 @@ class PagesControllerTest < ActionController::TestCase
     assert_response :ok
     assert_equal 'http://test.host/expected', response.headers['X-XHR-Redirected-To']
   end
+
+  test "XHR POST to a redirecting route, followed by XHR GET will set X-XHR-Redirected-To" do
+    @request.headers["X-XHR-Referer"] = 'http://test.host'
+    #@request.headers["X-Requested-With"] = 'XMLHttpRequest'
+    xhr :post, :redirect_to_somewhere_else_after_POST
+    assert_response 302
+    assert_redirected_to page_path(321)
+    xhr :get, :show, id: 321
+    assert_equal 'http://test.host/pages/321', response.headers['X-XHR-Redirected-To']
+  end
 end

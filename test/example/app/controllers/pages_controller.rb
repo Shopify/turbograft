@@ -12,7 +12,7 @@ class PagesController < ApplicationController
   end
 
   def redirect_to_somewhere_else_after_POST
-    redirect_to page_path(1)
+    redirect_to page_path(321)
   end
 
   def error_500
