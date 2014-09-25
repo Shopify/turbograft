@@ -5,3 +5,4 @@ Thanks go out to:
 - Tyler Mercier ([tylermercier](https://github.com/tylermercier))
 - Justin Li ([pushrax](https://github.com/pushrax))
 - Patrick Donovan ([patrickdonovan](https://github.com/patrickdonovan))
+- Kristian PD ([kristianpd](https://github.com/kristianpd))
