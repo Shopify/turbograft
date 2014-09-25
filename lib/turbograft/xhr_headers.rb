@@ -11,22 +11,18 @@ module TurboGraft
   module XHRHeaders
     extend ActiveSupport::Concern
 
-    def _compute_redirect_to_location(*args)
-      options, request = _normalize_redirect_params(args)
-
-      store_for_turbolinks begin
-        if options == :back && request.headers["X-XHR-Referer"]
-          super(*[(request if args.length == 2), request.headers["X-XHR-Referer"]].compact)
-        else
-          super(*args)
-        end
-      end
+    included do
+      alias_method_chain :_compute_redirect_to_location, :xhr_referer
     end
 
     private
-      def store_for_turbolinks(url)
-        session[:_turbolinks_redirect_to] = url if request.headers["X-XHR-Referer"]
-        url
+      def _compute_redirect_to_location_with_xhr_referer(options)
+        session[:_turbolinks_redirect_to] =
+          if options == :back && request.headers["X-XHR-Referer"]
+            _compute_redirect_to_location_without_xhr_referer(request.headers["X-XHR-Referer"])
+          else
+            _compute_redirect_to_location_without_xhr_referer(options)
+          end
       end
 
       def set_xhr_redirected_to
@@ -34,13 +30,6 @@ module TurboGraft
           response.headers['X-XHR-Redirected-To'] = session.delete :_turbolinks_redirect_to
         end
       end
-
-      # Ensure backwards compatibility
-      # Rails < 4.2:  _compute_redirect_to_location(options)
-      # Rails >= 4.2: _compute_redirect_to_location(request, options)
-      def _normalize_redirect_params(args)
-        options, req = args.reverse
-        [options, req || request]
-      end
   end
+
 end
