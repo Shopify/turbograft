@@ -59,6 +59,7 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     old_location = current_url
 
     click_button "Post via XHR and see X-XHR-Redirected-To"
+    sleep 2
 
     new_location = current_url
     assert page.has_content? "Page 321"
