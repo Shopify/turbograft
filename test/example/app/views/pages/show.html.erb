@@ -75,3 +75,9 @@
   <%= link_to "I will throw an error 404", error_404_pages_path %>
   <p>Hitting the back button, you will see this page again.</p>
 </section>
+
+<section>
+  <%= form_tag redirect_to_somewhere_else_after_POST_pages_path, method: "POST" do %>
+    <%= button_tag "Redirect to somewhere else after POST", type: :submit  %>
+  <% end %>
+</section>
