@@ -53,4 +53,16 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     assert_not_equal random_a, find('#random-number-a').text
     assert_not_equal random_b, find('#random-number-b').text
   end
+
+  test "when I use an XHR and POST to an endpoint that returns me a 302, I should see the URL reflecting that redirect too" do
+    assert page.has_content? "Page 1"
+    old_location = current_url
+
+    click_button "Post via XHR and see X-XHR-Redirected-To"
+    sleep 2
+
+    new_location = current_url
+    assert page.has_content? "Page 321"
+    assert_not_equal new_location, old_location
+  end
 end

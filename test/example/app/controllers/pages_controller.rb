@@ -11,6 +11,10 @@ class PagesController < ApplicationController
     @next_id = @id.to_i + 1
   end
 
+  def redirect_to_somewhere_else_after_POST
+    redirect_to page_path(321)
+  end
+
   def error_500
     render text: "Error 500!", status: 500
   end
