@@ -20,10 +20,22 @@ class PagesController < ApplicationController
   end
 
   def error_404
-    render text: "Error 404!", status: 404
+    render html: "Error 404!", status: 404
+  end
+
+  def error_422
+    render "error_422", status: 422
   end
 
   def html_with_noscript; end
+
+  def submit_foo
+    if params[:foo].blank?
+      render '_missing_foo', status: 422
+    else
+      render '_thanks_for_all_the_foo', status: 200, layout: false # it's not necessary to render a full response, and you may prefer not to
+    end
+  end
 
   def new
     render json: "{}", location: 'http://www.notexample.com'

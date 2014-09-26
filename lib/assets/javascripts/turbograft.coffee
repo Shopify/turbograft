@@ -6,3 +6,4 @@
 #= require page_cache
 #= require turbolinks
 #= require initializers
+#= require remote
