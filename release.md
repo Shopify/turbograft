@@ -1,6 +1,8 @@
 ## Release instructions
 
-Update version.rb to the correct version and then run `bundle exec rake release`
+1. Update `version.rb` and `package.json` to the correct version
+2. `bundle install`
+3. `bundle exec rake release`
 
 ## Remove old releases (only if they are failing)
 
