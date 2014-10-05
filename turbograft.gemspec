@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/Shopify/turbograft"
   spec.license       = "MIT"
 
-  spec.files         = Dir["lib/assets/javascripts/*.js.coffee", "lib/turbograft.rb", "lib/turbograft/*.rb", "README.md", "MIT-LICENSE"]
+  spec.files         = Dir["lib/**/*", "README.md", "MIT-LICENSE"]
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
