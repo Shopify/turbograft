@@ -6,3 +6,4 @@ Thanks go out to:
 - Justin Li ([pushrax](https://github.com/pushrax))
 - Patrick Donovan ([patrickdonovan](https://github.com/patrickdonovan))
 - Kristian PD ([kristianpd](https://github.com/kristianpd))
+- Nicholas Simmons ([nsimmons](https://github.com/nsimmons))
