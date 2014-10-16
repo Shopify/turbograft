@@ -8,6 +8,7 @@ describe 'Turbolinks', ->
     window.location.origin + slug
 
   beforeEach ->
+    @server = sinon.fakeServer.create()
     $("script").attr("data-turbolinks-eval", false)
     $("#mocha").attr("refresh-never", true)
     @replaceStateStub = stub(Turbolinks, "replaceState")
@@ -17,6 +18,7 @@ describe 'Turbolinks', ->
     Turbolinks.pageCache.clear()
 
   afterEach ->
+    @server.restore()
     @pushStateStub.restore()
     @replaceStateStub.restore()
     $("#turbo-area").remove()
@@ -81,12 +83,10 @@ describe 'Turbolinks', ->
   describe '#visit', ->
     describe 'with partial page replacement', ->
       it 'uses just the part of the response body we supply', ->
-
-        server = sinon.fakeServer.create()
-        server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
+        @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
 
         Turbolinks.visit "/some_request", true, ['turbo-area']
-        server.respond()
+        @server.respond()
 
         assert.equal "Hi there!", document.title
         assert.equal -1, document.body.textContent.indexOf("YOLO")
@@ -96,58 +96,26 @@ describe 'Turbolinks', ->
         assert.equal 0, @replaceStateStub.callCount
 
       it 'calls a user-supplied callback', ->
-        server = sinon.fakeServer.create()
-        server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
+        @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
 
         your_callback = stub()
         Turbolinks.visit "/some_request", true, ['turbo-area'], your_callback
-        server.respond()
+        @server.respond()
 
         assert your_callback.calledOnce
 
       it 'script tags are evaluated when they are the subject of a partial replace', ->
         window.globalStub = stub()
-        server = sinon.fakeServer.create()
-        server.respondWith([200, { "Content-Type": "text/html" }, script_response]);
+        @server.respondWith([200, { "Content-Type": "text/html" }, script_response]);
 
         Turbolinks.visit "/some_request", true, ['turbo-area']
-        server.respond()
+        @server.respond()
         assert globalStub.calledOnce
 
       it 'script tags are not evaluated if they have [data-turbolinks-eval="false"]', ->
         window.globalStub = stub()
-        server = sinon.fakeServer.create()
-        server.respondWith([200, { "Content-Type": "text/html" }, script_response_turbolinks_eval_false]);
+        @server.respondWith([200, { "Content-Type": "text/html" }, script_response_turbolinks_eval_false]);
 
         Turbolinks.visit "/some_request", true, ['turbo-area']
-        server.respond()
+        @server.respond()
         assert.equal 0, globalStub.callCount
-
-    describe 'without partial page replacement', ->
-      it 'uses entire response body', ->
-        server = sinon.fakeServer.create()
-        server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
-
-        Turbolinks.visit "/some_request", false, ['turbo-area']
-        server.respond()
-
-        assert.equal "Hi there!", document.title
-        assert document.body.textContent.indexOf("YOLO") > 0
-        assert document.body.textContent.indexOf("Hi bob") > 0
-        assert @pushStateStub.calledOnce
-        assert @pushStateStub.calledWith({turbolinks: true, url: url_for("/some_request")}, "", url_for("/some_request"))
-        assert.equal 0, @replaceStateStub.callCount
-
-      it 'ignores any partial refresh keys we might accidentally supply', ->
-        server = sinon.fakeServer.create()
-        server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
-
-        Turbolinks.visit "/some_request", false, ['turbo-area']
-        server.respond()
-
-        assert.equal "Hi there!", document.title
-        assert document.body.textContent.indexOf("YOLO") > 0
-        assert document.body.textContent.indexOf("Hi bob") > 0
-        assert @pushStateStub.calledOnce
-        assert @pushStateStub.calledWith({turbolinks: true, url: url_for("/some_request")}, "", url_for("/some_request"))
-        assert.equal 0, @replaceStateStub.callCount
