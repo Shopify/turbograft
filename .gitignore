@@ -11,3 +11,4 @@ lib/turbomodules.js
 *.gem
 *.orig
 .all
+Gemfile.lock
