@@ -1,6 +1,6 @@
 {
   "name": "turbograft",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "It's like turbolinks, but with partial page replacement and tests",
   "main": "index.js",
   "directories": {
