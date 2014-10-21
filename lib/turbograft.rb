@@ -9,13 +9,21 @@ require "turbograft/x_domain_blocker"
 require "turbograft/redirection"
 
 module TurboGraft
+  class Config
+    cattr_accessor :controllers
+    self.controllers = ["ActionController::Base"]
+  end
+
   class Engine < ::Rails::Engine
+
     initializer :turbograft do |config|
       ActiveSupport.on_load(:action_controller) do
-        ActionController::Base.class_eval do
-          include XHRHeaders, Cookies, XDomainBlocker, Redirection
-          before_filter :set_xhr_redirected_to, :set_request_method_cookie
-          after_filter :abort_xdomain_redirect
+        Config.controllers.each do |klass|
+          klass.constantize.class_eval do
+            include XHRHeaders, Cookies, XDomainBlocker, Redirection
+            before_filter :set_xhr_redirected_to, :set_request_method_cookie
+            after_filter :abort_xdomain_redirect
+          end
         end
 
         ActionDispatch::Request.class_eval do
