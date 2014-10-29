@@ -75,6 +75,7 @@ TurboGraft.handlers.remoteFormHandler = (ev) ->
 documentListenerForButtons = (eventType, handler, useCapture = false) ->
   document.addEventListener eventType, (ev) ->
     target = ev.target
+    ev.preventDefault() if nodeIsDisabled(target)
     return if !(target.nodeName == "A" || target.nodeName == "BUTTON") || nodeIsDisabled(target)
     handler(ev)
 
