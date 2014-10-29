@@ -1,12 +1,9 @@
 language: ruby
 rvm:
   - "2.0.0"
-node_js:
-  - "0.10"
 before_script:
-  - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   - bundle install
-  - npm install
-  - npm install -g browserify@5.11.1 testem@0.6.18 coffee-script
-script: testem ci --launch Firefox --file ./testem.json && cd test/example && bundle exec rake test
+env:
+  - DISPLAY=":99.0"
+script: bundle exec rake ci

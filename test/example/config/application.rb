@@ -4,6 +4,7 @@ require "rails/all"
 require "turbograft"
 require "jquery-rails"
 require 'rails/all'
+require 'teaspoon'
 
 module Example
   class Application < Rails::Application

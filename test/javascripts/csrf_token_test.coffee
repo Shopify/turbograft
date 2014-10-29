@@ -1,23 +1,15 @@
 describe 'CSRFToken', ->
-
   beforeEach ->
-    $csrfToken = $("<meta name='csrf-token' content='foo'></meta>")
-    @csrfTokenNode = $csrfToken[0]
-    $("body").append $csrfToken
-
-    @subject = CSRFToken
+    $meta = $("<meta>").attr("name", "csrf-token").attr("id", "meta-tag").attr("content", "original")
+    $("meta[name='csrf-token']").remove()
+    $("head").append($meta)
 
   afterEach ->
-    $("meta[name='csrf-token']").remove()
+    $("#meta-tag").remove()
 
-  describe '#get', ->
-    it 'returns the node and the value of the token', ->
-      result = @subject.get()
-      assert.equal "foo", result.token
-      assert.equal @csrfTokenNode, result.node
+  it 'can get the CSRF token', ->
+    assert.equal CSRFToken.get().token, "original"
 
-  describe '#update', ->
-    it 'sets the value of the token to a new value', ->
-      @subject.update("bar")
-      result = @subject.get()
-      assert.equal "bar", result.token
+  it 'can update the CSRF token', ->
+    CSRFToken.update("updated_value")
+    assert.equal CSRFToken.get().token, "updated_value"
