@@ -1,5 +1,4 @@
-window.TurboGraft ?= { handlers: {} }
-
+#= require_self
 #= require click
 #= require component_url
 #= require csrf_token
@@ -9,3 +8,5 @@ window.TurboGraft ?= { handlers: {} }
 #= require turbolinks
 #= require initializers
 #= require remote
+
+window.TurboGraft ?= { handlers: {} }
