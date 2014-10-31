@@ -59,7 +59,6 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     old_location = current_url
 
     click_button "Post via XHR and see X-XHR-Redirected-To"
-    sleep 2
 
     new_location = current_url
     assert page.has_content?("page 321")
@@ -71,7 +70,6 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     old_location = current_url
 
     click_link "remote-method GET to response of 200"
-    sleep 1
 
     new_location = current_url
     refute page.has_content?("Page 1")
@@ -83,7 +81,6 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     old_location = current_url
 
     click_link "remote-method GET to response of 422"
-    sleep 1
 
     new_location = current_url
     assert page.has_content?("Error 422!")
