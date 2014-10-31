@@ -1,7 +1,3 @@
-window.TurboGraft = {
-  handlers: {}
-}
-
 hasClass = (node, search) ->
   node.classList.contains(search)
 
@@ -15,8 +11,8 @@ TurboGraft.handlers.partialGraftClickHandler = (ev) ->
   ev.preventDefault()
   href = target.getAttribute("href")
   refresh = target.getAttribute("refresh")
-  throw new Error("TurboGraft developer error: href is not defined on node #{target}") if !href?
-  throw new Error("TurboGraft developer error: refresh is not defined on node #{target}") if !refresh?
+  throw new Error("TurboGraft developer error: href is not defined on node #{target}") unless href?
+  throw new Error("TurboGraft developer error: refresh is not defined on node #{target}") unless refresh?
 
   keys = refresh.trim().split(" ")
 
@@ -26,12 +22,11 @@ TurboGraft.handlers.partialGraftClickHandler = (ev) ->
 
 TurboGraft.handlers.remoteMethodHandler = (ev) ->
   target = ev.target
-  return unless target.getAttribute('remote-method')
+  httpRequestType = target.getAttribute('remote-method')
+  return unless httpRequestType
   ev.preventDefault()
   httpUrl = target.getAttribute('href')
-  httpRequestType = target.getAttribute('remote-method')
-  throw new Error("Turbograft developer error: You did not provide a request type for remote-method") if !httpRequestType
-  throw new Error("Turbograft developer error: You did not provide a URL for remote-method") if !httpUrl
+  throw new Error("Turbograft developer error: You did not provide a URL for remote-method") unless httpUrl
 
   if target.getAttribute("remote-once")
     target.removeAttribute("remote-once")
@@ -56,8 +51,8 @@ TurboGraft.handlers.remoteFormHandler = (ev) ->
   ev.preventDefault()
   httpUrl = target.getAttribute('action')
   httpRequestType = target.getAttribute('method')
-  throw new Error("Turbograft developer error: You did not provide a request type for remote-method") if !httpRequestType
-  throw new Error("Turbograft developer error: You did not provide a URL for remote-method") if !httpUrl
+  throw new Error("Turbograft developer error: You did not provide a request type for remote-method") unless httpRequestType
+  throw new Error("Turbograft developer error: You did not provide a URL for remote-method") unless httpUrl
 
   options =
     httpRequestType: httpRequestType
@@ -75,14 +70,13 @@ TurboGraft.handlers.remoteFormHandler = (ev) ->
 documentListenerForButtons = (eventType, handler, useCapture = false) ->
   document.addEventListener eventType, (ev) ->
     target = ev.target
-    ev.preventDefault() if nodeIsDisabled(target)
-    return if !(target.nodeName == "A" || target.nodeName == "BUTTON") || nodeIsDisabled(target)
+    isNodeDisabled = nodeIsDisabled(target)
+    ev.preventDefault() if isNodeDisabled
+    return if !(target.nodeName == "A" || target.nodeName == "BUTTON") || isNodeDisabled
     handler(ev)
 
 documentListenerForButtons('click', TurboGraft.handlers.partialGraftClickHandler, true)
 documentListenerForButtons('click', TurboGraft.handlers.remoteMethodHandler, true)
 
 document.addEventListener "submit", (ev) ->
-  target = ev.target
-  return unless target.getAttribute('remote-form')?
   TurboGraft.handlers.remoteFormHandler(ev)

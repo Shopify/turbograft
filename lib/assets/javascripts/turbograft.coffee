@@ -1,3 +1,5 @@
+window.TurboGraft ?= { handlers: {} }
+
 #= require click
 #= require component_url
 #= require csrf_token
