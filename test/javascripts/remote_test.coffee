@@ -179,15 +179,15 @@ describe 'Remote', ->
       server.respondWith("POST", "/foo/bar",
             [200, { "Content-Type": "application/json" },
              '[{ "id": 12, "comment": "Hey there" }]']);
+
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
         refreshOnSuccess: "a b c"
 
       server.respond()
-
       assert @refreshStub.calledWith
-        response: remote
+        response: sinon.match.has('responseText', '[{ "id": 12, "comment": "Hey there" }]')
         onlyKeys: ['a', 'b', 'c']
 
     it 'XHR=200: will trigger Page.refresh with refresh-on-success when full-refresh is provided', ->
@@ -235,7 +235,7 @@ describe 'Remote', ->
       server.respond()
 
       assert @refreshStub.calledWith
-        response: remote
+        response: sinon.match.has('responseText', '[{ "id": 12, "comment": "Hey there" }]')
         onlyKeys: ['a', 'b', 'c']
 
     it 'will not trigger Page.refresh if no refresh-on-error is present', ->
