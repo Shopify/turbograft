@@ -65,3 +65,22 @@ describe 'Page', ->
       assert loadPageStub.calledOnce
       assert loadPageStub.calledWith null, "placeholder for an XHR", true, afterRefreshCallback, ['a', 'b']
       loadPageStub.restore()
+
+    it 'updates window push state when response is a redirect', ->
+      replaceStateStub = stub(Turbolinks, "replaceState")
+
+      mockXHR = {
+        getResponseHeader: (header) ->
+          if header == 'Content-Type'
+            return "text/html"
+          else if header == 'X-XHR-Redirected-To'
+            return "http://www.test.com/redirect"
+          ""
+        status: 302
+        responseText: "<div>redirected</div>"
+      }
+      Page.refresh
+        response: mockXHR,
+        onlyKeys: ['a']
+
+      replaceStateStub.calledWith mockXHR.getResponseHeader('X-XHR-Redirected-To')
