@@ -9,7 +9,7 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
   end
 
   test "will strip noscript tags" do
-    click_link "Perform a full refresh"
+    click_link "Perform a full navigation to learn more"
     refute page.has_selector?("noscript") # this test should pass, I think
     refute page.has_content?("Please enable JavaScript")
   end
@@ -17,18 +17,18 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
   test "will replace the title and body" do
     page.execute_script "document.title = 'Something';"
     page.execute_script "$('body').addClass('hot-new-bod');"
-    click_link "Perform a full refresh"
+    click_link "Perform a full navigation to learn more"
     assert_not_equal "Something", page.title
     refute page.has_selector?("body.hot-new-bod")
   end
 
   test "will execute scripts that do not have data-turbolinks-eval='false'" do
-    click_link "Perform a full refresh"
+    click_link "Perform a full navigation to learn more"
     assert page.has_selector?("div.eval-true")
   end
 
   test "will not execute scripts that have data-turbolinks-eval='false'" do
-    click_link "Perform a full refresh"
+    click_link "Perform a full navigation to learn more"
     refute page.has_selector?("div.eval-false")
   end
 

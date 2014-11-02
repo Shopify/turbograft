@@ -2,14 +2,166 @@
 <html>
 <head>
   <title>Sample Turbograft Application</title>
+  <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,400italic' rel='stylesheet' type='text/css'>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
   <meta data-turbolinks-track="true" name="tracking-token" content="<%= Time.now.to_i %>">
+  <style>
+    .green { color: #96BF48; }
+    .blue { color: #479CCF; }
+    .hide { display: none; }
+
+    body {
+      font-family: 'Lato', Helvetica, sans-serif;
+      background: #f2f7fa;
+      color: #666;
+    }
+    a {
+      color: #666;
+    }
+    input {
+      border: 2px solid #666;
+      color: #666;
+      border-radius: 2px;
+      outline: none;
+      font-size: 16px;
+      padding: 0.5em;
+    }
+
+    .left {
+      overflow: auto;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      background: #31373d;
+      border-right: 1px solid #272c30;
+      padding-left: 30px;
+      padding-top: 80px;
+      padding-bottom: 40px;
+      padding-right: 30px;
+      width: 300px;
+      color: #888;
+    }
+    .left h1 {
+      font-weight: 300;
+      color: #bbb;
+    }
+    .left pre {
+      margin-top: 30px;
+      background: #272c30;
+      border-color: #252a2c;
+    }
+    .right {
+      position: absolute;
+      left: 388px;
+      right: 0;
+      top: 80px;
+      padding-bottom: 80px;
+    }
+    .left h1:first-child, .right h2:first-child {
+      margin-top: 0;
+    }
+    h1, h2 {
+      color: #555;
+      margin-top: 1.5em;
+    }
+    h1 {
+      color: #444;
+    }
+    pre, code {
+      font-family: Menlo,"DejaVu Sans Mono","Bitstream Vera Sans Mono",Consolas,Monaco,"Courier New",monospace;
+      background: #fff;
+      font-size: 12px;
+      line-height: 1em;
+      border-radius: 2px;
+      border: 1px solid #ecf0f3;
+    }
+    code {
+      display: inline-block;
+      padding: 4px;
+      position: relative;
+      top: -1px;
+    }
+    pre {
+      word-wrap: break-word;
+      line-height: 1.6em;
+      white-space: pre-wrap;
+      padding: 14px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    p {
+      max-width: 600px;
+      padding-right: 20px;
+      line-height: 1.5em;
+    }
+
+    .prepend-pre {
+      position: relative;
+    }
+
+    .prepend-pre:before {
+      content: " ";
+      position: absolute;
+      left: -10px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: #e2e7ea;
+    }
+    .event-stream {
+      max-height: 150px;
+      overflow-y: auto;
+    }
+  </style>
+  <script>
+    reappendPres = function() {
+      $(".prepended-pre").remove();
+      $('.prepend-pre').each(function() {
+        var html = $(this).html().replace(/^\n+|\n+$/g, '').replace(/&lt;/g, '<').replace(/&gt;/, '>');
+        var n = $('<pre class="prepended-pre"></pre>').text(html);
+        $(this).before(n);
+      });
+    }
+
+    document.addEventListener('page:load', function(event) {
+      reappendPres();
+    });
+
+    document.addEventListener('page:before-partial-replace', function(event) {
+      reappendPres();
+    });
+
+    $(function() {
+      reappendPres();
+    });
+
+    $(document).on("page:before-partial-replace page:load page:update page:change page:fetch page:receive page:restore turbograft:remote:start turbograft:remote:always turbograft:remote:success turbograft:remote:fail turbograft:remote:fail:unhandled", function(event) {
+      $(".event-stream").prepend("<div>" + event.type + "</div>");
+    });
+  </script>
 </head>
 <body>
 
-<%= yield %>
+<div class="left">
+  <h1>TurboGraft</h1>
+  <p>
+    Like turbolinks, but with partial page replacement
+    <a href="https://github.com/Shopify/turbograft">View TurboGraft on GitHub.</a>
+  </p>
+  <%= yield :sidebar %>
+  <p>Back to the <%= link_to "beginning", page_path(1) %></p>
+  <h3>Event stream (newest @ top):</h3>
+  <div class="event-stream">
+
+  </div>
+</div>
+
+<div class="right">
+  <%= yield %>
+</div>
 
 </body>
 </html>
