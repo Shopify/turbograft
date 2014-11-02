@@ -60,9 +60,11 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
 
     click_button "Post via XHR and see X-XHR-Redirected-To"
 
-    new_location = current_url
     assert page.has_content?("page 321")
-    assert_not_equal new_location, old_location
+
+    page.document.synchronize do
+      throw "not ready" unless current_url != old_location
+    end
   end
 
   test "remote-method on a link with GET and refresh-on-success and status 200" do
