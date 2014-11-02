@@ -2,9 +2,11 @@ describe 'Page', ->
 
   beforeEach ->
     @visitStub = stub(Turbolinks, "visit")
+    @replaceStateStub = stub(Turbolinks, "replaceState")
 
   afterEach ->
     @visitStub.restore()
+    @replaceStateStub.restore()
 
   it 'is defined', ->
     assert Page
@@ -67,7 +69,6 @@ describe 'Page', ->
       loadPageStub.restore()
 
     it 'updates window push state when response is a redirect', ->
-      replaceStateStub = stub(Turbolinks, "replaceState")
 
       mockXHR = {
         getResponseHeader: (header) ->
@@ -83,4 +84,4 @@ describe 'Page', ->
         response: mockXHR,
         onlyKeys: ['a']
 
-      replaceStateStub.calledWith mockXHR.getResponseHeader('X-XHR-Redirected-To')
+      @replaceStateStub.calledWith mockXHR.getResponseHeader('X-XHR-Redirected-To')
