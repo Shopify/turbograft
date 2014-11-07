@@ -17,7 +17,9 @@ Page.refresh = (options = {}, callback) ->
     location.href
 
   if options.response
-    Turbolinks.loadPage null, options.response, true, callback, options.onlyKeys || []
+    onlyKeys   = options.onlyKeys   || []
+    exceptKeys = options.exceptKeys || []
+    Turbolinks.loadPage null, options.response, true, callback, onlyKeys, exceptKeys
   else
     Turbolinks.visit newUrl, true, options.onlyKeys || [], -> callback?()
 

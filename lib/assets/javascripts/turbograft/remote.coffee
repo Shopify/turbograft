@@ -8,8 +8,9 @@ class TurboGraft.Remote
 
     formData.append("_method", @opts.httpRequestType)
 
-    @refreshOnSuccess = @opts.refreshOnSuccess.split(" ") if @opts.refreshOnSuccess
-    @refreshOnError = @opts.refreshOnError.split(" ") if @opts.refreshOnError
+    @refreshOnSuccess       = @opts.refreshOnSuccess.split(" ")       if @opts.refreshOnSuccess
+    @refreshOnError         = @opts.refreshOnError.split(" ")         if @opts.refreshOnError
+    @refreshOnErrorExcept   = @opts.refreshOnErrorExcept.split(" ")   if @opts.refreshOnErrorExcept
 
     xhr = new XMLHttpRequest
     xhr.open(actualRequestType, @opts.httpUrl, true)
@@ -61,10 +62,11 @@ class TurboGraft.Remote
       xhr: xhr,
       initiator: @initiator
 
-    if @refreshOnError
+    if @refreshOnError || @refreshOnErrorExcept
       Page.refresh
         response: xhr
         onlyKeys: @refreshOnError
+        exceptKeys: @refreshOnErrorExcept
     else
       triggerEvent 'turbograft:remote:fail:unhandled',
         xhr: xhr,

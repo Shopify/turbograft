@@ -47,6 +47,7 @@ describe 'Initializers', ->
         .attr("remote-method", "GET")
         .attr("refresh-on-success", "foo")
         .attr("refresh-on-error", "bar")
+        .attr("full-refresh-on-error-except", "zar")
         .attr("href", "somewhere")
 
       $("body").append($link)
@@ -57,6 +58,7 @@ describe 'Initializers', ->
         fullRefresh: false
         refreshOnSuccess: "foo"
         refreshOnError: "bar"
+        refreshOnErrorExcept: "zar"
 
     it 'passes through null for missing refresh-on-success', ->
       $link = $("<a>")
@@ -72,6 +74,7 @@ describe 'Initializers', ->
         fullRefresh: false
         refreshOnSuccess: null
         refreshOnError: "bar"
+        refreshOnErrorExcept: null
 
     it 'respects remote-method supplied', ->
       $link = $("<a>")
@@ -87,6 +90,7 @@ describe 'Initializers', ->
         fullRefresh: false
         refreshOnSuccess: null
         refreshOnError: "bar"
+        refreshOnErrorExcept: null
 
     it 'passes through null for missing refresh-on-error', ->
       $link = $("<a>")
@@ -102,6 +106,23 @@ describe 'Initializers', ->
         fullRefresh: false
         refreshOnSuccess: "foo"
         refreshOnError: null
+        refreshOnErrorExcept: null
+
+    it 'passes through null for missing full-refresh-on-error-except', ->
+      $link = $("<a>")
+        .attr("remote-method", "GET")
+        .attr("full-refresh-on-error-except", "zew")
+        .attr("href", "somewhere")
+
+      $("body").append($link)
+      $link[0].click()
+      assert @Remote.calledWith
+        httpRequestType: "GET"
+        httpUrl: "somewhere"
+        fullRefresh: false
+        refreshOnSuccess: null
+        refreshOnError: null
+        refreshOnErrorExcept: 'zew'
 
     it 'respects full-refresh', ->
       $link = $("<a>")
@@ -119,6 +140,7 @@ describe 'Initializers', ->
         fullRefresh: true
         refreshOnSuccess: "foo"
         refreshOnError: "bar"
+        refreshOnErrorExcept: null
 
     it 'will use a full-refresh if neither refresh-on-success nor refresh-on-error are provided', ->
       $link = $("<a>")
@@ -133,6 +155,7 @@ describe 'Initializers', ->
         fullRefresh: true
         refreshOnSuccess: null
         refreshOnError: null
+        refreshOnErrorExcept: null
 
     it 'does nothing if disabled', ->
       $link = $("<a>")

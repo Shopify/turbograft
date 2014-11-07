@@ -143,6 +143,7 @@
     <li><code>href</code>: the URL of the endpoint you wish to hit</li>
     <li><code>refresh-on-success</code>: (optional, but you'll almost always want it) which refresh keys will get refreshed, using the body of the response. This is space-delimited</li>
     <li><code>refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
+    <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
     <li><code>remote-once</code>: (optional) Only do this once. Removes remote-method and remote-once from element after consumption</li>
     <li><code>full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.  Defaults to <code>true</code> if neither <code>refresh-on-success</code> nor <code>refresh-on-error</code> are provided.</li>
   </ul>
@@ -167,6 +168,10 @@
 </div>
 
 <div class="prepend-pre">
+<a href="<%= error_422_with_show_pages_path %>" remote-method="GET" full-refresh-on-error-except="section-a">remote-method GET to response of 422 replaces everything except side-bar-a</a>
+</div>
+
+<div class="prepend-pre">
 <a href="<%= error_404_pages_path %>" remote-method="GET">remote-method GET to response of 404</a>
 </div>
   <p><code>refresh-on-error</code> only works for error 422.  This is mainly so you can refresh certain a part of a form (e.g., validation error div) when returning 422.  Nothing changes if the XHR errors out if you do not supply a <code>refresh-on-error</code>.</p>
@@ -181,6 +186,7 @@
     <li><code>method</code>: you should have one of these already</li>
     <li><code>refresh-on-success</code>: (optional, but you'll almost always want it) which refresh keys will get refreshed, using the body of the response. This is space-delimited</li>
     <li><code>refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
+    <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
     <li><code>full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.  Defaults to <code>true</code> if neither <code>refresh-on-success</code> nor <code>refresh-on-error</code> are provided.</li>
   </ul>
   <p>It emits a few events:</p>

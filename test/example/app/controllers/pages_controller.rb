@@ -27,6 +27,13 @@ class PagesController < ApplicationController
     render "error_422", status: 422
   end
 
+  def error_422_with_show
+    @id = 1
+    @next_id = 2
+
+    render :show, status: 422
+  end
+
   def html_with_noscript; end
 
   def submit_foo
