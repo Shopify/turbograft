@@ -12,17 +12,9 @@ In botony, one can take parts of a tree and splice it onto another tree.  The DO
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'turbograft'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install turbograft
+* Add `gem "turbograft"` to your Gemfile
+* Run `bundle install`
+* Add `#= require turbograft` to _app/assets/javascripts/application.js_
 
 ## Usage
 
