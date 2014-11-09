@@ -14,6 +14,7 @@ class TurboGraft.Remote
     xhr = new XMLHttpRequest
     xhr.open(actualRequestType, @opts.httpUrl, true)
     xhr.setRequestHeader('Accept', 'text/html, application/xhtml+xml, application/xml')
+    triggerEvent('turbograft:remote:init', xhr: xhr)
 
     xhr.addEventListener 'loadstart', =>
       triggerEvent 'turbograft:remote:start',
