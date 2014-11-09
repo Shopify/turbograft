@@ -17,13 +17,24 @@ module TurboGraft
 
     private
 
-    def _compute_redirect_to_location_with_xhr_referer(options)
-      session[:_turbolinks_redirect_to] =
-        if options == :back && request.headers["X-XHR-Referer"]
-          call_original(request.headers["X-XHR-Referer"])
-        else
-          call_original(options)
-        end
+    if Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR > 1
+      def _compute_redirect_to_location_with_xhr_referer(request, options)
+        session[:_turbolinks_redirect_to] =
+          if options == :back && request.headers["X-XHR-Referer"]
+            _compute_redirect_to_location_without_xhr_referer(request, request.headers["X-XHR-Referer"])
+          else
+            _compute_redirect_to_location_without_xhr_referer(request, options)
+          end
+      end
+    else
+      def _compute_redirect_to_location_with_xhr_referer(options)
+        session[:_turbolinks_redirect_to] =
+          if options == :back && request.headers["X-XHR-Referer"]
+            _compute_redirect_to_location_without_xhr_referer(request.headers["X-XHR-Referer"])
+          else
+            _compute_redirect_to_location_without_xhr_referer(options)
+          end
+      end
     end
 
     def set_xhr_redirected_to
@@ -31,14 +42,5 @@ module TurboGraft
         response.headers['X-XHR-Redirected-To'] = session.delete :_turbolinks_redirect_to
       end
     end
-
-    def call_original(options)
-      if Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR >= 1
-        _compute_redirect_to_location_without_xhr_referer(request, options)
-      else
-        _compute_redirect_to_location_without_xhr_referer(options)
-      end
-    end
   end
-
 end

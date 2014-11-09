@@ -7,3 +7,4 @@ Thanks go out to:
 - Patrick Donovan ([patrickdonovan](https://github.com/patrickdonovan))
 - Kristian PD ([kristianpd](https://github.com/kristianpd))
 - Nicholas Simmons ([nsimmons](https://github.com/nsimmons))
+- David Muto ([pseudomuto](https://github.com/pseudomuto))
