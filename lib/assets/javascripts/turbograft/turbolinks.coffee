@@ -54,33 +54,16 @@ class window.Turbolinks
   currentState = null
   loadedAssets = null
   referer = null
-  usePageCache = false
-  @pageCache = pageCache = new PageCache()
 
   fetch = (url, partialReplace = false, replaceContents = [], callback) ->
     url = new ComponentUrl url
 
     rememberReferer()
-    Turbolinks.cacheCurrentPage() if usePageCache
 
-    if usePageCache and cachedPage = transitionCacheFor(url.absolute)
-      fetchHistory cachedPage
-      fetchReplacement url, partialReplace, null, replaceContents
-    else
-      fetchReplacement url, partialReplace, ->
-        resetScrollPosition() unless replaceContents.length
-        callback?()
-      , replaceContents
-
-  @pageCacheEnabled = ->
-    usePageCache
-
-  @usePageCache = (status) ->
-    usePageCache = status
-
-  transitionCacheFor = (url) ->
-    cachedPage = pageCache.get(url)
-    cachedPage if cachedPage and !cachedPage.transitionCacheDisabled
+    fetchReplacement url, partialReplace, ->
+      resetScrollPosition() unless replaceContents.length
+      callback?()
+    , replaceContents
 
   @pushState: (state, title, url) ->
     window.history.pushState(state, title, url)
@@ -122,26 +105,6 @@ class window.Turbolinks
       onLoadFunction?()
     else
       document.location.href = url.absolute
-
-    return
-
-  fetchHistory = (cachedPage) ->
-    xhr?.abort()
-    changePage cachedPage.title, cachedPage.body, false
-    recallScrollPosition cachedPage
-    triggerEvent 'page:restore'
-
-
-  @cacheCurrentPage: ->
-    currentStateUrl = new ComponentUrl currentState.url
-
-    pageCache.set currentStateUrl.absolute,
-      url:                      currentStateUrl.relative,
-      body:                     document.body,
-      title:                    document.title,
-      positionY:                window.pageYOffset,
-      positionX:                window.pageXOffset,
-      transitionCacheDisabled:  document.querySelector('[data-no-transition-cache]')?
 
     return
 
@@ -290,11 +253,7 @@ class window.Turbolinks
 
   installHistoryChangeHandler = (event) ->
     if event.state?.turbolinks
-      if cachedPage = pageCache.get((new ComponentUrl(event.state.url)).absolute)
-        Turbolinks.cacheCurrentPage()
-        fetchHistory cachedPage
-      else
-        Turbolinks.visit event.target.location.href
+      Turbolinks.visit event.target.location.href
 
   # Delay execution of function long enough to miss the popstate event
   # some browsers fire on the initial page load.

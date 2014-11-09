@@ -15,8 +15,6 @@ describe 'Turbolinks', ->
     @pushStateStub = stub(Turbolinks, "pushState")
     document.body.appendChild(createTurboNodule())
 
-    Turbolinks.pageCache.clear()
-
   afterEach ->
     @server.restore()
     @pushStateStub.restore()
@@ -62,23 +60,6 @@ describe 'Turbolinks', ->
 
   it 'is defined', ->
     assert Turbolinks
-
-  it 'can access the function usePageCache / pageCacheEnabled', ->
-    assert.equal false, Turbolinks.pageCacheEnabled()
-    Turbolinks.usePageCache(true)
-    assert.equal true, Turbolinks.pageCacheEnabled()
-    Turbolinks.usePageCache(false)
-    assert.equal false, Turbolinks.pageCacheEnabled()
-
-  it 'has a PageCache object', ->
-    assert Turbolinks.pageCache
-    assert.equal 0, Turbolinks.pageCache.length()
-
-  describe '#cacheCurrentPage', ->
-    it 'stores some data about our current page', ->
-      assert.equal 0, Turbolinks.pageCache.length()
-      Turbolinks.cacheCurrentPage()
-      assert.equal 1, Turbolinks.pageCache.length()
 
   describe '#visit', ->
     describe 'with partial page replacement', ->
