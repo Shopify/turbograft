@@ -55,6 +55,19 @@ describe 'Remote', ->
       assert.equal "POST", request.method
 
   describe 'TurboGraft events', ->
+
+    it 'allows turbograft:remote:init to set a header', ->
+      $(document).one "turbograft:remote:init", (event) ->
+        event.originalEvent.data.xhr.setRequestHeader("X-CSRF-Token", "anything")
+
+      server = sinon.fakeServer.create()
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+
+      request = server.requests[0]
+      assert.equal "anything", request.requestHeaders["X-CSRF-Token"]
+
     it 'will trigger turbograft:remote:start on start with the XHR as the data', (done) ->
       $(document).one "turbograft:remote:start", (ev) ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
