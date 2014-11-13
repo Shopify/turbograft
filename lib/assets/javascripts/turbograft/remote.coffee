@@ -1,11 +1,11 @@
 class TurboGraft.Remote
   constructor: (@opts, form, target) ->
-    formData   = if form then new FormData(form) else new FormData()
-    @initiator = target || form
 
-    actualRequestType = if @opts.httpRequestType.toLowerCase() == 'get' then 'GET' else 'POST'
+    @initiator = form || target
 
-    formData.append("_method", @opts.httpRequestType)
+    @formData = @createPayload(form)
+
+    actualRequestType = if @opts.httpRequestType?.toLowerCase() == 'get' then 'GET' else 'POST'
 
     @refreshOnSuccess       = @opts.refreshOnSuccess.split(" ")       if @opts.refreshOnSuccess
     @refreshOnError         = @opts.refreshOnError.split(" ")         if @opts.refreshOnError
@@ -13,8 +13,11 @@ class TurboGraft.Remote
 
     xhr = new XMLHttpRequest
     xhr.open(actualRequestType, @opts.httpUrl, true)
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     xhr.setRequestHeader('Accept', 'text/html, application/xhtml+xml, application/xml')
-    triggerEventFor('turbograft:remote:init', @initiator, xhr: xhr)
+    xhr.setRequestHeader("Content-Type", @contentType) if @contentType
+
+    triggerEventFor('turbograft:remote:init', @initiator, {xhr: xhr, initiator: @initiator})
 
     xhr.addEventListener 'loadstart', =>
       triggerEventFor 'turbograft:remote:start', @initiator,
@@ -28,15 +31,52 @@ class TurboGraft.Remote
         @onError(event)
 
     xhr.addEventListener 'loadend', =>
+      @opts.done?()
       triggerEventFor 'turbograft:remote:always', @initiator,
+        initiator: @initiator
         xhr: xhr
 
-    xhr.send(formData)
-    xhr
+    @xhr = xhr
+
+  submit: ->
+    @xhr.send(@formData)
+
+  createPayload: (form) ->
+    if form
+      if form.querySelectorAll("[type='file']").length > 0
+        formData = new FormData(form)
+      else # for much smaller payloads
+        formData = @uriEncodeForm(form)
+    else
+      formData = new FormData()
+
+    if formData instanceof FormData
+      formData.append("_method", @opts.httpRequestType) if @opts.httpRequestType
+    else
+      @contentType = "application/x-www-form-urlencoded; charset=UTF-8"
+
+    formData
+
+  uriEncodeForm: (form) ->
+    formData = ""
+    inputs = form.querySelectorAll("input:not([type='reset']):not([type='button']):not([type='submit']):not([type='image']), select, textarea")
+    for input in inputs
+      inputEnabled = !input.disabled
+      radioOrCheck = (input.type == 'checkbox' || input.type == 'radio')
+
+      if inputEnabled && input.name
+        if (radioOrCheck && input.checked) || !radioOrCheck
+          formData += "#{encodeURI(input.name)}=#{encodeURI(input.value)}&"
+
+    formData = formData.slice(0,-1) if formData.charAt(formData.length - 1) == "&"
+    formData
 
   onSuccess: (ev) ->
+    @opts.success?()
+
     xhr = ev.target
     triggerEventFor 'turbograft:remote:success', @initiator,
+      initiator: @initiator
       xhr: xhr
 
     if redirect = xhr.getResponseHeader('X-Next-Redirect')
@@ -53,8 +93,11 @@ class TurboGraft.Remote
         onlyKeys: @refreshOnSuccess
 
   onError: (ev) ->
+    @opts.fail?()
+
     xhr = ev.target
     triggerEventFor 'turbograft:remote:fail', @initiator,
+      initiator: @initiator
       xhr: xhr
 
     if @refreshOnError || @refreshOnErrorExcept

@@ -13,6 +13,7 @@ describe 'Remote', ->
         httpRequestType: "GET"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -24,6 +25,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -35,6 +37,7 @@ describe 'Remote', ->
         httpRequestType: "PUT"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -46,6 +49,7 @@ describe 'Remote', ->
         httpRequestType: "PATCH"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -57,6 +61,7 @@ describe 'Remote', ->
         httpRequestType: "DELETE"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -73,6 +78,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
       request = server.requests[0]
       assert.equal "anything", request.requestHeaders["X-CSRF-Token"]
@@ -87,6 +93,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
     it 'if provided a target on creation, will provide this as data in events', (done) ->
       $(@initiating_target).one "turbograft:remote:start", (ev, a) ->
@@ -98,6 +105,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
     it 'will trigger turbograft:remote:success on success with the XHR as the data', (done) ->
       $(@initiating_target).one "turbograft:remote:fail", (ev) ->
@@ -115,6 +123,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
       server.respond()
 
@@ -138,6 +147,7 @@ describe 'Remote', ->
         httpUrl: "/foo/bar"
         refreshOnError: "foo"
       , @initiating_target
+      remote.submit()
 
       server.respond()
 
@@ -157,6 +167,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
       server.respond()
 
@@ -173,6 +184,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
       server.respond()
 
@@ -189,6 +201,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
       server.respond()
 
@@ -210,6 +223,7 @@ describe 'Remote', ->
         httpUrl: "/foo/bar"
         refreshOnSuccess: "a b c"
       , @initiating_target
+      remote.submit()
 
       server.respond()
       assert @refreshStub.calledWith
@@ -227,6 +241,7 @@ describe 'Remote', ->
         refreshOnSuccess: "a b c"
         fullRefresh: true
       , @initiating_target
+      remote.submit()
 
       server.respond()
 
@@ -243,6 +258,7 @@ describe 'Remote', ->
         httpUrl: "/foo/bar"
         fullRefresh: true
       , @initiating_target
+      remote.submit()
 
       server.respond()
 
@@ -260,6 +276,7 @@ describe 'Remote', ->
         refreshOnError: "a b c"
         fullRefresh: true
       , @initiating_target
+      remote.submit()
 
       server.respond()
 
@@ -277,7 +294,53 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
       , @initiating_target
+      remote.submit()
 
       server.respond()
 
       assert.equal 0, @refreshStub.callCount
+
+  describe 'serialization', ->
+
+    it 'will create FormData object if there is a file in the form', ->
+      form = $("<form><input type='file' name='foo'></form>")[0]
+
+      remote = new TurboGraft.Remote({}, form)
+      assert (remote.formData instanceof FormData)
+
+    it 'will not create FormData object if there is no file in the form', ->
+      form = $("<form><input type='text' name='foo' value='bar'></form>")[0]
+
+      remote = new TurboGraft.Remote({}, form)
+      assert.equal "foo=bar", remote.formData
+
+    it 'properly URL encodes multiple fields in the form', ->
+      formDesc = """
+      <form>
+        <input type="text" name="foo" value="bar">
+        <input type="text" name="faa" value="bat">
+        <textarea name="textarea">this is a test</textarea>
+        <input type="text" name="disabled" disabled value="disabled">
+        <input type="radio" name="radio1" value="A">
+        <input type="radio" name="radio1" value="B" checked>
+        <input type="checkbox" name="checkbox" value="C">
+        <input type="checkbox" name="checkbox" value="D" checked>
+        <input type="checkbox" name="disabled2" value="checked" checked disabled>
+        <select name="select1">
+          <option value="a">foo</option>
+          <option value="b">foo</option>
+          <option value="c" selected>foo</option>
+        </select>
+        <input type="text" name="foobar" value="foobat">
+      </form>
+      """
+      form = $(formDesc)[0]
+
+      remote = new TurboGraft.Remote({}, form)
+      assert.equal "foo=bar&faa=bat&textarea=this%20is%20a%20test&radio1=B&checkbox=D&select1=c&foobar=foobat", remote.formData
+
+    it 'will set content type on XHR proplery when form is URL encoded', ->
+      form = $("<form><input type='text' name='foo' value='bar'></form>")[0]
+
+      remote = new TurboGraft.Remote({}, form)
+      assert.equal "application/x-www-form-urlencoded; charset=UTF-8", remote.xhr.requestHeaders["Content-Type"]

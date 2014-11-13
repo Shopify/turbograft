@@ -35,16 +35,16 @@ describe 'Initializers', ->
       $button[0].click()
       assert.equal 0, @refreshStub.callCount, "Refresh was called when it shouldn't have been"
 
-  describe 'remote-method', ->
+  describe 'tg-remote on links', ->
     beforeEach ->
-      @Remote = stub(TurboGraft, "Remote")
+      @Remote = stub(TurboGraft, "Remote").returns({submit: ->})
 
     afterEach ->
       @Remote.restore()
 
     it 'creates a remote based on the options passed in', ->
       $link = $("<a>")
-        .attr("remote-method", "GET")
+        .attr("tg-remote", "GET")
         .attr("refresh-on-success", "foo")
         .attr("refresh-on-error", "bar")
         .attr("full-refresh-on-error-except", "zar")
@@ -62,7 +62,7 @@ describe 'Initializers', ->
 
     it 'passes through null for missing refresh-on-success', ->
       $link = $("<a>")
-        .attr("remote-method", "GET")
+        .attr("tg-remote", "GET")
         .attr("refresh-on-error", "bar")
         .attr("href", "somewhere")
 
@@ -76,9 +76,9 @@ describe 'Initializers', ->
         refreshOnError: "bar"
         refreshOnErrorExcept: null
 
-    it 'respects remote-method supplied', ->
+    it 'respects tg-remote supplied', ->
       $link = $("<a>")
-        .attr("remote-method", "PATCH")
+        .attr("tg-remote", "PATCH")
         .attr("refresh-on-error", "bar")
         .attr("href", "somewhere")
 
@@ -94,7 +94,7 @@ describe 'Initializers', ->
 
     it 'passes through null for missing refresh-on-error', ->
       $link = $("<a>")
-        .attr("remote-method", "GET")
+        .attr("tg-remote", "GET")
         .attr("refresh-on-success", "foo")
         .attr("href", "somewhere")
 
@@ -110,7 +110,7 @@ describe 'Initializers', ->
 
     it 'passes through null for missing full-refresh-on-error-except', ->
       $link = $("<a>")
-        .attr("remote-method", "GET")
+        .attr("tg-remote", "GET")
         .attr("full-refresh-on-error-except", "zew")
         .attr("href", "somewhere")
 
@@ -127,7 +127,7 @@ describe 'Initializers', ->
     it 'respects full-refresh', ->
       $link = $("<a>")
         .attr("full-refresh", true)
-        .attr("remote-method", "GET")
+        .attr("tg-remote", "GET")
         .attr("refresh-on-success", "foo")
         .attr("refresh-on-error", "bar")
         .attr("href", "somewhere")
@@ -144,7 +144,7 @@ describe 'Initializers', ->
 
     it 'will use a full-refresh if neither refresh-on-success nor refresh-on-error are provided', ->
       $link = $("<a>")
-        .attr("remote-method", "GET")
+        .attr("tg-remote", "GET")
         .attr("href", "somewhere")
 
       $("body").append($link)
@@ -160,7 +160,7 @@ describe 'Initializers', ->
     it 'does nothing if disabled', ->
       $link = $("<a>")
         .attr("disabled", "disabled")
-        .attr("remote-method", "GET")
+        .attr("tg-remote", "GET")
         .attr("refresh-on-success", "foo")
         .attr("refresh-on-error", "bar")
         .attr("href", "somewhere")

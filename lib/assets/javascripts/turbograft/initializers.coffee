@@ -22,15 +22,15 @@ TurboGraft.handlers.partialGraftClickHandler = (ev) ->
 
 TurboGraft.handlers.remoteMethodHandler = (ev) ->
   target = ev.target
-  httpRequestType = target.getAttribute('remote-method')
+  httpRequestType = target.getAttribute('tg-remote')
   return unless httpRequestType
   ev.preventDefault()
   httpUrl = target.getAttribute('href')
-  throw new Error("Turbograft developer error: You did not provide a URL for remote-method") unless httpUrl
+  throw new Error("Turbograft developer error: You did not provide a URL ('href' attribute) for tg-remote") unless httpUrl
 
   if target.getAttribute("remote-once")
     target.removeAttribute("remote-once")
-    target.removeAttribute("remote-method")
+    target.removeAttribute("tg-remote")
 
   options =
     httpRequestType: httpRequestType
@@ -44,19 +44,17 @@ TurboGraft.handlers.remoteMethodHandler = (ev) ->
     options.fullRefresh = true
 
   remote = new TurboGraft.Remote(options, null, target)
+  remote.submit()
   return
 
 TurboGraft.handlers.remoteFormHandler = (ev) ->
   target = ev.target
-  return unless target.getAttribute('remote-form')?
+  return unless target.getAttribute('tg-remote')?
   ev.preventDefault()
   httpUrl = target.getAttribute('action')
-  httpRequestType = target.getAttribute('method')
-  throw new Error("Turbograft developer error: You did not provide a request type for remote-method") unless httpRequestType
-  throw new Error("Turbograft developer error: You did not provide a URL for remote-method") unless httpUrl
+  throw new Error("Turbograft developer error: You did not provide a URL ('action' attribute) for tg-remote") unless httpUrl
 
   options =
-    httpRequestType: httpRequestType
     httpUrl: httpUrl
     fullRefresh: target.getAttribute('full-refresh')?
     refreshOnSuccess: target.getAttribute('refresh-on-success')
@@ -67,6 +65,7 @@ TurboGraft.handlers.remoteFormHandler = (ev) ->
     options.fullRefresh = true
 
   remote = new TurboGraft.Remote(options, target, target)
+  remote.submit()
   return
 
 documentListenerForButtons = (eventType, handler, useCapture = false) ->
