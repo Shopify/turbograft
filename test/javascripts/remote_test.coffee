@@ -250,6 +250,7 @@ describe 'Remote', ->
       assert @refreshStub.calledWith
         response: sinon.match.has('responseText', '<div id="foo" refresh="foo">Error occured</div>')
         onlyKeys: ['a', 'b', 'c']
+        exceptKeys: undefined
 
     it 'will not trigger Page.refresh if no refresh-on-error is present', ->
       server = sinon.fakeServer.create();

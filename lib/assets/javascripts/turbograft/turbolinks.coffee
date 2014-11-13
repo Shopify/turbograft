@@ -1,4 +1,4 @@
-xhr                     = null
+xhr = null
 
 installDocumentReadyPageEventTriggers = ->
   document.addEventListener 'DOMContentLoaded', ( ->
@@ -94,12 +94,12 @@ class window.Turbolinks
 
     return
 
-  @loadPage: (url, xhr, partialReplace = false, onLoadFunction = (->), replaceContents = []) ->
+  @loadPage: (url, xhr, partialReplace = false, onLoadFunction = (->), replaceContents = [], replaceAllExcept = []) ->
     triggerEvent 'page:receive'
 
     if doc = processResponse(xhr, partialReplace)
       reflectNewUrl url
-      nodes = changePage(extractTitleAndBody(doc)..., partialReplace, replaceContents)
+      nodes = changePage(extractTitleAndBody(doc)..., partialReplace, replaceContents, replaceAllExcept)
       reflectRedirectedUrl(xhr)
       triggerEvent 'page:load', nodes
       onLoadFunction?()
@@ -108,12 +108,15 @@ class window.Turbolinks
 
     return
 
-  changePage = (title, body, csrfToken, runScripts, partialReplace, replaceContents = []) ->
+  changePage = (title, body, csrfToken, runScripts, partialReplace, replaceContents = [], replaceAllExcept = []) ->
     document.title = title if title
     if replaceContents.length
       return refreshNodesWithKeys(replaceContents, body)
     else
-      deleteRefreshNeverNodes(body)
+      if replaceAllExcept.length
+        refreshAllExceptWithKeys(replaceAllExcept, body)
+      else
+        deleteRefreshNeverNodes(body)
 
       triggerEvent 'page:before-replace'
       document.documentElement.replaceChild body, document.body
@@ -166,6 +169,20 @@ class window.Turbolinks
         existingNode.parentNode.removeChild(existingNode)
 
     refreshedNodes
+
+  refreshAllExceptWithKeys = (keys, body) ->
+    allNodesToKeep = []
+
+    for key in keys
+      for node in document.querySelectorAll("[refresh=#{key}]")
+        allNodesToKeep.push(node)
+
+    for existingNode in allNodesToKeep
+      unless nodeId = existingNode.getAttribute('id')
+        throw new Error "Turbolinks refresh: Refresh key elements must have an id."
+
+      remoteNode = body.querySelector("##{ nodeId }")
+      remoteNode.parentNode.replaceChild(existingNode, remoteNode)
 
   executeScriptTags = ->
     scripts = Array::slice.call document.body.querySelectorAll 'script:not([data-turbolinks-eval="false"])'
