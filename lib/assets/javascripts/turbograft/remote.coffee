@@ -18,9 +18,8 @@ class TurboGraft.Remote
     triggerEvent('turbograft:remote:init', xhr: xhr)
 
     xhr.addEventListener 'loadstart', =>
-      triggerEvent 'turbograft:remote:start',
-        xhr: xhr,
-        initiator: @initiator
+      triggerEventFor 'turbograft:remote:start', @initiator,
+        xhr: xhr
 
     xhr.addEventListener 'error', @onError
     xhr.addEventListener 'load', (event) =>
@@ -30,18 +29,16 @@ class TurboGraft.Remote
         @onError(event)
 
     xhr.addEventListener 'loadend', =>
-      triggerEvent 'turbograft:remote:always',
-        xhr: xhr,
-        initiator: @initiator
+      triggerEventFor 'turbograft:remote:always', @initiator,
+        xhr: xhr
 
     xhr.send(formData)
     xhr
 
   onSuccess: (ev) ->
     xhr = ev.target
-    triggerEvent 'turbograft:remote:success',
-      xhr: xhr,
-      initiator: @initiator
+    triggerEventFor 'turbograft:remote:success', @initiator,
+      xhr: xhr
 
     if redirect = xhr.getResponseHeader('X-Next-Redirect')
       Page.visit(redirect, reload: true)
@@ -58,9 +55,8 @@ class TurboGraft.Remote
 
   onError: (ev) ->
     xhr = ev.target
-    triggerEvent 'turbograft:remote:fail',
-      xhr: xhr,
-      initiator: @initiator
+    triggerEventFor 'turbograft:remote:fail', @initiator,
+      xhr: xhr
 
     if @refreshOnError || @refreshOnErrorExcept
       Page.refresh
@@ -68,6 +64,5 @@ class TurboGraft.Remote
         onlyKeys: @refreshOnError
         exceptKeys: @refreshOnErrorExcept
     else
-      triggerEvent 'turbograft:remote:fail:unhandled',
-        xhr: xhr,
-        initiator: @initiator
+      triggerEventFor 'turbograft:remote:fail:unhandled', @initiator,
+        xhr: xhr

@@ -28,6 +28,12 @@ window.triggerEvent = (name, data) ->
   event.initEvent name, true, true
   document.dispatchEvent event
 
+window.triggerEventFor = (name, node, data) ->
+  event = document.createEvent 'Events'
+  event.data = data if data
+  event.initEvent name, true, true
+  node.dispatchEvent event
+
 popCookie = (name) ->
   value = document.cookie.match(new RegExp(name+"=(\\w+)"))?[1].toUpperCase() or ''
   document.cookie = name + '=; expires=Thu, 01-Jan-70 00:00:01 GMT; path=/'
