@@ -1,14 +1,19 @@
 describe 'Remote', ->
+  @initiating_target = null
 
   beforeEach ->
     $(document).off "turbograft:remote:start turbograft:remote:always turbograft:remote:success turbograft:remote:fail turbograft:remote:fail:unhandled"
+    @initiating_target = $("<form />")[0]
 
   describe 'HTTP methods', ->
+
+
     it 'will send a GET with _method=GET', ->
       server = sinon.fakeServer.create();
       remote = new TurboGraft.Remote
         httpRequestType: "GET"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -19,6 +24,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -29,6 +35,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "PUT"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -39,6 +46,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "PATCH"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -49,6 +57,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "DELETE"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -57,19 +66,20 @@ describe 'Remote', ->
   describe 'TurboGraft events', ->
 
     it 'allows turbograft:remote:init to set a header', ->
-      $(document).one "turbograft:remote:init", (event) ->
+      $(@initiating_target).one "turbograft:remote:init", (event) ->
         event.originalEvent.data.xhr.setRequestHeader("X-CSRF-Token", "anything")
 
       server = sinon.fakeServer.create()
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
       request = server.requests[0]
       assert.equal "anything", request.requestHeaders["X-CSRF-Token"]
 
     it 'will trigger turbograft:remote:start on start with the XHR as the data', (done) ->
-      $(document).one "turbograft:remote:start", (ev) ->
+      $(@initiating_target).one "turbograft:remote:start", (ev) ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
@@ -77,26 +87,24 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
     it 'if provided a target on creation, will provide this as data in events', (done) ->
-      initiating_target = document.createElement("div")
-
-      $(document).one "turbograft:remote:start", (ev) ->
+      $(@initiating_target).one "turbograft:remote:start", (ev, a) ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
-        assert.equal initiating_target, ev.originalEvent.data.initiator
         done()
 
       server = sinon.fakeServer.create();
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
-      , null, initiating_target
+      , null, @initiating_target
 
     it 'will trigger turbograft:remote:success on success with the XHR as the data', (done) ->
-      $(document).one "turbograft:remote:fail", (ev) ->
+      $(@initiating_target).one "turbograft:remote:fail", (ev) ->
         assert.equal true, false, "This should not have happened"
 
-      $(document).one "turbograft:remote:success", (ev) ->
+      $(@initiating_target).one "turbograft:remote:success", (ev) ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
@@ -107,17 +115,18 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
       server.respond()
 
     it 'will trigger turbograft:remote:fail on failure with the XHR as the data', (done) ->
-      $(document).one "turbograft:remote:success", (ev) ->
+      $(@initiating_target).one "turbograft:remote:success", (ev) ->
         assert.equal true, false, "This should not have happened"
 
-      $(document).one "turbograft:remote:fail:unhandled", (ev) ->
+      $(@initiating_target).one "turbograft:remote:fail:unhandled", (ev) ->
         assert.equal true, false, "This should not have happened"
 
-      $(document).one "turbograft:remote:fail", (ev) ->
+      $(@initiating_target).one "turbograft:remote:fail", (ev) ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
@@ -129,14 +138,15 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
         refreshOnError: "foo"
+      , null, @initiating_target
 
       server.respond()
 
     it 'will trigger turbograft:remote:fail:unhandled on failure with the XHR as the data when no refreshOnError was provided', (done) ->
-      $(document).one "turbograft:remote:success", (ev) ->
+      $(@initiating_target).one "turbograft:remote:success", (ev) ->
         assert.equal true, false, "This should not have happened"
 
-      $(document).one "turbograft:remote:fail:unhandled", (ev) ->
+      $(@initiating_target).one "turbograft:remote:fail:unhandled", (ev) ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
@@ -147,11 +157,12 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
       server.respond()
 
     it 'will trigger turbograft:remote:always on success with the XHR as the data', (done) ->
-      $(document).one "turbograft:remote:always", (ev) ->
+      $(@initiating_target).one "turbograft:remote:always", (ev) ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
@@ -162,11 +173,12 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
       server.respond()
 
     it 'will trigger turbograft:remote:always on failure with the XHR as the data', (done) ->
-      $(document).one "turbograft:remote:always", (ev) ->
+      $(@initiating_target).one "turbograft:remote:always", (ev) ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
@@ -177,6 +189,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
       server.respond()
 
@@ -197,6 +210,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
         refreshOnSuccess: "a b c"
+      , null, @initiating_target
 
       server.respond()
       assert @refreshStub.calledWith
@@ -213,6 +227,7 @@ describe 'Remote', ->
         httpUrl: "/foo/bar"
         refreshOnSuccess: "a b c"
         fullRefresh: true
+      , null, @initiating_target
 
       server.respond()
 
@@ -228,6 +243,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
         fullRefresh: true
+      , null, @initiating_target
 
       server.respond()
 
@@ -244,6 +260,7 @@ describe 'Remote', ->
         httpUrl: "/foo/bar"
         refreshOnError: "a b c"
         fullRefresh: true
+      , null, @initiating_target
 
       server.respond()
 
@@ -260,6 +277,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
+      , null, @initiating_target
 
       server.respond()
 
