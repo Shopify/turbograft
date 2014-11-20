@@ -7,13 +7,12 @@ describe 'Remote', ->
 
   describe 'HTTP methods', ->
 
-
     it 'will send a GET with _method=GET', ->
       server = sinon.fakeServer.create();
       remote = new TurboGraft.Remote
         httpRequestType: "GET"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -24,7 +23,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -35,7 +34,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "PUT"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -46,7 +45,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "PATCH"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -57,7 +56,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "DELETE"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
       request = server.requests[0]
       assert.equal "/foo/bar", request.url
@@ -73,7 +72,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
       request = server.requests[0]
       assert.equal "anything", request.requestHeaders["X-CSRF-Token"]
@@ -87,7 +86,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
     it 'if provided a target on creation, will provide this as data in events', (done) ->
       $(@initiating_target).one "turbograft:remote:start", (ev, a) ->
@@ -98,7 +97,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
     it 'will trigger turbograft:remote:success on success with the XHR as the data', (done) ->
       $(@initiating_target).one "turbograft:remote:fail", (ev) ->
@@ -115,7 +114,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
       server.respond()
 
@@ -138,7 +137,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
         refreshOnError: "foo"
-      , null, @initiating_target
+      , @initiating_target
 
       server.respond()
 
@@ -157,7 +156,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
       server.respond()
 
@@ -173,7 +172,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
       server.respond()
 
@@ -189,7 +188,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
       server.respond()
 
@@ -210,7 +209,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
         refreshOnSuccess: "a b c"
-      , null, @initiating_target
+      , @initiating_target
 
       server.respond()
       assert @refreshStub.calledWith
@@ -227,7 +226,7 @@ describe 'Remote', ->
         httpUrl: "/foo/bar"
         refreshOnSuccess: "a b c"
         fullRefresh: true
-      , null, @initiating_target
+      , @initiating_target
 
       server.respond()
 
@@ -243,7 +242,7 @@ describe 'Remote', ->
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
         fullRefresh: true
-      , null, @initiating_target
+      , @initiating_target
 
       server.respond()
 
@@ -260,7 +259,7 @@ describe 'Remote', ->
         httpUrl: "/foo/bar"
         refreshOnError: "a b c"
         fullRefresh: true
-      , null, @initiating_target
+      , @initiating_target
 
       server.respond()
 
@@ -277,7 +276,7 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
-      , null, @initiating_target
+      , @initiating_target
 
       server.respond()
 

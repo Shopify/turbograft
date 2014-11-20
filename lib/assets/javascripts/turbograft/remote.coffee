@@ -1,8 +1,7 @@
 class TurboGraft.Remote
   constructor: (@opts, form, target) ->
-    formData = if form then new FormData(form) else new FormData()
-
-    @initiator = target
+    formData   = if form then new FormData(form) else new FormData()
+    @initiator = target || form
 
     actualRequestType = if @opts.httpRequestType.toLowerCase() == 'get' then 'GET' else 'POST'
 
