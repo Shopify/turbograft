@@ -62,6 +62,18 @@ describe 'Turbolinks', ->
     assert Turbolinks
 
   describe '#visit', ->
+    it 'returns if pageChangePrevented', ->
+      listener = (event) ->
+        event.preventDefault()
+        assert.equal '/some_request', event.data
+
+      window.addEventListener('page:before-change', listener)
+
+      Turbolinks.visit "/some_request", true, ['turbo-area']
+      assert.equal 0, @server.requests.length
+
+      window.removeEventListener('page:before-change', listener)
+
     describe 'with partial page replacement', ->
       it 'uses just the part of the response body we supply', ->
         @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);

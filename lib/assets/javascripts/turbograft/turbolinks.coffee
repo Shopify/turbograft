@@ -56,6 +56,7 @@ class window.Turbolinks
   referer = null
 
   fetch = (url, partialReplace = false, replaceContents = [], callback) ->
+    return if pageChangePrevented(url)
     url = new ComponentUrl url
 
     rememberReferer()
@@ -233,8 +234,8 @@ class window.Turbolinks
     else
       window.scrollTo 0, 0
 
-  pageChangePrevented = ->
-    !triggerEvent 'page:before-change'
+  pageChangePrevented = (url) ->
+    !triggerEvent('page:before-change', url)
 
   processResponse = (xhr, partial = false) ->
     clientOrServerError = ->
