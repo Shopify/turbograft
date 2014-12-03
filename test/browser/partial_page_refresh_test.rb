@@ -67,25 +67,41 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "remote-method on a link with GET and refresh-on-success and status 200" do
+  test "tg-remote on a link with GET and refresh-on-success and status 200" do
     assert page.has_content?("page 1")
     old_location = current_url
 
-    click_link "remote-method GET to response of 200"
+    click_link "tg-remote GET to response of 200"
 
     new_location = current_url
     refute page.has_content?("Page 1")
     assert_equal new_location, old_location
   end
 
-  test "remote-method on a link with GET and refresh-on-error and status 422" do
+  test "tg-remote on a link with GET and refresh-on-error and status 422" do
     assert page.has_content?("page 1")
     old_location = current_url
 
-    click_link "remote-method GET to response of 422"
+    click_link "tg-remote GET to response of 422"
 
     new_location = current_url
     assert page.has_content?("Error 422!")
     assert_equal new_location, old_location
+  end
+
+  test "tg-remote on a form with post, in status codes: 422 and 200" do
+    click_button "Submit tg-remote POST"
+    assert page.has_content?("Please supply a foo!")
+
+    page.fill_in 'foo', :with => 'some text'
+    click_button "Submit tg-remote POST"
+
+    refute page.has_content?("Please supply a foo!")
+    assert page.has_content?("Thanks for the foo! We'll consider it.")
+  end
+
+  test "tg-remote on a form with patch" do
+    click_button "Submit tg-remote PATCH"
+    assert page.has_content?("Thanks, we got your patch.")
   end
 end

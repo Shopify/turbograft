@@ -44,6 +44,10 @@ class PagesController < ApplicationController
     end
   end
 
+  def patch_foo
+    render '_patched_foo', status: 200, layout: false
+  end
+
   def new
     render json: "{}", location: 'http://www.notexample.com'
   end

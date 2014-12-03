@@ -135,16 +135,16 @@
 </section>
 
 <section>
-  <h1>remote-method</h1>
+  <h1>tg-remote links</h1>
   <p>This provides functionality similar to rails version of link_to for methods other than GET, allowing you to query methods on different endpoints, and partial page replacing different refresh keys depending on the response status.</p>
   <p>It requires your node to be marked up with:</p>
   <ul>
-    <li><code>remote-method</code>: the HTTP method you wish to call on your endpoint</li>
+    <li><code>tg-remote</code>: the HTTP method you wish to call on your endpoint</li>
     <li><code>href</code>: the URL of the endpoint you wish to hit</li>
     <li><code>refresh-on-success</code>: (optional, but you'll almost always want it) which refresh keys will get refreshed, using the body of the response. This is space-delimited</li>
     <li><code>refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
     <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
-    <li><code>remote-once</code>: (optional) Only do this once. Removes remote-method and remote-once from element after consumption</li>
+    <li><code>remote-once</code>: (optional) Only do this once. Removes <code>tg-remote</code> and <code>remote-once</code> from element after consumption</li>
     <li><code>full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.  Defaults to <code>true</code> if neither <code>refresh-on-success</code> nor <code>refresh-on-error</code> are provided.</li>
   </ul>
   <p>It emits a few events:</p>
@@ -156,34 +156,33 @@
     <li><code>turbograft:remote:fail</code>: always fires when XHR failed</li>
     <li><code>turbograft:remote:fail:unhandled</code>: fires after the above event, but when we didn't partially replace anything with refresh-on-error (because there was no refresh-on-error supplied)</li>
   </ul>
-  <p>Each event also is sent with a copy of the xhr in case you need to look at anything in there, as well as a reference to the element that initated the remote-method.</p>
+  <p>Each event also is sent with a copy of the xhr in case you need to look at anything in there, as well as a reference to the element that initated the <code>remote</code>.</p>
 
 
 <div class="prepend-pre">
-<a href="<%= page_path(rand(100)) %>" remote-method="GET" refresh-on-success="page section-a section-b">remote-method GET to response of 200</a>
+<a href="<%= page_path(rand(100)) %>" tg-remote="GET" refresh-on-success="page section-a section-b">tg-remote GET to response of 200</a>
 </div>
 
 <div class="prepend-pre">
-<a href="<%= error_422_pages_path %>" remote-method="GET" refresh-on-error="page">remote-method GET to response of 422</a>
+<a href="<%= error_422_pages_path %>" tg-remote="GET" refresh-on-error="page">tg-remote GET to response of 422</a>
 </div>
 
 <div class="prepend-pre">
-<a href="<%= error_422_with_show_pages_path %>" remote-method="GET" full-refresh-on-error-except="section-a">remote-method GET to response of 422 replaces everything except side-bar-a</a>
+<a href="<%= error_422_with_show_pages_path %>" tg-remote="GET" full-refresh-on-error-except="section-a">tg-remote GET to response of 422 replaces everything except side-bar-a</a>
 </div>
 
 <div class="prepend-pre">
-<a href="<%= error_404_pages_path %>" remote-method="GET">remote-method GET to response of 404</a>
+<a href="<%= error_404_pages_path %>" tg-remote="GET">tg-remote GET to response of 404</a>
 </div>
   <p><code>refresh-on-error</code> only works for error 422.  This is mainly so you can refresh certain a part of a form (e.g., validation error div) when returning 422.  Nothing changes if the XHR errors out if you do not supply a <code>refresh-on-error</code>.</p>
 </section>
 
 <section>
-  <h1>remote-form</h1>
+  <h1>tg-remote forms</h1>
   <p>It requires your <code>form</code> to be marked up with:</p>
   <ul>
-    <li><code>remote-form</code>: an attribute that doesn't need a value</li>
+    <li><code>tg-remote</code>: an attribute that doesn't need a value</li>
     <li><code>action</code>: you should have one of these already</li>
-    <li><code>method</code>: you should have one of these already</li>
     <li><code>refresh-on-success</code>: (optional, but you'll almost always want it) which refresh keys will get refreshed, using the body of the response. This is space-delimited</li>
     <li><code>refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
     <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
@@ -199,16 +198,35 @@
     <li><code>turbograft:remote:fail:unhandled</code>: fires after the above event, but when we didn't partially replace anything with refresh-on-error (because there was no refresh-on-error supplied)</li>
   </ul>
 
+<h3>Example of tg-remote form: POST</h3>
 <div class="prepend-pre">
 <div id="foo-results" refresh="foo-results">
   Use the field below to submit some content, and get a result.
 </div>
-<form remote-form action="/pages/submit_foo" method="post" refresh-on-success="foo-results foo-errors" refresh-on-error="foo-results foo-errors">
-  <input name="foo" type="text">
-  <button type="submit">Submit</button>
+<form tg-remote action="/pages/submit_foo" method="post" refresh-on-success="foo-results foo-errors" refresh-on-error="foo-results foo-errors">
+  <input id="foo" name="foo" type="text">
+  <button type="submit">Submit tg-remote POST</button>
 </form>
 </div>
 </section>
+
+<h3>Example of tg-remote form: PATCH</h3>
+<div class="prepend-pre">
+<div id="foo-results2" refresh="foo-results2">
+
+</div>
+<form tg-remote action="/pages/patch_foo" method="post" refresh-on-success="foo-results2">
+  <input type="hidden" name="_method" value="patch">
+  <input type="radio" name="someradio" value="A">
+  <input type="radio" name="someradio" value="B">
+  <input type="radio" name="someradio" value="C">
+  <input type="checkbox" name="somecheck" value="1">
+  <input type="text" name="disabled_textbox" disabled value="Disabled">
+  <input type="text" name="readonly_textbox" readonly value="Readonly">
+  <br>
+  <input type="submit" value="Submit tg-remote PATCH">
+</form>
+</div>
 
 <section>
   <h1>Other features</h1>
