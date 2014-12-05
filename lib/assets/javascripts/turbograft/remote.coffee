@@ -66,7 +66,7 @@ class TurboGraft.Remote
 
       if inputEnabled && input.name
         if (radioOrCheck && input.checked) || !radioOrCheck
-          formData += "#{encodeURI(input.name)}=#{encodeURI(input.value)}&"
+          formData += "#{encodeURIComponent(input.name)}=#{encodeURIComponent(input.value)}&"
 
     formData = formData.slice(0,-1) if formData.charAt(formData.length - 1) == "&"
     formData
