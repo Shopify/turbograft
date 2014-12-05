@@ -319,6 +319,7 @@ describe 'Remote', ->
       <form>
         <input type="text" name="foo" value="bar">
         <input type="text" name="faa" value="bat">
+        <input type="text" name="fii" value="bam+">
         <textarea name="textarea">this is a test</textarea>
         <input type="text" name="disabled" disabled value="disabled">
         <input type="radio" name="radio1" value="A">
@@ -337,9 +338,9 @@ describe 'Remote', ->
       form = $(formDesc)[0]
 
       remote = new TurboGraft.Remote({}, form)
-      assert.equal "foo=bar&faa=bat&textarea=this%20is%20a%20test&radio1=B&checkbox=D&select1=c&foobar=foobat", remote.formData
+      assert.equal "foo=bar&faa=bat&fii=bam%2B&textarea=this%20is%20a%20test&radio1=B&checkbox=D&select1=c&foobar=foobat", remote.formData
 
-    it 'will set content type on XHR proplery when form is URL encoded', ->
+    it 'will set content type on XHR properly when form is URL encoded', ->
       form = $("<form><input type='text' name='foo' value='bar'></form>")[0]
 
       remote = new TurboGraft.Remote({}, form)
