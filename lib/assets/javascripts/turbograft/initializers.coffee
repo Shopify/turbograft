@@ -40,9 +40,6 @@ TurboGraft.handlers.remoteMethodHandler = (ev) ->
     refreshOnError: target.getAttribute('refresh-on-error')
     refreshOnErrorExcept: target.getAttribute('full-refresh-on-error-except')
 
-  if !options.refreshOnSuccess && !options.refreshOnError && !options.refreshOnErrorExcept
-    options.fullRefresh = true
-
   remote = new TurboGraft.Remote(options, null, target)
   remote.submit()
   return
@@ -60,9 +57,6 @@ TurboGraft.handlers.remoteFormHandler = (ev) ->
     refreshOnSuccess: target.getAttribute('refresh-on-success')
     refreshOnError: target.getAttribute('refresh-on-error')
     refreshOnErrorExcept: target.getAttribute('full-refresh-on-error-except')
-
-  if !options.refreshOnSuccess && !options.refreshOnError && !options.refreshOnErrorExcept
-    options.fullRefresh = true
 
   remote = new TurboGraft.Remote(options, target, target)
   remote.submit()

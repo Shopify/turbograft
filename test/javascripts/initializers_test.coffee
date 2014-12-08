@@ -142,21 +142,6 @@ describe 'Initializers', ->
         refreshOnError: "bar"
         refreshOnErrorExcept: null
 
-    it 'will use a full-refresh if neither refresh-on-success nor refresh-on-error are provided', ->
-      $link = $("<a>")
-        .attr("tg-remote", "GET")
-        .attr("href", "somewhere")
-
-      $("body").append($link)
-      $link[0].click()
-      assert @Remote.calledWith
-        httpRequestType: "GET"
-        httpUrl: "somewhere"
-        fullRefresh: true
-        refreshOnSuccess: null
-        refreshOnError: null
-        refreshOnErrorExcept: null
-
     it 'does nothing if disabled', ->
       $link = $("<a>")
         .attr("disabled", "disabled")
