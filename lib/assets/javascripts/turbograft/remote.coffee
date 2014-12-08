@@ -17,6 +17,10 @@ class TurboGraft.Remote
     xhr.setRequestHeader('Accept', 'text/html, application/xhtml+xml, application/xml')
     xhr.setRequestHeader("Content-Type", @contentType) if @contentType
 
+    csrfTokenNode = document.querySelector('meta[name="X-CSRF-Token"]')
+    csrfToken = csrfTokenNode?.getAttribute('content')
+    xhr.setRequestHeader('X-CSRF-Token', csrfToken) if csrfToken
+
     triggerEventFor('turbograft:remote:init', @initiator, {xhr: xhr, initiator: @initiator})
 
     xhr.addEventListener 'loadstart', =>

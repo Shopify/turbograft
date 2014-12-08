@@ -71,7 +71,7 @@ describe 'Remote', ->
 
     it 'allows turbograft:remote:init to set a header', ->
       $(@initiating_target).one "turbograft:remote:init", (event) ->
-        event.originalEvent.data.xhr.setRequestHeader("X-CSRF-Token", "anything")
+        event.originalEvent.data.xhr.setRequestHeader("X-Header", "anything")
 
       server = sinon.fakeServer.create()
       remote = new TurboGraft.Remote
@@ -81,7 +81,23 @@ describe 'Remote', ->
       remote.submit()
 
       request = server.requests[0]
-      assert.equal "anything", request.requestHeaders["X-CSRF-Token"]
+      assert.equal "anything", request.requestHeaders["X-Header"]
+
+    it 'will automatically set the X-CSRF-Token header for you', ->
+      $fakeCsrfNode = $("<meta>").attr("name", "X-CSRF-Token").attr("content", "some-token")
+      $("head").append($fakeCsrfNode)
+
+      server = sinon.fakeServer.create()
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+      , @initiating_target
+      remote.submit()
+
+      request = server.requests[0]
+      assert.equal "some-token", request.requestHeaders["X-CSRF-Token"]
+
+      $('meta[name="X-CSRF-Token"]').remove()
 
     it 'will trigger turbograft:remote:start on start with the XHR as the data', (done) ->
       $(@initiating_target).one "turbograft:remote:start", (ev) ->
