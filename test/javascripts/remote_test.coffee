@@ -69,6 +69,13 @@ describe 'Remote', ->
 
   describe 'TurboGraft events', ->
 
+    beforeEach ->
+      @refreshStub = stub(Page, "refresh")
+
+    afterEach ->
+      @refreshStub.restore()
+
+
     it 'allows turbograft:remote:init to set a header', ->
       $(@initiating_target).one "turbograft:remote:init", (event) ->
         event.originalEvent.data.xhr.setRequestHeader("X-CSRF-Token", "anything")
@@ -205,12 +212,21 @@ describe 'Remote', ->
 
       server.respond()
 
-  describe 'Page methods triggered', ->
-    beforeEach ->
-      @refreshStub = stub(Page, "refresh")
+    it 'XHR=200: will trigger Page.refresh using XHR only', ->
+      server = sinon.fakeServer.create();
+      server.respondWith("POST", "/foo/bar",
+            [200, { "Content-Type": "text/html" },
+             '<div>Hey there</div>']);
 
-    afterEach ->
-      @refreshStub.restore()
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+      , @initiating_target
+      remote.submit()
+
+      server.respond()
+      assert @refreshStub.calledWith
+        response: sinon.match.has('responseText', '<div>Hey there</div>')
 
     it 'XHR=200: will trigger Page.refresh using XHR and refresh-on-success', ->
       server = sinon.fakeServer.create();

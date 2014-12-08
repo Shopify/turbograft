@@ -91,6 +91,9 @@ class TurboGraft.Remote
       Page.refresh
         response: xhr
         onlyKeys: @refreshOnSuccess
+    else
+      Page.refresh
+        response: xhr
 
   onError: (ev) ->
     @opts.fail?()
