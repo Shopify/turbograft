@@ -4,24 +4,8 @@ hasClass = (node, search) ->
 nodeIsDisabled = (node) ->
    node.getAttribute('disabled') || hasClass(node, 'disabled')
 
-TurboGraft.handlers.partialGraftClickHandler = (ev) ->
-  target = ev.target
-  partialGraft = target.getAttribute("partial-graft")
-  return unless partialGraft?
-  ev.preventDefault()
-  href = target.getAttribute("href")
-  refresh = target.getAttribute("refresh")
-  throw new Error("TurboGraft developer error: href is not defined on node #{target}") unless href?
-  throw new Error("TurboGraft developer error: refresh is not defined on node #{target}") unless refresh?
-
-  keys = refresh.trim().split(" ")
-
-  Page.refresh
-    url: href,
-    onlyKeys: keys
-
 TurboGraft.handlers.remoteMethodHandler = (ev) ->
-  target = ev.target
+  target = ev.clickTarget
   httpRequestType = target.getAttribute('tg-remote')
   return unless httpRequestType
   ev.preventDefault()
@@ -66,12 +50,18 @@ documentListenerForButtons = (eventType, handler, useCapture = false) ->
   document.addEventListener eventType, (ev) ->
     target = ev.target
     return if !target
-    isNodeDisabled = nodeIsDisabled(target)
-    ev.preventDefault() if isNodeDisabled
-    return if !(target.nodeName == "A" || target.nodeName == "BUTTON") || isNodeDisabled
-    handler(ev)
 
-documentListenerForButtons('click', TurboGraft.handlers.partialGraftClickHandler, true)
+    while target != document && (typeof target != "undefined")
+      if target.nodeName == "A" || target.nodeName == "BUTTON"
+        isNodeDisabled = nodeIsDisabled(target)
+        ev.preventDefault() if isNodeDisabled
+        unless isNodeDisabled
+          ev.clickTarget = target
+          handler(ev)
+          return
+
+      target = target.parentNode
+
 documentListenerForButtons('click', TurboGraft.handlers.remoteMethodHandler, true)
 
 document.addEventListener "submit", (ev) ->

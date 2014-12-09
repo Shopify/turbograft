@@ -1,40 +1,5 @@
 describe 'Initializers', ->
 
-  describe 'partial-graft', ->
-    beforeEach ->
-      @refreshStub = stub(Page, "refresh")
-
-    afterEach ->
-      @refreshStub.restore()
-
-    it 'calls Page.refresh when all required attributes are present', ->
-      $link = $("<a partial-graft>").attr("href", "/foo").attr("refresh", "foo bar")
-      $("body").append($link)
-      $link[0].click()
-      assert @refreshStub.calledWith
-        url: "/foo",
-        onlyKeys: ['foo', 'bar']
-
-    it 'does nothing when the link is disabled ', ->
-      $link = $("<a partial-graft>").attr("disabled", "disabled").attr("href", "/foo").attr("refresh", "foo bar")
-      $("body").append($link)
-      $link[0].click()
-      assert.equal 0, @refreshStub.callCount, "Refresh was called when it shouldn't have been"
-
-    it 'works on buttons too', ->
-      $button = $("<button partial-graft>").attr("href", "/foo").attr("refresh", "foo bar")
-      $("body").append($button)
-      $button[0].click()
-      assert @refreshStub.calledWith
-        url: "/foo",
-        onlyKeys: ['foo', 'bar']
-
-    it 'does nothing when the button is disabled ', ->
-      $button = $("<button partial-graft>").attr("disabled", "disabled").attr("href", "/foo").attr("refresh", "foo bar")
-      $("body").append($button)
-      $button[0].click()
-      assert.equal 0, @refreshStub.callCount, "Refresh was called when it shouldn't have been"
-
   describe 'tg-remote on links', ->
     beforeEach ->
       @Remote = stub(TurboGraft, "Remote").returns({submit: ->})
@@ -153,3 +118,43 @@ describe 'Initializers', ->
       $("body").append($link)
       $link[0].click()
       assert.equal 0, @Remote.callCount
+
+    it 'clicking on nodes inside of an <a> will bubble correctly', ->
+      $link = $("<a><i>foo</i></a>")
+        .attr("tg-remote", "PATCH")
+        .attr("refresh-on-error", "bar")
+        .attr("href", "somewhere")
+
+      $i = $link.find("i")
+
+      $("body").append($link)
+      $i[0].click()
+      assert @Remote.calledWith
+        httpRequestType: "PATCH"
+        httpUrl: "somewhere"
+        fullRefresh: false
+        refreshOnSuccess: null
+        refreshOnError: "bar"
+        refreshOnErrorExcept: null
+
+      $link.remove()
+
+    it 'clicking on nodes inside of a <button> will bubble correctly', ->
+      $link = $("<a><i><em><strong>foo</strong></em></i></a>")
+        .attr("tg-remote", "PATCH")
+        .attr("refresh-on-error", "bar")
+        .attr("href", "somewhere")
+
+      $strong = $link.find("strong")
+
+      $("body").append($link)
+      $strong[0].click()
+      assert @Remote.calledWith
+        httpRequestType: "PATCH"
+        httpUrl: "somewhere"
+        fullRefresh: false
+        refreshOnSuccess: null
+        refreshOnError: "bar"
+        refreshOnErrorExcept: null
+
+      $link.remove()
