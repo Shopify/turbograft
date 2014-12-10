@@ -66,15 +66,6 @@
     onlyKeys: ['section-a', 'section-b']
   });">Refresh Section A and B</button>
 </div>
-
-  <p>It's a bit ugly and cumbersome to need to write an <code>onclick</code> handler like this, so instead, we provide a helper that does the same thing:</p>
-<div class="prepend-pre">
-<button href="<%= page_path(@id) %>" partial-graft refresh="section-a section-b">Partial Graft Helper: A and B</button>
-</div>
-
-  <p>Just add the attribute, <code>partial-graft</code>.</p>
-
-
 </section>
 
 <section>
@@ -160,7 +151,9 @@
 
 
 <div class="prepend-pre">
-<a href="<%= page_path(rand(100)) %>" tg-remote="GET" refresh-on-success="page section-a section-b">tg-remote GET to response of 200</a>
+<a href="<%= page_path(rand(100)) %>" tg-remote="GET" refresh-on-success="page section-a section-b">
+  <i>tg-remote GET to response of 200</i>
+</a>
 </div>
 
 <div class="prepend-pre">

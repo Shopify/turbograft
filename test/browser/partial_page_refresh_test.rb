@@ -46,14 +46,6 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     assert_not_equal random_b, find('#random-number-b').text
   end
 
-  test "partial-graft helper works" do
-    random_a = find('#random-number-a').text
-    random_b = find('#random-number-b').text
-    click_button "Partial Graft Helper: A and B"
-    assert_not_equal random_a, find('#random-number-a').text
-    assert_not_equal random_b, find('#random-number-b').text
-  end
-
   test "when I use an XHR and POST to an endpoint that returns me a 302, I should see the URL reflecting that redirect too" do
     assert page.has_content?("page 1")
     old_location = current_url
