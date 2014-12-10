@@ -91,7 +91,7 @@ describe 'Remote', ->
       assert.equal "anything", request.requestHeaders["X-Header"]
 
     it 'will automatically set the X-CSRF-Token header for you', ->
-      $fakeCsrfNode = $("<meta>").attr("name", "X-CSRF-Token").attr("content", "some-token")
+      $fakeCsrfNode = $("<meta>").attr("name", "csrf-token").attr("content", "some-token")
       $("head").append($fakeCsrfNode)
 
       server = sinon.fakeServer.create()
@@ -104,7 +104,7 @@ describe 'Remote', ->
       request = server.requests[0]
       assert.equal "some-token", request.requestHeaders["X-CSRF-Token"]
 
-      $('meta[name="X-CSRF-Token"]').remove()
+      $('meta[name="csrf-token"]').remove()
 
     it 'will trigger turbograft:remote:start on start with the XHR as the data', (done) ->
       $(@initiating_target).one "turbograft:remote:start", (ev) ->
