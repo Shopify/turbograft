@@ -36,11 +36,27 @@ class PagesController < ApplicationController
 
   def html_with_noscript; end
 
-  def submit_foo
-    if params[:foo].blank?
-      render '_missing_foo', status: 422
+  def post_foo
+    if params[:foopost].blank?
+      render '_missing_foo', status: 422, locals: {method: "post"}
     else
       render '_thanks_for_all_the_foo', status: 200, layout: false # it's not necessary to render a full response, and you may prefer not to
+    end
+  end
+
+  def put_foo
+    if params[:fooput].blank?
+      render '_missing_foo', status: 422, locals: {method: "put"}
+    else
+      render '_replaced_foo', status: 200, layout: false # it's not necessary to render a full response, and you may prefer not to
+    end
+  end
+
+  def delete_foo
+    if params[:foodelete].blank?
+      render '_requires_deletion_confirmation', status: 422
+    else
+      render '_delete_foo', status: 200, layout: false # it's not necessary to render a full response, and you may prefer not to
     end
   end
 

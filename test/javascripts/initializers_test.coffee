@@ -1,5 +1,34 @@
 describe 'Initializers', ->
 
+  # can't figure out why this doesn't work:
+  # describe 'tg-remote on forms', ->
+  #   beforeEach ->
+  #     @Remote = stub(TurboGraft, "Remote").returns({submit: ->})
+
+  #   afterEach ->
+  #     @Remote.restore()
+
+  #   it.only 'creates a remote based on the options passed in', ->
+  #     $form = $("<form>")
+  #       .attr("tg-remote", "true")
+  #       .attr("method", "put")
+  #       .attr("refresh-on-success", "foo")
+  #       .attr("refresh-on-error", "bar")
+  #       .attr("full-refresh-on-error-except", "zar")
+  #       .attr("action", "somewhere")
+
+  #     $("body").append($form)
+  #     $form.trigger("submit")
+
+  #     assert @Remote.called
+  #     assert @Remote.calledWith
+  #       httpRequestType: "put"
+  #       httpUrl: "somewhere"
+  #       fullRefresh: false
+  #       refreshOnSuccess: "foo"
+  #       refreshOnError: "bar"
+  #       refreshOnErrorExcept: "zar"
+
   describe 'tg-remote on links', ->
     beforeEach ->
       @Remote = stub(TurboGraft, "Remote").returns({submit: ->})
@@ -17,6 +46,7 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
+      assert @Remote.called
       assert @Remote.calledWith
         httpRequestType: "GET"
         httpUrl: "somewhere"
@@ -33,6 +63,7 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
+      assert @Remote.called
       assert @Remote.calledWith
         httpRequestType: "GET"
         httpUrl: "somewhere"
@@ -49,6 +80,7 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
+      assert @Remote.called
       assert @Remote.calledWith
         httpRequestType: "PATCH"
         httpUrl: "somewhere"
@@ -65,6 +97,7 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
+      assert @Remote.called
       assert @Remote.calledWith
         httpRequestType: "GET"
         httpUrl: "somewhere"
@@ -81,6 +114,7 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
+      assert @Remote.called
       assert @Remote.calledWith
         httpRequestType: "GET"
         httpUrl: "somewhere"
@@ -99,6 +133,7 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
+      assert @Remote.called
       assert @Remote.calledWith
         httpRequestType: "GET"
         httpUrl: "somewhere"
@@ -129,6 +164,7 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $i[0].click()
+      assert @Remote.called
       assert @Remote.calledWith
         httpRequestType: "PATCH"
         httpUrl: "somewhere"
@@ -149,6 +185,7 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $strong[0].click()
+      assert @Remote.called
       assert @Remote.calledWith
         httpRequestType: "PATCH"
         httpUrl: "somewhere"

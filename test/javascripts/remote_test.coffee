@@ -340,6 +340,26 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote({}, form)
       assert (remote.formData instanceof FormData)
 
+    it 'will add the _method to the form if supplied in the constructor', ->
+      form = $("<form></form>")[0]
+
+      remote = new TurboGraft.Remote({httpRequestType: 'put'}, form)
+      assert.equal "_method=put", remote.formData
+
+    it 'will not override any Rails _method hidden input in the form, even if we try to using the constructor', ->
+      form = $("<form method='POST'><input name='_method' value='PATCH'></form>")[0]
+      # above: actual HTTP is POST, rails will interpret it as PATCH
+
+      remote = new TurboGraft.Remote({httpRequestType: 'DELETE'}, form) # DELETE should be ignored here
+      assert.equal "_method=PATCH", remote.formData
+
+    it 'will not add a _method if improperly supplied', ->
+      form = $("<form method='POST'></form>")[0]
+      # above: actual HTTP is POST, rails will interpret it as PATCH
+
+      remote = new TurboGraft.Remote({httpRequestType: undefined}, form) # DELETE should be ignored here
+      assert.equal "", remote.formData
+
     it 'will not create FormData object if there is no file in the form', ->
       form = $("<form><input type='text' name='foo' value='bar'></form>")[0]
 

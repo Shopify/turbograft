@@ -36,6 +36,7 @@ TurboGraft.handlers.remoteFormHandler = (ev) ->
   throw new Error("Turbograft developer error: You did not provide a URL ('action' attribute) for tg-remote") unless httpUrl
 
   options =
+    httpRequestType: target.getAttribute('method')
     httpUrl: httpUrl
     fullRefresh: target.getAttribute('full-refresh')?
     refreshOnSuccess: target.getAttribute('refresh-on-success')

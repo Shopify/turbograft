@@ -85,7 +85,7 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     click_button "Submit tg-remote POST"
     assert page.has_content?("Please supply a foo!")
 
-    page.fill_in 'foo', :with => 'some text'
+    page.fill_in 'foopost', :with => 'some text'
     click_button "Submit tg-remote POST"
 
     refute page.has_content?("Please supply a foo!")
@@ -95,5 +95,27 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
   test "tg-remote on a form with patch" do
     click_button "Submit tg-remote PATCH"
     assert page.has_content?("Thanks, we got your patch.")
+  end
+
+  test "tg-remote on a form with put" do
+    click_button "Submit tg-remote PUT"
+    assert page.has_content?("Please supply a foo!")
+
+    page.fill_in 'fooput', :with => 'some text'
+    click_button "Submit tg-remote PUT"
+
+    refute page.has_content?("Please supply a foo!")
+    assert page.has_content?("Thanks, we replaced your foo with a new one.")
+  end
+
+  test "tg-remote on a form with delete" do
+    click_button "Submit tg-remote DELETE"
+    assert page.has_content?("Please confirm that you want to delete this foo.")
+
+    page.check 'foodelete'
+    click_button "Submit tg-remote DELETE"
+
+    refute page.has_content?("Please confirm that you want to delete this foo.")
+    assert page.has_content?("Your foo has been destroyed.")
   end
 end

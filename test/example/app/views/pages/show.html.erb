@@ -193,22 +193,48 @@
 
 <h3>Example of tg-remote form: POST</h3>
 <div class="prepend-pre">
-<div id="foo-results" refresh="foo-results">
+<div id="foo-results-post" refresh="foo-results-post">
   Use the field below to submit some content, and get a result.
 </div>
-<form tg-remote action="/pages/submit_foo" method="post" refresh-on-success="foo-results foo-errors" refresh-on-error="foo-results foo-errors">
-  <input id="foo" name="foo" type="text">
+<form tg-remote action="/pages/post_foo" method="post" refresh-on-success="foo-results-post" refresh-on-error="foo-results-post">
+  <input id="foopost" name="foopost" type="text">
   <button type="submit">Submit tg-remote POST</button>
+</form>
+</div>
+</section>
+
+<h3>Example of tg-remote form: PUT</h3>
+<div class="prepend-pre">
+<div id="foo-results-put" refresh="foo-results-put">
+
+</div>
+<form tg-remote action="/pages/put_foo" method="put" refresh-on-success="foo-results-put" refresh-on-error="foo-results-put">
+  <input id="fooput" name="fooput" type="text">
+  <button type="submit">Submit tg-remote PUT</button>
+</form>
+</div>
+</section>
+
+<h3>Example of tg-remote form: DELETE</h3>
+<div class="prepend-pre">
+<div id="foo-results-delete" refresh="foo-results-delete">
+
+</div>
+<form tg-remote action="/pages/delete_foo" method="delete" refresh-on-success="foo-results-delete" refresh-on-error="foo-results-delete">
+  <label>
+    <input type="checkbox" id="foodelete" name="foodelete" value="0"> Really delete this foo?
+  </label>
+  <button type="submit">Submit tg-remote DELETE</button>
 </form>
 </div>
 </section>
 
 <h3>Example of tg-remote form: PATCH</h3>
 <div class="prepend-pre">
-<div id="foo-results2" refresh="foo-results2">
+<div id="foo-results-patch" refresh="foo-results-patch">
 
 </div>
-<form tg-remote action="/pages/patch_foo" method="post" refresh-on-success="foo-results2">
+<form tg-remote action="/pages/patch_foo" method="post" refresh-on-success="foo-results-patch">
   <input type="hidden" name="_method" value="patch">
   <input type="radio" name="someradio" value="A">
   <input type="radio" name="someradio" value="B">
