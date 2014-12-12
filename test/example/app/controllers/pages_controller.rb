@@ -75,4 +75,8 @@ class PagesController < ApplicationController
   def new
     render json: "{}", location: 'http://www.notexample.com'
   end
+
+  def method_agnostic
+    render json: "{}", status: 200
+  end
 end

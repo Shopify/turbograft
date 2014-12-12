@@ -137,6 +137,7 @@
     <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
     <li><code>remote-once</code>: (optional) Only do this once. Removes <code>tg-remote</code> and <code>remote-once</code> from element after consumption</li>
     <li><code>full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.</li>
+    <li><code>tg-remote-norefresh</code>: (valueless)  Adding this attribute this will perform your action without refreshing anything on the page.  This can be used for actions that have no visible side-effects.</li>
   </ul>
   <p>It emits a few events:</p>
   <ul>
@@ -164,6 +165,16 @@
 <a href="<%= error_422_with_show_pages_path %>" tg-remote="GET" full-refresh-on-error-except="section-a">tg-remote GET to response of 422 replaces everything except side-bar-a</a>
 </div>
 
+<h3>tg-remote links of various method types, with tg-remote-norefresh</h3>
+<p>No visible side effects here, so open your Network inspector to see them in action.</p>
+<div class="prepend-pre">
+<a href="/pages/method_agnostic" tg-remote="GET" tg-remote-norefresh>tg-remote GET</a><br>
+<a href="/pages/method_agnostic" tg-remote="POST" tg-remote-norefresh>tg-remote POST</a><br>
+<a href="/pages/method_agnostic" tg-remote="PATCH" tg-remote-norefresh>tg-remote PATCH</a><br>
+<a href="/pages/method_agnostic" tg-remote="PUT" tg-remote-norefresh>tg-remote PUT</a><br>
+<a href="/pages/method_agnostic" tg-remote="DELETE" tg-remote-norefresh>tg-remote DELETE</a>
+</div>
+
 <div class="prepend-pre">
 <a href="<%= error_404_pages_path %>" tg-remote="GET">tg-remote GET to response of 404</a>
 </div>
@@ -180,6 +191,7 @@
     <li><code>refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
     <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
     <li><code>full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.</li>
+    <li><code>tg-remote-norefresh</code>: (valueless)  Adding this attribute this will perform your action without refreshing anything on the page.  This can be used for actions that have no visible side-effects.</li>
   </ul>
   <p>It emits a few events:</p>
   <ul>

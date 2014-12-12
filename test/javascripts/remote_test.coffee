@@ -297,6 +297,24 @@ describe 'Remote', ->
       assert.equal 1, @refreshStub.callCount
       assert.equal 0, @refreshStub.args[0].length
 
+    it 'XHR=200: will not trigger Page.refresh when tg-remote-norefresh is present on the initiator', ->
+      server = sinon.fakeServer.create();
+      server.respondWith("POST", "/foo/bar",
+            [200, { "Content-Type": "text/html" },
+             '<div>Hey there</div>']);
+
+      @initiating_target.setAttribute("tg-remote-norefresh", true)
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+        fullRefresh: true
+      , @initiating_target
+      remote.submit()
+
+      server.respond()
+
+      assert.equal 0, @refreshStub.callCount
+
     it 'will trigger Page.refresh using XHR and refresh-on-error', ->
       server = sinon.fakeServer.create();
       server.respondWith("POST", "/foo/bar",

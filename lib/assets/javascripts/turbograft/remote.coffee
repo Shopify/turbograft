@@ -55,7 +55,7 @@ class TurboGraft.Remote
       else # for much smaller payloads
         formData = @uriEncodeForm(form)
     else
-      formData = new FormData()
+      formData = ''
 
     if formData instanceof FormData
       formData.append("_method", @opts.httpRequestType) if @opts.httpRequestType
@@ -94,17 +94,18 @@ class TurboGraft.Remote
       Page.visit(redirect, reload: true)
       return
 
-    if @opts.fullRefresh && @refreshOnSuccess
-      Page.refresh(onlyKeys: @refreshOnSuccess)
-    else if @opts.fullRefresh
-      Page.refresh()
-    else if @refreshOnSuccess
-      Page.refresh
-        response: xhr
-        onlyKeys: @refreshOnSuccess
-    else
-      Page.refresh
-        response: xhr
+    unless @initiator.hasAttribute('tg-remote-norefresh')
+      if @opts.fullRefresh && @refreshOnSuccess
+        Page.refresh(onlyKeys: @refreshOnSuccess)
+      else if @opts.fullRefresh
+        Page.refresh()
+      else if @refreshOnSuccess
+        Page.refresh
+          response: xhr
+          onlyKeys: @refreshOnSuccess
+      else
+        Page.refresh
+          response: xhr
 
   onError: (ev) ->
     @opts.fail?()

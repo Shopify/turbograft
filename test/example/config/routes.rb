@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       put :put_foo
       patch :patch_foo
       delete :delete_foo
+      match 'method_agnostic' => 'pages#method_agnostic', via:[:get, :post, :delete, :put, :patch]
     end
   end
 end
