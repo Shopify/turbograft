@@ -1,33 +1,36 @@
 describe 'Initializers', ->
 
   # can't figure out why this doesn't work:
-  # describe 'tg-remote on forms', ->
-  #   beforeEach ->
-  #     @Remote = stub(TurboGraft, "Remote").returns({submit: ->})
+  describe 'tg-remote on forms', ->
+    beforeEach ->
+      @Remote = stub(TurboGraft, "Remote").returns({submit: ->})
 
-  #   afterEach ->
-  #     @Remote.restore()
+    afterEach ->
+      @Remote.restore()
 
-  #   it.only 'creates a remote based on the options passed in', ->
-  #     $form = $("<form>")
-  #       .attr("tg-remote", "true")
-  #       .attr("method", "put")
-  #       .attr("refresh-on-success", "foo")
-  #       .attr("refresh-on-error", "bar")
-  #       .attr("full-refresh-on-error-except", "zar")
-  #       .attr("action", "somewhere")
+    it 'creates a remote based on the options passed in', ->
+      $form = $("<form>")
+        .attr("tg-remote", "true")
+        .attr("method", "put")
+        .attr("refresh-on-success", "foo")
+        .attr("refresh-on-error", "bar")
+        .attr("full-refresh-on-error-except", "zar")
+        .attr("action", "somewhere")
+      $form.append("<input type='submit'>")
 
-  #     $("body").append($form)
-  #     $form.trigger("submit")
+      $("body").append($form)
+      $form.find("input").trigger("click")
 
-  #     assert @Remote.called
-  #     assert @Remote.calledWith
-  #       httpRequestType: "put"
-  #       httpUrl: "somewhere"
-  #       fullRefresh: false
-  #       refreshOnSuccess: "foo"
-  #       refreshOnError: "bar"
-  #       refreshOnErrorExcept: "zar"
+      assert @Remote.called
+      assert @Remote.calledWith
+        httpRequestType: "put"
+        httpUrl: "somewhere"
+        fullRefresh: false
+        refreshOnSuccess: "foo"
+        refreshOnError: "bar"
+        refreshOnErrorExcept: "zar"
+
+      $form.remove()
 
   describe 'tg-remote on links', ->
     beforeEach ->
