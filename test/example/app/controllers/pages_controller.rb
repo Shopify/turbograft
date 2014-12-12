@@ -77,6 +77,6 @@ class PagesController < ApplicationController
   end
 
   def method_agnostic
-    render json: "{}", status: 200
+    render json: {method: request.env["REQUEST_METHOD"]}, status: 200
   end
 end
