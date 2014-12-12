@@ -92,6 +92,17 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     assert page.has_content?("Thanks for the foo! We'll consider it.")
   end
 
+  test "tg-remote on a form with get" do
+    click_button "Submit tg-remote GET"
+    assert page.has_content?("Please supply a foo!")
+
+    page.fill_in 'fooget', :with => 'some text'
+    click_button "Submit tg-remote GET"
+
+    refute page.has_content?("Please supply a foo!")
+    assert page.has_content?("We found no results for some text :(")
+  end
+
   test "tg-remote on a form with patch" do
     click_button "Submit tg-remote PATCH"
     assert page.has_content?("Thanks, we got your patch.")

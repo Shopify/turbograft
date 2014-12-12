@@ -203,6 +203,18 @@
 </div>
 </section>
 
+<h3>Example of tg-remote form: GET</h3>
+<div class="prepend-pre">
+<div id="foo-results-get" refresh="foo-results-get">
+  Use the field below to get a foo of your choice.
+</div>
+<form tg-remote action="/pages/get_foo" method="get" refresh-on-success="foo-results-get" refresh-on-error="foo-results-get">
+  <input id="fooget" name="fooget" type="text">
+  <button type="submit">Submit tg-remote GET</button>
+</form>
+</div>
+</section>
+
 <h3>Example of tg-remote form: PUT</h3>
 <div class="prepend-pre">
 <div id="foo-results-put" refresh="foo-results-put">

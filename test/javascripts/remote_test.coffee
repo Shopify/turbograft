@@ -355,9 +355,8 @@ describe 'Remote', ->
 
     it 'will not add a _method if improperly supplied', ->
       form = $("<form method='POST'></form>")[0]
-      # above: actual HTTP is POST, rails will interpret it as PATCH
 
-      remote = new TurboGraft.Remote({httpRequestType: undefined}, form) # DELETE should be ignored here
+      remote = new TurboGraft.Remote({httpRequestType: undefined}, form)
       assert.equal "", remote.formData
 
     it 'will not create FormData object if there is no file in the form', ->

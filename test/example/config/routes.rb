@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       get :error_422_with_show
       post :redirect_to_somewhere_else_after_POST
       post :post_foo
+      get :get_foo
       put :put_foo
       patch :patch_foo
       delete :delete_foo

@@ -44,6 +44,14 @@ class PagesController < ApplicationController
     end
   end
 
+  def get_foo
+    if params[:fooget].blank?
+      render '_missing_foo', status: 422, locals: {method: "get"}
+    else
+      render '_searched_for_foo', status: 200, layout: false # it's not necessary to render a full response, and you may prefer not to
+    end
+  end
+
   def put_foo
     if params[:fooput].blank?
       render '_missing_foo', status: 422, locals: {method: "put"}

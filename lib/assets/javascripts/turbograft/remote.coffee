@@ -3,16 +3,19 @@ class TurboGraft.Remote
 
     @initiator = form || target
 
-    @formData = @createPayload(form)
+    @actualRequestType = if @opts.httpRequestType?.toLowerCase() == 'get' then 'GET' else 'POST'
 
-    actualRequestType = if @opts.httpRequestType?.toLowerCase() == 'get' then 'GET' else 'POST'
+    @formData = @createPayload(form)
 
     @refreshOnSuccess       = @opts.refreshOnSuccess.split(" ")       if @opts.refreshOnSuccess
     @refreshOnError         = @opts.refreshOnError.split(" ")         if @opts.refreshOnError
     @refreshOnErrorExcept   = @opts.refreshOnErrorExcept.split(" ")   if @opts.refreshOnErrorExcept
 
     xhr = new XMLHttpRequest
-    xhr.open(actualRequestType, @opts.httpUrl, true)
+    if @actualRequestType == 'GET'
+      xhr.open(@actualRequestType, @opts.httpUrl + "?#{@formData}", true)
+    else
+      xhr.open(@actualRequestType, @opts.httpUrl, true)
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     xhr.setRequestHeader('Accept', 'text/html, application/xhtml+xml, application/xml')
     xhr.setRequestHeader("Content-Type", @contentType) if @contentType
@@ -57,7 +60,7 @@ class TurboGraft.Remote
       formData.append("_method", @opts.httpRequestType) if @opts.httpRequestType
     else
       @contentType = "application/x-www-form-urlencoded; charset=UTF-8"
-      formData = @formAppend(formData, "_method", @opts.httpRequestType) if formData.indexOf("_method") == -1 && @opts.httpRequestType
+      formData = @formAppend(formData, "_method", @opts.httpRequestType) if formData.indexOf("_method") == -1 && @opts.httpRequestType && @actualRequestType != 'GET'
       formData = formData.slice(0,-1) if formData.charAt(formData.length - 1) == "&"
 
     formData
