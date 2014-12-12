@@ -13,7 +13,8 @@ class TurboGraft.Remote
 
     xhr = new XMLHttpRequest
     if @actualRequestType == 'GET'
-      xhr.open(@actualRequestType, @opts.httpUrl + "?#{@formData}", true)
+      url = if @formData then @opts.httpUrl + "?#{@formData}" else @opts.httpUrl
+      xhr.open(@actualRequestType, url, true)
     else
       xhr.open(@actualRequestType, @opts.httpUrl, true)
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
