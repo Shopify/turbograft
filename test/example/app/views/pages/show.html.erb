@@ -137,6 +137,7 @@
     <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
     <li><code>remote-once</code>: (optional) Only do this once. Removes <code>tg-remote</code> and <code>remote-once</code> from element after consumption</li>
     <li><code>full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.</li>
+    <li><code>tg-remote-norefresh</code>: (valueless)  Adding this attribute this will perform your action without refreshing anything on the page.  This can be used for actions that have no visible side-effects.</li>
   </ul>
   <p>It emits a few events:</p>
   <ul>
@@ -164,6 +165,16 @@
 <a href="<%= error_422_with_show_pages_path %>" tg-remote="GET" full-refresh-on-error-except="section-a">tg-remote GET to response of 422 replaces everything except side-bar-a</a>
 </div>
 
+<h3>tg-remote links of various method types, with tg-remote-norefresh</h3>
+<p>No visible side effects here, so open your Network inspector to see them in action.</p>
+<div class="prepend-pre">
+<a href="/pages/method_agnostic" tg-remote="GET" tg-remote-norefresh>tg-remote GET</a><br>
+<a href="/pages/method_agnostic" tg-remote="POST" tg-remote-norefresh>tg-remote POST</a><br>
+<a href="/pages/method_agnostic" tg-remote="PATCH" tg-remote-norefresh>tg-remote PATCH</a><br>
+<a href="/pages/method_agnostic" tg-remote="PUT" tg-remote-norefresh>tg-remote PUT</a><br>
+<a href="/pages/method_agnostic" tg-remote="DELETE" tg-remote-norefresh>tg-remote DELETE</a>
+</div>
+
 <div class="prepend-pre">
 <a href="<%= error_404_pages_path %>" tg-remote="GET">tg-remote GET to response of 404</a>
 </div>
@@ -180,6 +191,7 @@
     <li><code>refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
     <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
     <li><code>full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.</li>
+    <li><code>tg-remote-norefresh</code>: (valueless)  Adding this attribute this will perform your action without refreshing anything on the page.  This can be used for actions that have no visible side-effects.</li>
   </ul>
   <p>It emits a few events:</p>
   <ul>
@@ -193,22 +205,60 @@
 
 <h3>Example of tg-remote form: POST</h3>
 <div class="prepend-pre">
-<div id="foo-results" refresh="foo-results">
+<div id="foo-results-post" refresh="foo-results-post">
   Use the field below to submit some content, and get a result.
 </div>
-<form tg-remote action="/pages/submit_foo" method="post" refresh-on-success="foo-results foo-errors" refresh-on-error="foo-results foo-errors">
-  <input id="foo" name="foo" type="text">
+<form tg-remote action="/pages/post_foo" method="post" refresh-on-success="foo-results-post" refresh-on-error="foo-results-post">
+  <input id="foopost" name="foopost" type="text">
   <button type="submit">Submit tg-remote POST</button>
+</form>
+</div>
+</section>
+
+<h3>Example of tg-remote form: GET</h3>
+<div class="prepend-pre">
+<div id="foo-results-get" refresh="foo-results-get">
+  Use the field below to get a foo of your choice.
+</div>
+<form tg-remote action="/pages/get_foo" method="get" refresh-on-success="foo-results-get" refresh-on-error="foo-results-get">
+  <input id="fooget" name="fooget" type="text">
+  <button type="submit">Submit tg-remote GET</button>
+</form>
+</div>
+</section>
+
+<h3>Example of tg-remote form: PUT</h3>
+<div class="prepend-pre">
+<div id="foo-results-put" refresh="foo-results-put">
+
+</div>
+<form tg-remote action="/pages/put_foo" method="put" refresh-on-success="foo-results-put" refresh-on-error="foo-results-put">
+  <input id="fooput" name="fooput" type="text">
+  <button type="submit">Submit tg-remote PUT</button>
+</form>
+</div>
+</section>
+
+<h3>Example of tg-remote form: DELETE</h3>
+<div class="prepend-pre">
+<div id="foo-results-delete" refresh="foo-results-delete">
+
+</div>
+<form tg-remote action="/pages/delete_foo" method="delete" refresh-on-success="foo-results-delete" refresh-on-error="foo-results-delete">
+  <label>
+    <input type="checkbox" id="foodelete" name="foodelete" value="0"> Really delete this foo?
+  </label>
+  <button type="submit">Submit tg-remote DELETE</button>
 </form>
 </div>
 </section>
 
 <h3>Example of tg-remote form: PATCH</h3>
 <div class="prepend-pre">
-<div id="foo-results2" refresh="foo-results2">
+<div id="foo-results-patch" refresh="foo-results-patch">
 
 </div>
-<form tg-remote action="/pages/patch_foo" method="post" refresh-on-success="foo-results2">
+<form tg-remote action="/pages/patch_foo" method="post" refresh-on-success="foo-results-patch">
   <input type="hidden" name="_method" value="patch">
   <input type="radio" name="someradio" value="A">
   <input type="radio" name="someradio" value="B">

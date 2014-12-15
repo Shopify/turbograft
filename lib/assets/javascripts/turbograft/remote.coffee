@@ -3,16 +3,20 @@ class TurboGraft.Remote
 
     @initiator = form || target
 
-    @formData = @createPayload(form)
+    @actualRequestType = if @opts.httpRequestType?.toLowerCase() == 'get' then 'GET' else 'POST'
 
-    actualRequestType = if @opts.httpRequestType?.toLowerCase() == 'get' then 'GET' else 'POST'
+    @formData = @createPayload(form)
 
     @refreshOnSuccess       = @opts.refreshOnSuccess.split(" ")       if @opts.refreshOnSuccess
     @refreshOnError         = @opts.refreshOnError.split(" ")         if @opts.refreshOnError
     @refreshOnErrorExcept   = @opts.refreshOnErrorExcept.split(" ")   if @opts.refreshOnErrorExcept
 
     xhr = new XMLHttpRequest
-    xhr.open(actualRequestType, @opts.httpUrl, true)
+    if @actualRequestType == 'GET'
+      url = if @formData then @opts.httpUrl + "?#{@formData}" else @opts.httpUrl
+      xhr.open(@actualRequestType, url, true)
+    else
+      xhr.open(@actualRequestType, @opts.httpUrl, true)
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     xhr.setRequestHeader('Accept', 'text/html, application/xhtml+xml, application/xml')
     xhr.setRequestHeader("Content-Type", @contentType) if @contentType
@@ -51,14 +55,19 @@ class TurboGraft.Remote
       else # for much smaller payloads
         formData = @uriEncodeForm(form)
     else
-      formData = new FormData()
+      formData = ''
 
     if formData instanceof FormData
       formData.append("_method", @opts.httpRequestType) if @opts.httpRequestType
     else
       @contentType = "application/x-www-form-urlencoded; charset=UTF-8"
+      formData = @formAppend(formData, "_method", @opts.httpRequestType) if formData.indexOf("_method") == -1 && @opts.httpRequestType && @actualRequestType != 'GET'
 
     formData
+
+  formAppend: (uriEncoded, key, value) ->
+    uriEncoded += "&" if uriEncoded.length
+    uriEncoded += "#{encodeURIComponent(key)}=#{encodeURIComponent(value)}"
 
   uriEncodeForm: (form) ->
     formData = ""
@@ -69,9 +78,8 @@ class TurboGraft.Remote
 
       if inputEnabled && input.name
         if (radioOrCheck && input.checked) || !radioOrCheck
-          formData += "#{encodeURIComponent(input.name)}=#{encodeURIComponent(input.value)}&"
+          formData = @formAppend(formData, input.name, input.value)
 
-    formData = formData.slice(0,-1) if formData.charAt(formData.length - 1) == "&"
     formData
 
   onSuccess: (ev) ->
@@ -86,17 +94,18 @@ class TurboGraft.Remote
       Page.visit(redirect, reload: true)
       return
 
-    if @opts.fullRefresh && @refreshOnSuccess
-      Page.refresh(onlyKeys: @refreshOnSuccess)
-    else if @opts.fullRefresh
-      Page.refresh()
-    else if @refreshOnSuccess
-      Page.refresh
-        response: xhr
-        onlyKeys: @refreshOnSuccess
-    else
-      Page.refresh
-        response: xhr
+    unless @initiator.hasAttribute('tg-remote-norefresh')
+      if @opts.fullRefresh && @refreshOnSuccess
+        Page.refresh(onlyKeys: @refreshOnSuccess)
+      else if @opts.fullRefresh
+        Page.refresh()
+      else if @refreshOnSuccess
+        Page.refresh
+          response: xhr
+          onlyKeys: @refreshOnSuccess
+      else
+        Page.refresh
+          response: xhr
 
   onError: (ev) ->
     @opts.fail?()

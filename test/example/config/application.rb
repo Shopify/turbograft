@@ -5,6 +5,9 @@ require "turbograft"
 require "jquery-rails"
 require 'rails/all'
 require 'teaspoon'
+require 'byebug'
+require 'pry'
+require 'pry-byebug'
 
 module Example
   class Application < Rails::Application
