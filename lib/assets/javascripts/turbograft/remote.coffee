@@ -62,12 +62,12 @@ class TurboGraft.Remote
     else
       @contentType = "application/x-www-form-urlencoded; charset=UTF-8"
       formData = @formAppend(formData, "_method", @opts.httpRequestType) if formData.indexOf("_method") == -1 && @opts.httpRequestType && @actualRequestType != 'GET'
-      formData = formData.slice(0,-1) if formData.charAt(formData.length - 1) == "&"
 
     formData
 
   formAppend: (uriEncoded, key, value) ->
-    uriEncoded += "#{encodeURIComponent(key)}=#{encodeURIComponent(value)}&"
+    uriEncoded += "&" if uriEncoded.length
+    uriEncoded += "#{encodeURIComponent(key)}=#{encodeURIComponent(value)}"
 
   uriEncodeForm: (form) ->
     formData = ""
