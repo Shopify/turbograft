@@ -189,7 +189,7 @@ class window.Turbolinks
 
     for existingNode in allNodesToKeep
       unless nodeId = existingNode.getAttribute('id')
-        throw new Error("TurboGraft static elements must an id.")
+        throw new Error("TurboGraft refresh: Static elements must have an id.")
 
       remoteNode = body.querySelector("##{ nodeId }")
       remoteNode.parentNode.replaceChild(existingNode, remoteNode)
@@ -203,7 +203,7 @@ class window.Turbolinks
 
     for existingNode in allNodesToKeep
       unless nodeId = existingNode.getAttribute('id')
-        throw new Error "Turbolinks refresh: Refresh key elements must have an id."
+        throw new Error "Turbolinks refresh: Refresh except key elements must have an id."
 
       remoteNode = body.querySelector("##{ nodeId }")
       remoteNode.parentNode.replaceChild(existingNode, remoteNode)
