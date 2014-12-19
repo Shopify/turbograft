@@ -104,6 +104,7 @@ class window.Turbolinks
   @loadPage: (url, xhr, partialReplace = false, onLoadFunction = (->), replaceContents = [], replaceAllExcept = []) ->
     triggerEvent 'page:receive'
 
+
     if doc = processResponse(xhr, partialReplace)
       reflectNewUrl url
       nodes = changePage(extractTitleAndBody(doc)..., partialReplace, replaceContents, replaceAllExcept)
@@ -117,9 +118,11 @@ class window.Turbolinks
 
   changePage = (title, body, csrfToken, runScripts, partialReplace, replaceContents = [], replaceAllExcept = []) ->
     document.title = title if title
+
     if replaceContents.length
       return refreshNodesWithKeys(replaceContents, body)
     else
+      persistStaticElements(body)
       if replaceAllExcept.length
         refreshAllExceptWithKeys(replaceAllExcept, body)
       else
@@ -176,6 +179,20 @@ class window.Turbolinks
         existingNode.parentNode.removeChild(existingNode)
 
     refreshedNodes
+
+  persistStaticElements = (body) ->
+    allNodesToKeep = []
+
+    nodes = document.querySelectorAll("[tg-static]")
+    for node in nodes
+      allNodesToKeep.push(node)
+
+    for existingNode in allNodesToKeep
+      unless nodeId = existingNode.getAttribute('id')
+        throw new Error("TurboGraft static elements must an id.")
+
+      remoteNode = body.querySelector("##{ nodeId }")
+      remoteNode.parentNode.replaceChild(existingNode, remoteNode)
 
   refreshAllExceptWithKeys = (keys, body) ->
     allNodesToKeep = []
