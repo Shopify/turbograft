@@ -25,7 +25,8 @@
 <div class="prepend-pre">
 <nav id="static" tg-static>
   <ul>
-    <li>Search <i id='badge1' refresh='navigation'><input type="text" name="badgeinput"></i></li>
+    <li>Navigation <i id='badge1' refresh='navigation'><input type="text" name="badgeinput"></i></li>
+    <li>Always Refresh: <i id="badge2" refresh-always><input type="text" name="badgeinput2"></i></li>
     <li>Home</li>
   </ul>
 </nav>
@@ -33,7 +34,7 @@
 
 <div class="prepend-pre">
 <%= link_to "Perform a full page refresh", page_path(@next_id) %><br>
-<%= link_to "Perform a partial page refresh and refresh the navigation", redirect_to_somewhere_else_after_POST_pages_path, "tg-remote" => "POST", "refresh-on-success" => "navigation" %>
+<%= link_to "Perform a partial page refresh and refresh the navigation section", redirect_to_somewhere_else_after_POST_pages_path, "tg-remote" => "POST", "refresh-on-success" => "navigation" %>
 </div>
 
 </section>

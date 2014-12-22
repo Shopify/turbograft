@@ -116,15 +116,16 @@ class window.Turbolinks
 
     return
 
-  changePage = (title, body, csrfToken, runScripts, partialReplace, replaceContents = [], replaceAllExcept = []) ->
+  changePage = (title, body, csrfToken, runScripts, partialReplace, onlyKeys = [], exceptKeys = []) ->
     document.title = title if title
 
-    if replaceContents.length
-      return refreshNodesWithKeys(replaceContents, body)
+    refreshRefreshAlwaysNodes(body)
+    if onlyKeys.length
+      return refreshNodesWithKeys(onlyKeys, body)
     else
       persistStaticElements(body)
-      if replaceAllExcept.length
-        refreshAllExceptWithKeys(replaceAllExcept, body)
+      if exceptKeys.length
+        refreshAllExceptWithKeys(exceptKeys, body)
       else
         deleteRefreshNeverNodes(body)
 
@@ -144,15 +145,7 @@ class window.Turbolinks
 
     return
 
-  refreshNodesWithKeys = (keys, body) ->
-    allNodesToBeRefreshed = []
-    for node in document.querySelectorAll("[refresh-always]")
-      allNodesToBeRefreshed.push(node)
-
-    for key in keys
-      for node in document.querySelectorAll("[refresh=#{key}]")
-        allNodesToBeRefreshed.push(node)
-
+  refreshNodes = (allNodesToBeRefreshed, body) ->
     triggerEvent 'page:before-partial-replace', allNodesToBeRefreshed
 
     parentIsRefreshing = (node) ->
@@ -180,6 +173,23 @@ class window.Turbolinks
 
     refreshedNodes
 
+  refreshRefreshAlwaysNodes = (body) ->
+    allNodesToBeRefreshed = []
+    for node in document.querySelectorAll("[refresh-always]")
+      allNodesToBeRefreshed.push(node)
+
+    refreshNodes(allNodesToBeRefreshed, body)
+    return
+
+  refreshNodesWithKeys = (keys, body) ->
+    allNodesToBeRefreshed = []
+    for key in keys
+      for node in document.querySelectorAll("[refresh=#{key}]")
+        allNodesToBeRefreshed.push(node)
+
+    refreshNodes(allNodesToBeRefreshed, body)
+    return
+
   keepNodes = (body, allNodesToKeep) ->
     for existingNode in allNodesToKeep
       unless nodeId = existingNode.getAttribute('id')
@@ -188,7 +198,6 @@ class window.Turbolinks
       remoteNode = body.querySelector("##{ nodeId }")
       continue unless remoteNode
       remoteNode.parentNode.replaceChild(existingNode, remoteNode)
-
 
   persistStaticElements = (body) ->
     allNodesToKeep = []

@@ -56,7 +56,17 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
     page.fill_in 'badgeinput', :with => 'tg-static innards'
     click_link "Perform a full page refresh"
     assert_equal "tg-static innards", find_field("badgeinput").value
-    click_link "Perform a partial page refresh and refresh the navigation"
+    click_link "Perform a partial page refresh and refresh the navigation section"
     assert_equal "", find_field("badgeinput").value
+  end
+
+  test "always-refresh will always refresh the annotated nodes, regardless of refresh type" do
+    page.fill_in 'badgeinput2', :with => 'some innards'
+    click_link "Perform a full page refresh"
+    assert_equal "", find_field("badgeinput2").value
+
+    page.fill_in 'badgeinput2', :with => 'some innards'
+    click_link "Perform a partial page refresh and refresh the navigation section"
+    assert_equal "", find_field("badgeinput2").value
   end
 end
