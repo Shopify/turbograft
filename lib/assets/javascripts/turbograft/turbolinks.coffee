@@ -195,9 +195,8 @@ class window.Turbolinks
       unless nodeId = existingNode.getAttribute('id')
         throw new Error("TurboGraft refresh: Kept nodes must have an id.")
 
-      remoteNode = body.querySelector("##{ nodeId }")
-      continue unless remoteNode
-      remoteNode.parentNode.replaceChild(existingNode, remoteNode)
+      if remoteNode = body.querySelector("##{ nodeId }")
+        remoteNode.parentNode.replaceChild(existingNode, remoteNode)
 
   persistStaticElements = (body) ->
     allNodesToKeep = []
