@@ -180,19 +180,24 @@ class window.Turbolinks
 
     refreshedNodes
 
+  keepNodes = (body, allNodesToKeep) ->
+    for existingNode in allNodesToKeep
+      unless nodeId = existingNode.getAttribute('id')
+        throw new Error("TurboGraft refresh: Kept nodes must have an id.")
+
+      remoteNode = body.querySelector("##{ nodeId }")
+      continue unless remoteNode
+      remoteNode.parentNode.replaceChild(existingNode, remoteNode)
+
+
   persistStaticElements = (body) ->
     allNodesToKeep = []
 
     nodes = document.querySelectorAll("[tg-static]")
-    for node in nodes
-      allNodesToKeep.push(node)
+    allNodesToKeep.push(node) for node in nodes
 
-    for existingNode in allNodesToKeep
-      unless nodeId = existingNode.getAttribute('id')
-        throw new Error("TurboGraft refresh: Static elements must have an id.")
-
-      remoteNode = body.querySelector("##{ nodeId }")
-      remoteNode.parentNode.replaceChild(existingNode, remoteNode)
+    keepNodes(body, allNodesToKeep)
+    return
 
   refreshAllExceptWithKeys = (keys, body) ->
     allNodesToKeep = []
@@ -201,12 +206,8 @@ class window.Turbolinks
       for node in document.querySelectorAll("[refresh=#{key}]")
         allNodesToKeep.push(node)
 
-    for existingNode in allNodesToKeep
-      unless nodeId = existingNode.getAttribute('id')
-        throw new Error "Turbolinks refresh: Refresh except key elements must have an id."
-
-      remoteNode = body.querySelector("##{ nodeId }")
-      remoteNode.parentNode.replaceChild(existingNode, remoteNode)
+    keepNodes(body, allNodesToKeep)
+    return
 
   executeScriptTags = ->
     scripts = Array::slice.call document.body.querySelectorAll 'script:not([data-turbolinks-eval="false"])'
