@@ -125,9 +125,14 @@ The internal state of any nodes marked with `tg-static` will remain, even though
 
 Though, if you were to refresh the page at a higher level -- e.g., refreshing an ancestor of the `tg-static`, the static aspect is no longer obeyed and it is replaced!
 
+Examples of where this may be useful include:
+
+- running `<video>` or `<audio>` element
+- a client-controlled static nav
+
 ### refresh-always
 
-For the lazy developer in all of us, we can use the attribute `refresh-always` when, through any page refresh (partial or full) we want to be sure we've absolutely replaced a certain element, if it exists.
+For the lazy developer in all of us, we can use the attribute `refresh-always` when we want to be sure we've absolutely replaced a certain element, if it exists.  An example of such a node you may want to apply this might be an unread notification count -- always being sure to update it if it exists in the response.
 
 ## Example App
 
