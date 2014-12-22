@@ -51,4 +51,12 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
     page.evaluate_script('window.history.back()')
     assert_equal "Sample Turbograft Application", page.title
   end
+
+  test "tg-static preserves client-side state of innards on partial refresh, and replaces contents on full refresh" do
+    page.fill_in 'badgeinput', :with => 'tg-static innards'
+    click_link "Perform a full page refresh"
+    assert_equal "tg-static innards", find_field("badgeinput").value
+    click_link "Perform a partial page refresh and refresh the navigation"
+    assert_equal "", find_field("badgeinput").value
+  end
 end
