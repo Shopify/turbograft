@@ -51,7 +51,7 @@ documentListenerForButtons = (eventType, handler, useCapture = false) ->
   document.addEventListener eventType, (ev) ->
     target = ev.target
 
-    while target != document && (typeof target != "undefined") && (target != null)
+    while target != document && target?
       if target.nodeName == "A" || target.nodeName == "BUTTON"
         isNodeDisabled = nodeIsDisabled(target)
         ev.preventDefault() if isNodeDisabled
