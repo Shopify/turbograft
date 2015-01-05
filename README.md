@@ -16,7 +16,7 @@ Turbograft was built with simplicity in mind. It intends to offer the smallest a
 
 ## Status
 [![Gem Version](https://badge.fury.io/rb/turbograft.svg)](http://badge.fury.io/rb/turbograft)
-[![Build Status](https://api.travis-ci.org/Shopify/turbograft.svg)](http://travis-ci.org/Shopify/turbograft)
+[![Build Status](https://travis-ci.org/Shopify/turbograft.svg?branch=master)](http://travis-ci.org/Shopify/turbograft)
 
 ## Installation
 
