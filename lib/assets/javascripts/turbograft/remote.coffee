@@ -20,6 +20,7 @@ class TurboGraft.Remote
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     xhr.setRequestHeader('Accept', 'text/html, application/xhtml+xml, application/xml')
     xhr.setRequestHeader("Content-Type", @contentType) if @contentType
+    xhr.setRequestHeader 'X-XHR-Referer', document.location.href
 
     csrfToken = CSRFToken.get().token
     xhr.setRequestHeader('X-CSRF-Token', csrfToken) if csrfToken
