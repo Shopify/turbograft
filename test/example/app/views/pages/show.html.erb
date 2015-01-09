@@ -111,7 +111,10 @@
     operation = $.ajax({
       type: "POST",
       url: "<%= redirect_to_somewhere_else_after_POST_pages_path %>",
-      data: {}
+      data: {},
+      beforeSend: function (request) {
+        request.setRequestHeader("X-XHR-Referer", document.location.href);
+      }
     });
 
     operation.done(function(results, status, xhr) {
