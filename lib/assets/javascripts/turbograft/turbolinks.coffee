@@ -104,6 +104,7 @@ class window.Turbolinks
   @loadPage: (url, xhr, partialReplace = false, onLoadFunction = (->), replaceContents = [], replaceAllExcept = []) ->
     triggerEvent 'page:receive'
 
+
     if doc = processResponse(xhr, partialReplace)
       reflectNewUrl url
       nodes = changePage(extractTitleAndBody(doc)..., partialReplace, replaceContents, replaceAllExcept)
@@ -115,13 +116,16 @@ class window.Turbolinks
 
     return
 
-  changePage = (title, body, csrfToken, runScripts, partialReplace, replaceContents = [], replaceAllExcept = []) ->
+  changePage = (title, body, csrfToken, runScripts, partialReplace, onlyKeys = [], exceptKeys = []) ->
     document.title = title if title
-    if replaceContents.length
-      return refreshNodesWithKeys(replaceContents, body)
+
+    refreshRefreshAlwaysNodes(body)
+    if onlyKeys.length
+      return refreshNodesWithKeys(onlyKeys, body)
     else
-      if replaceAllExcept.length
-        refreshAllExceptWithKeys(replaceAllExcept, body)
+      persistStaticElements(body)
+      if exceptKeys.length
+        refreshAllExceptWithKeys(exceptKeys, body)
       else
         deleteRefreshNeverNodes(body)
 
@@ -141,15 +145,7 @@ class window.Turbolinks
 
     return
 
-  refreshNodesWithKeys = (keys, body) ->
-    allNodesToBeRefreshed = []
-    for node in document.querySelectorAll("[refresh-always]")
-      allNodesToBeRefreshed.push(node)
-
-    for key in keys
-      for node in document.querySelectorAll("[refresh=#{key}]")
-        allNodesToBeRefreshed.push(node)
-
+  refreshNodes = (allNodesToBeRefreshed, body) ->
     triggerEvent 'page:before-partial-replace', allNodesToBeRefreshed
 
     parentIsRefreshing = (node) ->
@@ -177,6 +173,40 @@ class window.Turbolinks
 
     refreshedNodes
 
+  refreshRefreshAlwaysNodes = (body) ->
+    allNodesToBeRefreshed = []
+    for node in document.querySelectorAll("[refresh-always]")
+      allNodesToBeRefreshed.push(node)
+
+    refreshNodes(allNodesToBeRefreshed, body)
+    return
+
+  refreshNodesWithKeys = (keys, body) ->
+    allNodesToBeRefreshed = []
+    for key in keys
+      for node in document.querySelectorAll("[refresh=#{key}]")
+        allNodesToBeRefreshed.push(node)
+
+    refreshNodes(allNodesToBeRefreshed, body)
+    return
+
+  keepNodes = (body, allNodesToKeep) ->
+    for existingNode in allNodesToKeep
+      unless nodeId = existingNode.getAttribute('id')
+        throw new Error("TurboGraft refresh: Kept nodes must have an id.")
+
+      if remoteNode = body.querySelector("##{ nodeId }")
+        remoteNode.parentNode.replaceChild(existingNode, remoteNode)
+
+  persistStaticElements = (body) ->
+    allNodesToKeep = []
+
+    nodes = document.querySelectorAll("[tg-static]")
+    allNodesToKeep.push(node) for node in nodes
+
+    keepNodes(body, allNodesToKeep)
+    return
+
   refreshAllExceptWithKeys = (keys, body) ->
     allNodesToKeep = []
 
@@ -184,12 +214,8 @@ class window.Turbolinks
       for node in document.querySelectorAll("[refresh=#{key}]")
         allNodesToKeep.push(node)
 
-    for existingNode in allNodesToKeep
-      unless nodeId = existingNode.getAttribute('id')
-        throw new Error "Turbolinks refresh: Refresh key elements must have an id."
-
-      remoteNode = body.querySelector("##{ nodeId }")
-      remoteNode.parentNode.replaceChild(existingNode, remoteNode)
+    keepNodes(body, allNodesToKeep)
+    return
 
   executeScriptTags = ->
     scripts = Array::slice.call document.body.querySelectorAll 'script:not([data-turbolinks-eval="false"])'

@@ -17,6 +17,29 @@
 <% end %>
 
 <section>
+  <h1>Static Elements</h1>
+  <p>With the <code>tg-static</code> attribute decorating a node, we can make sure that this node is not replaced during a fullpage refresh.</p>
+  <p>In the example below, we demonstrate a fullpage refresh where the contents of the input will remain even though the entire page has been swapped out.  We also demonstrate a partial page refresh which swaps out specifically the input element.  Thus, we can still replace elements inside of a <code>tg-static</code> node.</p>
+  <p>Though, if you were to refresh the page at a higher level -- e.g., refreshing an ancestor of the <code>tg-static</code>, the static aspect is no longer obeyed and it is replaced.</p>
+
+<div class="prepend-pre">
+<nav id="static" tg-static>
+  <ul>
+    <li>Navigation <i id='badge1' refresh='navigation'><input type="text" name="badgeinput"></i></li>
+    <li>Always Refresh: <i id="badge2" refresh-always><input type="text" name="badgeinput2"></i></li>
+    <li>Home</li>
+  </ul>
+</nav>
+</div>
+
+<div class="prepend-pre">
+<%= link_to "Perform a full page refresh", page_path(@next_id) %><br>
+<%= link_to "Perform a partial page refresh and refresh the navigation section", redirect_to_somewhere_else_after_POST_pages_path, "tg-remote" => "POST", "refresh-on-success" => "navigation" %>
+</div>
+
+</section>
+
+<section>
   <h1>Partial page refresh</h1>
 
   <p>Here's a fieldset, vaguely representing some client state.  Enter some values.</p>
