@@ -26,6 +26,12 @@ class PagesControllerTest < ActionController::TestCase
     assert_equal "http://test.host/pages/1", session[:_turbolinks_redirect_to]
   end
 
+  test "_compute_redirect_to_location sets redirect_to for turbolinks only if request referrer is set" do
+    get :index
+    assert_response :ok
+    assert_nil session[:_turbolinks_redirect_to]
+  end
+
   test "set_xhr_redirected_to sets X-XHR-Redirected-To" do
     get :index, {}, {_turbolinks_redirect_to: 'http://test.host/expected'}
     assert_response :ok
