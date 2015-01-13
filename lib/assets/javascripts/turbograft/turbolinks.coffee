@@ -119,9 +119,11 @@ class window.Turbolinks
   changePage = (title, body, csrfToken, runScripts, partialReplace, onlyKeys = [], exceptKeys = []) ->
     document.title = title if title
 
-    refreshRefreshAlwaysNodes(body)
+    refreshedNodes = []
+    refreshedNodes = refreshRefreshAlwaysNodes(body)
     if onlyKeys.length
-      return refreshNodesWithKeys(onlyKeys, body)
+      refreshedNodes = refreshedNodes.concat refreshNodesWithKeys(onlyKeys, body)
+      return refreshedNodes
     else
       persistStaticElements(body)
       if exceptKeys.length
@@ -178,8 +180,7 @@ class window.Turbolinks
     for node in document.querySelectorAll("[refresh-always]")
       allNodesToBeRefreshed.push(node)
 
-    refreshNodes(allNodesToBeRefreshed, body)
-    return
+    return refreshNodes(allNodesToBeRefreshed, body)
 
   refreshNodesWithKeys = (keys, body) ->
     allNodesToBeRefreshed = []
@@ -187,8 +188,7 @@ class window.Turbolinks
       for node in document.querySelectorAll("[refresh=#{key}]")
         allNodesToBeRefreshed.push(node)
 
-    refreshNodes(allNodesToBeRefreshed, body)
-    return
+    return refreshNodes(allNodesToBeRefreshed, body)
 
   keepNodes = (body, allNodesToKeep) ->
     for existingNode in allNodesToKeep
