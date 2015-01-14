@@ -112,3 +112,21 @@ describe 'Turbolinks', ->
         Turbolinks.visit "/some_request", true, ['turbo-area']
         @server.respond()
         assert.equal 0, globalStub.callCount
+
+      it 'triggers the page:load event with a list of nodes that are new (freshly replaced)', ->
+        $(document).one 'page:load', (event) ->
+          ev = event.originalEvent
+          assert.equal true, ev.data instanceof Array
+          assert.equal 1, ev.data.length
+          node = ev.data[0]
+
+          assert.equal "turbo-area", node.id
+          assert.equal "turbo-area", node.getAttribute('refresh')
+
+        @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
+
+        Turbolinks.visit "/some_request", true, ['turbo-area']
+        @server.respond()
+
+        $(document).off 'page:load'
+
