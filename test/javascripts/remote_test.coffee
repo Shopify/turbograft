@@ -371,6 +371,26 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote({httpRequestType: 'DELETE'}, form) # DELETE should be ignored here
       assert.equal "_method=PATCH", remote.formData
 
+    it 'will not set _method when using FormData', ->
+      form = $("<form><input type='file' name='foo'></form>")[0]
+
+      oldFormData = window.FormData
+
+      constructed = false
+      window.FormData = class FormData
+        constructor: ->
+          constructed = true
+          @hash = {}
+
+        append: (key, val) ->
+          @hash[key] = val
+
+      remote = new TurboGraft.Remote({httpRequestType: 'DELETE'}, form)
+      assert.equal undefined, remote.formData.hash._method
+      assert.isTrue constructed
+
+      window.FormData = oldFormData
+
     it 'will not add a _method if improperly supplied', ->
       form = $("<form method='POST'></form>")[0]
 
