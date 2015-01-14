@@ -58,9 +58,7 @@ class TurboGraft.Remote
     else
       formData = ''
 
-    if formData instanceof FormData
-      formData.append("_method", @opts.httpRequestType) if @opts.httpRequestType
-    else
+    if formData not instanceof FormData
       @contentType = "application/x-www-form-urlencoded; charset=UTF-8"
       formData = @formAppend(formData, "_method", @opts.httpRequestType) if formData.indexOf("_method") == -1 && @opts.httpRequestType && @actualRequestType != 'GET'
 
