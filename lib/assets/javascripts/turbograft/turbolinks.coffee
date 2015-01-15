@@ -163,6 +163,7 @@ class window.Turbolinks
         throw new Error "Turbolinks refresh: Refresh key elements must have an id."
 
       if newNode = body.querySelector("##{ nodeId }")
+        newNode = newNode.cloneNode(true)
         existingNode.parentNode.replaceChild(newNode, existingNode)
 
         if newNode.nodeName == 'SCRIPT' && newNode.getAttribute("data-turbolinks-eval") != "false"
