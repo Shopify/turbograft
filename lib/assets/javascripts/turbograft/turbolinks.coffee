@@ -104,7 +104,6 @@ class window.Turbolinks
   @loadPage: (url, xhr, partialReplace = false, onLoadFunction = (->), replaceContents = [], replaceAllExcept = []) ->
     triggerEvent 'page:receive'
 
-
     if doc = processResponse(xhr, partialReplace)
       reflectNewUrl url
       nodes = changePage(extractTitleAndBody(doc)..., partialReplace, replaceContents, replaceAllExcept)
@@ -133,6 +132,7 @@ class window.Turbolinks
       triggerEvent 'page:before-replace'
       document.documentElement.replaceChild body, document.body
       CSRFToken.update csrfToken if csrfToken?
+      setAutofocusElement()
       executeScriptTags() if runScripts
       currentState = window.history.state
       triggerEvent 'page:change'
@@ -154,6 +154,11 @@ class window.Turbolinks
       matchingNodes.push(node)
 
     return matchingNodes
+
+  setAutofocusElement = ->
+    autofocusElement = (list = document.querySelectorAll 'input[autofocus], textarea[autofocus]')[list.length - 1]
+    if autofocusElement and document.activeElement isnt autofocusElement
+      autofocusElement.focus()
 
   deleteRefreshNeverNodes = (body) ->
     for node in body.querySelectorAll('[refresh-never]')
