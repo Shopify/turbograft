@@ -119,12 +119,11 @@ class window.Turbolinks
   changePage = (title, body, csrfToken, runScripts, partialReplace, onlyKeys = [], exceptKeys = []) ->
     document.title = title if title
 
-    refreshedNodes = []
-    refreshedNodes = refreshRefreshAlwaysNodes(body)
     if onlyKeys.length
-      refreshedNodes = refreshedNodes.concat refreshNodesWithKeys(onlyKeys, body)
-      return refreshedNodes
+      nodesToRefresh = [].concat(getNodesWithRefreshAlways(), getNodesMatchingRefreshKeys(onlyKeys))
+      return refreshNodes(nodesToRefresh, body)
     else
+      refreshNodes(getNodesWithRefreshAlways(), body)
       persistStaticElements(body)
       if exceptKeys.length
         refreshAllExceptWithKeys(exceptKeys, body)
@@ -140,6 +139,21 @@ class window.Turbolinks
       triggerEvent 'page:update'
 
     return
+
+  getNodesMatchingRefreshKeys = (keys) ->
+    matchingNodes = []
+    for key in keys
+      for node in document.querySelectorAll("[refresh=#{key}]")
+        matchingNodes.push(node)
+
+    return matchingNodes
+
+  getNodesWithRefreshAlways = ->
+    matchingNodes = []
+    for node in document.querySelectorAll("[refresh-always]")
+      matchingNodes.push(node)
+
+    return matchingNodes
 
   deleteRefreshNeverNodes = (body) ->
     for node in body.querySelectorAll('[refresh-never]')
@@ -175,21 +189,6 @@ class window.Turbolinks
         existingNode.parentNode.removeChild(existingNode)
 
     refreshedNodes
-
-  refreshRefreshAlwaysNodes = (body) ->
-    allNodesToBeRefreshed = []
-    for node in document.querySelectorAll("[refresh-always]")
-      allNodesToBeRefreshed.push(node)
-
-    return refreshNodes(allNodesToBeRefreshed, body)
-
-  refreshNodesWithKeys = (keys, body) ->
-    allNodesToBeRefreshed = []
-    for key in keys
-      for node in document.querySelectorAll("[refresh=#{key}]")
-        allNodesToBeRefreshed.push(node)
-
-    return refreshNodes(allNodesToBeRefreshed, body)
 
   keepNodes = (body, allNodesToKeep) ->
     for existingNode in allNodesToKeep

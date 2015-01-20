@@ -58,6 +58,20 @@ describe 'Turbolinks', ->
     </html>
   """
 
+  response_with_refresh_always = """
+    <!doctype html>
+    <html>
+      <head>
+        <title>Hi</title>
+      </head>
+      <body>
+        <div id="div1" refresh="div1">
+          <div id="div2" refresh-always>Refresh-always</div>
+        </div>
+      </body>
+    </html>
+  """
+
   it 'is defined', ->
     assert Turbolinks
 
@@ -130,3 +144,45 @@ describe 'Turbolinks', ->
 
         $(document).off 'page:load'
 
+      it 'does not trigger the page:before-partial-replace event more than once', ->
+        handler = stub()
+        $(document).on 'page:before-partial-replace', ->
+          handler()
+          assert handler.calledOnce
+
+        @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
+
+        Turbolinks.visit "/some_request", true, ['turbo-area']
+        @server.respond()
+
+        $(document).off 'page:before-partial-replace'
+
+      it 'replaces and passes through the outermost nodes if a series of nodes got replaced', ->
+        currentBody = """
+          <div id="div1" refresh="div1">
+            <div id="div2" refresh-always>Refresh-always</div>
+          </div>
+        """
+
+        $("body").append($(currentBody))
+
+        $(document).on 'page:before-partial-replace', (ev) ->
+          nodes = ev.originalEvent.data
+          assert.equal 2, nodes.length
+          assert.equal 'div2', nodes[0].id
+          assert.equal 'div1', nodes[1].id
+
+        $(document).on 'page:load', (ev) ->
+          nodes = ev.originalEvent.data
+          assert.equal 1, nodes.length
+          assert.equal 'div1', nodes[0].id
+
+        @server.respondWith([200, { "Content-Type": "text/html" }, response_with_refresh_always]);
+
+        Page.refresh(onlyKeys: ['div1'])
+        @server.respond()
+
+        $(document).off 'page:before-partial-replace'
+        $(document).off 'page:load'
+
+        $("#div1").remove()
