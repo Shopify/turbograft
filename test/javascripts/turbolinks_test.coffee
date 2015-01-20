@@ -157,7 +157,7 @@ describe 'Turbolinks', ->
 
         $(document).off 'page:before-partial-replace'
 
-      it.only 'replaces and passes through the outermost nodes if a series of nodes got replaced', ->
+      it 'replaces and passes through the outermost nodes if a series of nodes got replaced', ->
         currentBody = """
           <div id="div1" refresh="div1">
             <div id="div2" refresh-always>Refresh-always</div>
