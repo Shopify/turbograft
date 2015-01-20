@@ -183,5 +183,6 @@ describe 'Turbolinks', ->
         @server.respond()
 
         $(document).off 'page:before-partial-replace'
+        $(document).off 'page:load'
 
         $("#div1").remove()
