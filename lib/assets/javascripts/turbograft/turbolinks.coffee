@@ -120,7 +120,9 @@ class window.Turbolinks
 
     if onlyKeys.length
       nodesToRefresh = [].concat(getNodesWithRefreshAlways(), getNodesMatchingRefreshKeys(onlyKeys))
-      return refreshNodes(nodesToRefresh, body)
+      nodes = refreshNodes(nodesToRefresh, body)
+      setAutofocusElement() if anyAutofocusElement(nodes)
+      return nodes
     else
       refreshNodes(getNodesWithRefreshAlways(), body)
       persistStaticElements(body)
@@ -154,6 +156,13 @@ class window.Turbolinks
       matchingNodes.push(node)
 
     return matchingNodes
+
+  anyAutofocusElement = (nodes) ->
+    for node in nodes
+      if node.querySelectorAll('input[autofocus], textarea[autofocus]').length > 0
+        return true
+
+    false
 
   setAutofocusElement = ->
     autofocusElement = (list = document.querySelectorAll 'input[autofocus], textarea[autofocus]')[list.length - 1]
