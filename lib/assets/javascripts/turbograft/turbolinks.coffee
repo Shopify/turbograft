@@ -19,9 +19,6 @@ historyStateIsDefined =
 browserSupportsPushState =
   window.history and window.history.pushState and window.history.replaceState and historyStateIsDefined
 
-browserIsntBuggy =
-  !navigator.userAgent.match /CriOS\//
-
 window.triggerEvent = (name, data) ->
   event = document.createEvent 'Events'
   event.data = data if data
@@ -42,7 +39,7 @@ popCookie = (name) ->
 requestMethodIsSafe =
   popCookie('request_method') in ['GET','']
 
-browserSupportsTurbolinks = browserSupportsPushState and browserIsntBuggy and requestMethodIsSafe
+browserSupportsTurbolinks = browserSupportsPushState and requestMethodIsSafe
 
 browserSupportsCustomEvents =
   document.addEventListener and document.createEvent
