@@ -21,6 +21,7 @@ TurboGraft.handlers.remoteMethodHandler = (ev) ->
     httpUrl: httpUrl
     fullRefresh: target.getAttribute('full-refresh')?
     refreshOnSuccess: target.getAttribute('refresh-on-success')
+    refreshOnSuccessExcept: target.getAttribute('full-refresh-on-success-except')
     refreshOnError: target.getAttribute('refresh-on-error')
     refreshOnErrorExcept: target.getAttribute('full-refresh-on-error-except')
 
@@ -40,6 +41,7 @@ TurboGraft.handlers.remoteFormHandler = (ev) ->
     httpUrl: httpUrl
     fullRefresh: target.getAttribute('full-refresh')?
     refreshOnSuccess: target.getAttribute('refresh-on-success')
+    refreshOnSuccessExcept: target.getAttribute('full-refresh-on-success-except')
     refreshOnError: target.getAttribute('refresh-on-error')
     refreshOnErrorExcept: target.getAttribute('full-refresh-on-error-except')
 

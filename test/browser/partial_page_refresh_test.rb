@@ -70,6 +70,20 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     assert_equal new_location, old_location
   end
 
+  test "tg-remote on a link with GET and full-refresh-on-success-except and status 200" do
+    random_a = find('#random-number-a').text
+
+    assert page.has_content?("page 1")
+    old_location = current_url
+
+    click_link "tg-remote GET to response of 200 with full-refresh-on-success-except"
+
+    new_location = current_url
+    refute page.has_content?("Page 1")
+    assert_equal random_a, find('#random-number-a').text
+    assert_equal new_location, old_location
+  end
+
   test "tg-remote on a link with GET and refresh-on-error and status 422" do
     assert page.has_content?("page 1")
     old_location = current_url

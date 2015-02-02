@@ -8,6 +8,7 @@ class TurboGraft.Remote
     @formData = @createPayload(form)
 
     @refreshOnSuccess       = @opts.refreshOnSuccess.split(" ")       if @opts.refreshOnSuccess
+    @refreshOnSuccessExcept = @opts.refreshOnSuccessExcept.split(" ") if @opts.refreshOnSuccessExcept
     @refreshOnError         = @opts.refreshOnError.split(" ")         if @opts.refreshOnError
     @refreshOnErrorExcept   = @opts.refreshOnErrorExcept.split(" ")   if @opts.refreshOnErrorExcept
 
@@ -102,6 +103,10 @@ class TurboGraft.Remote
         Page.refresh
           response: xhr
           onlyKeys: @refreshOnSuccess
+      else if @refreshOnSuccessExcept
+        Page.refresh
+          response: xhr
+          exceptKeys: @refreshOnSuccessExcept
       else
         Page.refresh
           response: xhr
@@ -114,10 +119,13 @@ class TurboGraft.Remote
       initiator: @initiator
       xhr: xhr
 
-    if @refreshOnError || @refreshOnErrorExcept
+    if @refreshOnError
       Page.refresh
         response: xhr
         onlyKeys: @refreshOnError
+    else if @refreshOnErrorExcept
+      Page.refresh
+        response: xhr
         exceptKeys: @refreshOnErrorExcept
     else
       triggerEventFor 'turbograft:remote:fail:unhandled', @initiator,

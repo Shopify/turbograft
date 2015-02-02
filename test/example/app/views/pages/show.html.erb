@@ -185,6 +185,12 @@
 </div>
 
 <div class="prepend-pre">
+<a href="<%= page_path(rand(100)) %>" tg-remote="GET" full-refresh-on-success-except="section-a">
+  <i>tg-remote GET to response of 200 with full-refresh-on-success-except</i>
+</a>
+</div>
+
+<div class="prepend-pre">
 <a href="<%= error_422_pages_path %>" tg-remote="GET" refresh-on-error="page">tg-remote GET to response of 422</a>
 </div>
 

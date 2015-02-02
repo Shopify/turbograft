@@ -15,6 +15,7 @@ describe 'Initializers', ->
         .attr("refresh-on-success", "foo")
         .attr("refresh-on-error", "bar")
         .attr("full-refresh-on-error-except", "zar")
+        .attr("full-refresh-on-success-except", "zap")
         .attr("action", "somewhere")
       $form.append("<input type='submit'>")
 
@@ -27,6 +28,7 @@ describe 'Initializers', ->
         httpUrl: "somewhere"
         fullRefresh: false
         refreshOnSuccess: "foo"
+        refreshOnSuccessExcept: "zap"
         refreshOnError: "bar"
         refreshOnErrorExcept: "zar"
 
@@ -45,6 +47,7 @@ describe 'Initializers', ->
         .attr("refresh-on-success", "foo")
         .attr("refresh-on-error", "bar")
         .attr("full-refresh-on-error-except", "zar")
+        .attr("full-refresh-on-success-except", "zap")
         .attr("href", "somewhere")
 
       $("body").append($link)
@@ -55,6 +58,7 @@ describe 'Initializers', ->
         httpUrl: "somewhere"
         fullRefresh: false
         refreshOnSuccess: "foo"
+        refreshOnSuccessExcept: "zap"
         refreshOnError: "bar"
         refreshOnErrorExcept: "zar"
 
@@ -72,6 +76,7 @@ describe 'Initializers', ->
         httpUrl: "somewhere"
         fullRefresh: false
         refreshOnSuccess: null
+        refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
 
@@ -89,6 +94,7 @@ describe 'Initializers', ->
         httpUrl: "somewhere"
         fullRefresh: false
         refreshOnSuccess: null
+        refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
 
@@ -106,6 +112,7 @@ describe 'Initializers', ->
         httpUrl: "somewhere"
         fullRefresh: false
         refreshOnSuccess: "foo"
+        refreshOnSuccessExcept: null
         refreshOnError: null
         refreshOnErrorExcept: null
 
@@ -123,8 +130,27 @@ describe 'Initializers', ->
         httpUrl: "somewhere"
         fullRefresh: false
         refreshOnSuccess: null
+        refreshOnSuccessExcept: null
         refreshOnError: null
         refreshOnErrorExcept: 'zew'
+
+    it 'respects full-refresh-on-success-except', ->
+      $link = $("<a>")
+        .attr("tg-remote", "GET")
+        .attr("full-refresh-on-success-except", "zew")
+        .attr("href", "somewhere")
+
+      $("body").append($link)
+      $link[0].click()
+      assert @Remote.called
+      assert @Remote.calledWith
+        httpRequestType: "GET"
+        httpUrl: "somewhere"
+        fullRefresh: false
+        refreshOnSuccess: null
+        refreshOnSuccessExcept: 'zew'
+        refreshOnError: null
+        refreshOnErrorExcept: null
 
     it 'respects full-refresh', ->
       $link = $("<a>")
@@ -142,6 +168,7 @@ describe 'Initializers', ->
         httpUrl: "somewhere"
         fullRefresh: true
         refreshOnSuccess: "foo"
+        refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
 
@@ -173,6 +200,7 @@ describe 'Initializers', ->
         httpUrl: "somewhere"
         fullRefresh: false
         refreshOnSuccess: null
+        refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
 
@@ -194,6 +222,7 @@ describe 'Initializers', ->
         httpUrl: "somewhere"
         fullRefresh: false
         refreshOnSuccess: null
+        refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
 
