@@ -358,6 +358,18 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote({}, form)
       assert (remote.formData instanceof FormData)
 
+    it 'will not create FormData object if the only input does not have a name', ->
+      form = $("<form><input type='file'></form>")[0]
+
+      remote = new TurboGraft.Remote({}, form)
+      assert.isFalse (remote.formData instanceof FormData)
+
+    it 'will create FormData object but skip any input which doesnt have a name', ->
+      form = $("<form><input type='file' name='foo'><input type='file'></form>")[0]
+
+      remote = new TurboGraft.Remote({}, form)
+      assert (remote.formData instanceof FormData)
+
     it 'will add the _method to the form if supplied in the constructor', ->
       form = $("<form></form>")[0]
 
