@@ -51,13 +51,10 @@ class TurboGraft.Remote
 
   createPayload: (form) ->
     if form
-      cleanForm = form.cloneNode(true)
-      for node in cleanForm.querySelectorAll('input:not([name])')
-        node.parentNode.removeChild(node)
-      if cleanForm.querySelectorAll("[type='file']").length > 0
-        formData = new FormData(cleanForm)
+      if form.querySelectorAll("[type='file'][name]").length > 0
+        formData = @nativeEncodeForm(form)
       else # for much smaller payloads
-        formData = @uriEncodeForm(cleanForm)
+        formData = @uriEncodeForm(form)
     else
       formData = ''
 
@@ -73,6 +70,18 @@ class TurboGraft.Remote
 
   uriEncodeForm: (form) ->
     formData = ""
+    @_iterateOverFormInputs (input) =>
+      formData = @formAppend(formData, input.name, input.value)
+
+  nativeEncodeForm: (form) ->
+    formData = new FormData
+    @_iterateOverFormInputs (input) =>
+      if input.type == 'file'
+        # ???
+      else
+        formData.append(input.name, input.value)
+
+  _iterateOverFormInputs: (form, callback) ->
     inputs = form.querySelectorAll("input:not([type='reset']):not([type='button']):not([type='submit']):not([type='image']), select, textarea")
     for input in inputs
       inputEnabled = !input.disabled
@@ -80,9 +89,7 @@ class TurboGraft.Remote
 
       if inputEnabled && input.name
         if (radioOrCheck && input.checked) || !radioOrCheck
-          formData = @formAppend(formData, input.name, input.value)
-
-    formData
+          callback(input)
 
   onSuccess: (ev) ->
     @opts.success?()
