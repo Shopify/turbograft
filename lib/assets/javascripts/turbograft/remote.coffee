@@ -51,10 +51,13 @@ class TurboGraft.Remote
 
   createPayload: (form) ->
     if form
-      if form.querySelectorAll("[type='file']").length > 0
-        formData = new FormData(form)
+      $cleanForm = $(form).clone()
+      $cleanForm.find('input[tg-remote-noserialize]').remove()
+      cleanForm = $cleanForm[0]
+      if cleanForm.querySelectorAll("[type='file']").length > 0
+        formData = new FormData(cleanForm)
       else # for much smaller payloads
-        formData = @uriEncodeForm(form)
+        formData = @uriEncodeForm(cleanForm)
     else
       formData = ''
 
