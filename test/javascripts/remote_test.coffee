@@ -358,6 +358,18 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote({}, form)
       assert (remote.formData instanceof FormData)
 
+    it 'will not create FormData object if the only input has tg-remote-noserialize', ->
+      form = $("<form><input tg-remote-noserialize type='file' name='foo'></form>")[0]
+
+      remote = new TurboGraft.Remote({}, form)
+      assert.isFalse (remote.formData instanceof FormData)
+
+    it 'will create FormData object but skip any input with tg-remote-noserialize', ->
+      form = $("<form><input type='file' name='foo'><input tg-remote-noserialize type='file' name='bar'></form>")[0]
+
+      remote = new TurboGraft.Remote({}, form)
+      assert (remote.formData instanceof FormData)
+
     it 'will add the _method to the form if supplied in the constructor', ->
       form = $("<form></form>")[0]
 
