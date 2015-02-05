@@ -72,14 +72,16 @@ class TurboGraft.Remote
     formData = ""
     @_iterateOverFormInputs form, (input) =>
       formData = @formAppend(formData, input.name, input.value)
+    formData
 
   nativeEncodeForm: (form) ->
     formData = new FormData
     @_iterateOverFormInputs form, (input) =>
       if input.type == 'file'
-        # ???
+        formData.append(input.name, input.files[0]) # <- just a guess
       else
         formData.append(input.name, input.value)
+    formData
 
   _iterateOverFormInputs: (form, callback) ->
     inputs = form.querySelectorAll("input:not([type='reset']):not([type='button']):not([type='submit']):not([type='image']), select, textarea")
