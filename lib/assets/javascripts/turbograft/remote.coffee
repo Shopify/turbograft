@@ -78,7 +78,8 @@ class TurboGraft.Remote
     formData = new FormData
     @_iterateOverFormInputs form, (input) =>
       if input.type == 'file'
-        formData.append(input.name, input.files[0]) # <- just a guess
+        for file in input.files
+          formData.append(input.name, file)
       else
         formData.append(input.name, input.value)
     formData
