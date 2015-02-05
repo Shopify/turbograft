@@ -70,12 +70,12 @@ class TurboGraft.Remote
 
   uriEncodeForm: (form) ->
     formData = ""
-    @_iterateOverFormInputs (input) =>
+    @_iterateOverFormInputs form, (input) =>
       formData = @formAppend(formData, input.name, input.value)
 
   nativeEncodeForm: (form) ->
     formData = new FormData
-    @_iterateOverFormInputs (input) =>
+    @_iterateOverFormInputs form, (input) =>
       if input.type == 'file'
         # ???
       else
