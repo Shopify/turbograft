@@ -50,21 +50,9 @@ class TurboGraft.Remote
     @xhr.send(@formData)
 
   createPayload: (form) ->
-    if form
-      cleanForm = form.cloneNode(true)
-      for node in cleanForm.querySelectorAll('input:not([name])')
-        node.parentNode.removeChild(node)
-      if cleanForm.querySelectorAll("[type='file']").length > 0
-        formData = new FormData(cleanForm)
-      else # for much smaller payloads
-        formData = @uriEncodeForm(cleanForm)
-    else
-      formData = ''
-
-    if formData not instanceof FormData
-      @contentType = "application/x-www-form-urlencoded; charset=UTF-8"
-      formData = @formAppend(formData, "_method", @opts.httpRequestType) if formData.indexOf("_method") == -1 && @opts.httpRequestType && @actualRequestType != 'GET'
-
+    formData = @uriEncodeForm(form)
+    @contentType = "application/x-www-form-urlencoded; charset=UTF-8"
+    formData = @formAppend(formData, "_method", @opts.httpRequestType) if formData.indexOf("_method") == -1 && @opts.httpRequestType && @actualRequestType != 'GET'
     formData
 
   formAppend: (uriEncoded, key, value) ->

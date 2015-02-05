@@ -352,24 +352,6 @@ describe 'Remote', ->
 
   describe 'serialization', ->
 
-    it 'will create FormData object if there is a file in the form', ->
-      form = $("<form><input type='file' name='foo'></form>")[0]
-
-      remote = new TurboGraft.Remote({}, form)
-      assert (remote.formData instanceof FormData)
-
-    it 'will not create FormData object if the only input does not have a name', ->
-      form = $("<form><input type='file'></form>")[0]
-
-      remote = new TurboGraft.Remote({}, form)
-      assert.isFalse (remote.formData instanceof FormData)
-
-    it 'will create FormData object but skip any input which doesnt have a name', ->
-      form = $("<form><input type='file' name='foo'><input type='file'></form>")[0]
-
-      remote = new TurboGraft.Remote({}, form)
-      assert (remote.formData instanceof FormData)
-
     it 'will add the _method to the form if supplied in the constructor', ->
       form = $("<form></form>")[0]
 
@@ -382,26 +364,6 @@ describe 'Remote', ->
 
       remote = new TurboGraft.Remote({httpRequestType: 'DELETE'}, form) # DELETE should be ignored here
       assert.equal "_method=PATCH", remote.formData
-
-    it 'will not set _method when using FormData', ->
-      form = $("<form><input type='file' name='foo'></form>")[0]
-
-      oldFormData = window.FormData
-
-      constructed = false
-      window.FormData = class FormData
-        constructor: ->
-          constructed = true
-          @hash = {}
-
-        append: (key, val) ->
-          @hash[key] = val
-
-      remote = new TurboGraft.Remote({httpRequestType: 'DELETE'}, form)
-      assert.equal undefined, remote.formData.hash._method
-      assert.isTrue constructed
-
-      window.FormData = oldFormData
 
     it 'will not add a _method if improperly supplied', ->
       form = $("<form method='POST'></form>")[0]
