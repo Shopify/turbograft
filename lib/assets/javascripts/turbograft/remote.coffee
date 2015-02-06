@@ -74,14 +74,18 @@ class TurboGraft.Remote
       formData = @formAppend(formData, input.name, input.value)
     formData
 
+  formDataAppend: (formData, input) ->
+    if input.type == 'file'
+      for file in input.files
+        formData.append(input.name, file)
+    else
+      formData.append(input.name, input.value)
+    formData
+
   nativeEncodeForm: (form) ->
     formData = new FormData
     @_iterateOverFormInputs form, (input) =>
-      if input.type == 'file'
-        for file in input.files
-          formData.append(input.name, file)
-      else
-        formData.append(input.name, input.value)
+      formData = @formDataAppend(formData, input)
     formData
 
   _iterateOverFormInputs: (form, callback) ->
