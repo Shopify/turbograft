@@ -388,6 +388,17 @@ describe 'Remote', ->
 
   describe 'serialization', ->
 
+    it 'will create FormData by calling formDataAppend for each valid input', ->
+      form = $("<form><input type='file' name='foo'><input type='text' name='bar' value='fizzbuzz'></form>")[0]
+
+      appendSpy = sinon.spy(FormData.prototype, 'append')
+      formDataAppendSpy = sinon.spy(TurboGraft.Remote.prototype, 'formDataAppend')
+
+      remote = new TurboGraft.Remote({}, form)
+
+      assert appendSpy.calledOnce
+      assert formDataAppendSpy.calledTwice
+
     it 'will create FormData object if there is a file in the form', ->
       form = $("<form><input type='file' name='foo'></form>")[0]
 
