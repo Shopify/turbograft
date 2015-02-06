@@ -262,6 +262,24 @@ describe 'Remote', ->
         response: sinon.match.has('responseText', '<div>Hey there</div>')
         onlyKeys: ['a', 'b', 'c']
 
+    it 'XHR=200: will trigger Page.refresh using XHR and refresh-on-success-except', ->
+      server = sinon.fakeServer.create();
+      server.respondWith("POST", "/foo/bar",
+            [200, { "Content-Type": "text/html" },
+             '<div>Hey there</div>']);
+
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+        refreshOnSuccessExcept: "a b c"
+      , @initiating_target
+      remote.submit()
+
+      server.respond()
+      assert @refreshStub.calledWith
+        response: sinon.match.has('responseText', '<div>Hey there</div>')
+        exceptKeys: ['a', 'b', 'c']
+
     it 'XHR=200: will trigger Page.refresh with refresh-on-success when full-refresh is provided', ->
       server = sinon.fakeServer.create();
       server.respondWith("POST", "/foo/bar",
@@ -333,7 +351,25 @@ describe 'Remote', ->
       assert @refreshStub.calledWith
         response: sinon.match.has('responseText', '<div id="foo" refresh="foo">Error occured</div>')
         onlyKeys: ['a', 'b', 'c']
-        exceptKeys: undefined
+
+    it 'will trigger Page.refresh using XHR and refresh-on-error-except', ->
+      server = sinon.fakeServer.create();
+      server.respondWith("POST", "/foo/bar",
+            [422, { "Content-Type": "text/html" },
+             '<div id="foo" refresh="foo">Error occured</div>']);
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+        refreshOnErrorExcept: "a b c"
+        fullRefresh: true
+      , @initiating_target
+      remote.submit()
+
+      server.respond()
+
+      assert @refreshStub.calledWith
+        response: sinon.match.has('responseText', '<div id="foo" refresh="foo">Error occured</div>')
+        exceptKeys: ['a', 'b', 'c']
 
     it 'will not trigger Page.refresh if no refresh-on-error is present', ->
       server = sinon.fakeServer.create();
