@@ -92,7 +92,26 @@ describe 'Page', ->
         response: mockXHR,
         onlyKeys: ['a']
 
-      @replaceStateStub.calledWith mockXHR.getResponseHeader('X-XHR-Redirected-To')
+      assert @replaceStateStub.calledWith sinon.match.any, '', mockXHR.getResponseHeader('X-XHR-Redirected-To')
+
+    it 'doens\'t update window push state if updatePushState is false', ->
+
+      mockXHR = {
+        getResponseHeader: (header) ->
+          if header == 'Content-Type'
+            return "text/html"
+          else if header == 'X-XHR-Redirected-To'
+            return "http://www.test.com/redirect"
+          ""
+        status: 302
+        responseText: "<div>redirected</div>"
+      }
+      Page.refresh
+        response: mockXHR,
+        onlyKeys: ['a']
+        updatePushState: false
+
+      assert @replaceStateStub.notCalled
 
   describe 'onReplace', ->
 

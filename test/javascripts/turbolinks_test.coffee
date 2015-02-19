@@ -102,6 +102,18 @@ describe 'Turbolinks', ->
         assert @pushStateStub.calledWith({turbolinks: true, url: url_for("/some_request")}, "", url_for("/some_request"))
         assert.equal 0, @replaceStateStub.callCount
 
+      it 'doesn\'t update the window state if updatePushState is false', ->
+        @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
+
+        Turbolinks.visit "/some_request", {partialReplace: true, onlyKeys: ['turbo-area'], updatePushState: false}
+        @server.respond()
+
+        assert.equal "Hi there!", document.title
+        assert.equal -1, document.body.textContent.indexOf("YOLO")
+        assert document.body.textContent.indexOf("Hi bob") > 0
+        assert @pushStateStub.notCalled
+        assert @replaceStateStub.notCalled
+
       it 'calls a user-supplied callback', ->
         @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
 
