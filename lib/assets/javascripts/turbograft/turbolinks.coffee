@@ -78,7 +78,7 @@ class window.Turbolinks
       resetScrollPosition() unless options.onlyKeys.length
       options.callback?()
 
-    fetchReplacement url, options.partialReplace, options.onLoadFunction, options.onlyKeys
+    fetchReplacement url, options
 
   @pushState: (state, title, url) ->
     window.history.pushState(state, title, url)
@@ -86,7 +86,7 @@ class window.Turbolinks
   @replaceState: (state, title, url) ->
     window.history.replaceState(state, title, url)
 
-  fetchReplacement = (url, partialReplace, onLoadFunction, replaceContents) ->
+  fetchReplacement = (url, options) ->
     triggerEvent 'page:fetch', url: url.absolute
 
     xhr?.abort()
@@ -99,7 +99,7 @@ class window.Turbolinks
       if xhr.status >= 500
         document.location.href = url.absolute
       else
-        Turbolinks.loadPage(url, xhr, partialReplace, onLoadFunction, replaceContents)
+        Turbolinks.loadPage(url, xhr, options.partialReplace, options.onLoadFunction, options.onlyKeys)
 
     xhr.onloadend = -> xhr = null
     xhr.onerror   = ->
