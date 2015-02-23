@@ -22,7 +22,7 @@ describe 'Page', ->
         url: '/foo'
 
       assert @visitStub.calledOnce
-      assert @visitStub.calledWith "/foo", {partialRefresh: true, onlyKeys: undefined}
+      assert @visitStub.calledWith "/foo", { partialReplace: true, onlyKeys: undefined }
 
     it 'with opts.queryParams', ->
       Page.refresh
@@ -53,14 +53,14 @@ describe 'Page', ->
         onlyKeys: ['a', 'b', 'c']
 
       assert @visitStub.calledOnce
-      assert @visitStub.calledWith location.href, {partialRefresh: true, onlyKeys: ['a', 'b', 'c']}
+      assert @visitStub.calledWith location.href, { partialReplace: true, onlyKeys: ['a', 'b', 'c'] }
 
     it 'with callback', ->
       afterRefreshCallback = stub()
       Page.refresh {}, afterRefreshCallback
 
       assert @visitStub.calledOnce
-      assert @visitStub.calledWith location.href, {partialRefresh: true, callback: afterRefreshCallback}
+      assert @visitStub.calledWith location.href, { partialReplace: true, callback: afterRefreshCallback }
 
     it 'calls Turbolinks#loadPage if an XHR is provided in opts.response', ->
       loadPageStub = stub(Turbolinks, "loadPage")
@@ -72,7 +72,7 @@ describe 'Page', ->
       , afterRefreshCallback
 
       assert loadPageStub.calledOnce
-      assert loadPageStub.calledWith null, "placeholder for an XHR", true, afterRefreshCallback, ['a', 'b']
+      assert loadPageStub.calledWith null, "placeholder for an XHR", { partialReplace: true, onLoadFunction: afterRefreshCallback, onlyKeys: ['a', 'b'], exceptKeys: [] }
       loadPageStub.restore()
 
     it 'updates window push state when response is a redirect', ->

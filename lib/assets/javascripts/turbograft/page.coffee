@@ -19,9 +19,9 @@ Page.refresh = (options = {}, callback) ->
   if options.response
     onlyKeys   = options.onlyKeys   || []
     exceptKeys = options.exceptKeys || []
-    Turbolinks.loadPage null, options.response, true, callback, onlyKeys, exceptKeys
+    Turbolinks.loadPage null, options.response, {partialReplace: true, onLoadFunction: callback, onlyKeys: onlyKeys, exceptKeys: exceptKeys}
   else
-    options.partialRefresh = true
+    options.partialReplace = true
     options.callback = callback if callback
 
     Turbolinks.visit newUrl, options

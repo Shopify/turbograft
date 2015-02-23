@@ -99,7 +99,7 @@ class window.Turbolinks
       if xhr.status >= 500
         document.location.href = url.absolute
       else
-        Turbolinks.loadPage(url, xhr, options.partialReplace, options.onLoadFunction, options.onlyKeys)
+        Turbolinks.loadPage(url, xhr, options)
 
     xhr.onloadend = -> xhr = null
     xhr.onerror   = ->
@@ -109,15 +109,15 @@ class window.Turbolinks
 
     return
 
-  @loadPage: (url, xhr, partialReplace = false, onLoadFunction = (->), replaceContents = [], replaceAllExcept = []) ->
+  @loadPage: (url, xhr, options = {}) ->
     triggerEvent 'page:receive'
 
-    if doc = processResponse(xhr, partialReplace)
+    if doc = processResponse(xhr, options.partialReplace)
       reflectNewUrl url
-      nodes = changePage(extractTitleAndBody(doc)..., partialReplace, replaceContents, replaceAllExcept)
+      nodes = changePage(extractTitleAndBody(doc)..., options.partialReplace, options.onlyKeys, options.exceptKeys)
       reflectRedirectedUrl(xhr)
       triggerEvent 'page:load', nodes
-      onLoadFunction?()
+      options.onLoadFunction?()
     else
       document.location.href = url.absolute
 
