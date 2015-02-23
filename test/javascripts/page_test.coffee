@@ -55,6 +55,13 @@ describe 'Page', ->
       assert @visitStub.calledOnce
       assert @visitStub.calledWith location.href, {partialRefresh: true, onlyKeys: ['a', 'b', 'c']}
 
+    it 'with callback', ->
+      afterRefreshCallback = stub()
+      Page.refresh {}, afterRefreshCallback
+
+      assert @visitStub.calledOnce
+      assert @visitStub.calledWith location.href, {partialRefresh: true, callback: afterRefreshCallback}
+
     it 'calls Turbolinks#loadPage if an XHR is provided in opts.response', ->
       loadPageStub = stub(Turbolinks, "loadPage")
       afterRefreshCallback = stub()

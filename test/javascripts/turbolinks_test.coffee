@@ -106,7 +106,7 @@ describe 'Turbolinks', ->
         @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
 
         your_callback = stub()
-        Turbolinks.visit "/some_request", {partialReplace: true, onlyKeys: ['turbo-area']}, your_callback
+        Turbolinks.visit "/some_request", {partialReplace: true, onlyKeys: ['turbo-area'], callback: your_callback}
         @server.respond()
 
         assert your_callback.calledOnce
