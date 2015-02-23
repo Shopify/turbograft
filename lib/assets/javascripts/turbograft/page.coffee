@@ -21,7 +21,7 @@ Page.refresh = (options = {}, callback) ->
     exceptKeys = options.exceptKeys || []
     Turbolinks.loadPage null, options.response, true, callback, onlyKeys, exceptKeys
   else
-    Turbolinks.visit newUrl, true, options.onlyKeys || [], -> callback?()
+    Turbolinks.visit newUrl, {partialRefresh: true, onlyKeys: options.onlyKeys}, -> callback?()
 
 Page.open = ->
   window.open(arguments...)

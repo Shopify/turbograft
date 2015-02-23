@@ -66,16 +66,19 @@ class window.Turbolinks
   loadedAssets = null
   referer = null
 
-  fetch = (url, partialReplace = false, replaceContents = [], callback) ->
+  fetch = (url, options = {}, callback) ->
     return if pageChangePrevented(url)
     url = new ComponentUrl url
 
     rememberReferer()
 
-    fetchReplacement url, partialReplace, ->
-      resetScrollPosition() unless replaceContents.length
+    options.partialReplace ?= false
+    options.onlyKeys ?= []
+    options.onLoadFunction = ->
+      resetScrollPosition() unless options.onlyKeys.length
       callback?()
-    , replaceContents
+
+    fetchReplacement url, options.partialReplace, options.onLoadFunction, options.onlyKeys
 
   @pushState: (state, title, url) ->
     window.history.pushState(state, title, url)

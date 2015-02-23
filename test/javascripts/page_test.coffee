@@ -22,7 +22,7 @@ describe 'Page', ->
         url: '/foo'
 
       assert @visitStub.calledOnce
-      assert @visitStub.calledWith "/foo", true, []
+      assert @visitStub.calledWith "/foo", {partialRefresh: true, onlyKeys: undefined}
 
     it 'with opts.queryParams', ->
       Page.refresh
@@ -53,7 +53,7 @@ describe 'Page', ->
         onlyKeys: ['a', 'b', 'c']
 
       assert @visitStub.calledOnce
-      assert @visitStub.calledWith location.href, true, ['a', 'b', 'c']
+      assert @visitStub.calledWith location.href, {partialRefresh: true, onlyKeys: ['a', 'b', 'c']}
 
     it 'calls Turbolinks#loadPage if an XHR is provided in opts.response', ->
       loadPageStub = stub(Turbolinks, "loadPage")
