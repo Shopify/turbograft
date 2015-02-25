@@ -4,13 +4,10 @@ hasClass = (node, search) ->
 nodeIsDisabled = (node) ->
    node.getAttribute('disabled') || hasClass(node, 'disabled')
 
-TurboGraft.handlers.remoteMethodHandler = (ev) ->
-  target = ev.clickTarget
-  httpRequestType = target.getAttribute('tg-remote')
-  return unless httpRequestType
-  ev.preventDefault()
-  httpUrl = target.getAttribute('href')
-  throw new Error("Turbograft developer error: You did not provide a URL ('href' attribute) for tg-remote") unless httpUrl
+setupRemoteFromTarget = (target, httpRequestType, urlAttribute, form = null) ->
+  httpUrl = target.getAttribute(urlAttribute)
+
+  throw new Error("Turbograft developer error: You did not provide a URL ('#{urlAttribute}' attribute) for tg-remote") unless httpUrl
 
   if target.getAttribute("remote-once")
     target.removeAttribute("remote-once")
@@ -25,27 +22,27 @@ TurboGraft.handlers.remoteMethodHandler = (ev) ->
     refreshOnError: target.getAttribute('refresh-on-error')
     refreshOnErrorExcept: target.getAttribute('full-refresh-on-error-except')
 
-  remote = new TurboGraft.Remote(options, null, target)
+  new TurboGraft.Remote(options, form, target)
+
+TurboGraft.handlers.remoteMethodHandler = (ev) ->
+  target = ev.clickTarget
+  httpRequestType = target.getAttribute('tg-remote')
+
+  return unless httpRequestType
+  ev.preventDefault()
+
+  remote = setupRemoteFromTarget(target, httpRequestType, 'href')
   remote.submit()
   return
 
 TurboGraft.handlers.remoteFormHandler = (ev) ->
   target = ev.target
+  method = target.getAttribute('method')
+
   return unless target.getAttribute('tg-remote')?
   ev.preventDefault()
-  httpUrl = target.getAttribute('action')
-  throw new Error("Turbograft developer error: You did not provide a URL ('action' attribute) for tg-remote") unless httpUrl
 
-  options =
-    httpRequestType: target.getAttribute('method')
-    httpUrl: httpUrl
-    fullRefresh: target.getAttribute('full-refresh')?
-    refreshOnSuccess: target.getAttribute('refresh-on-success')
-    refreshOnSuccessExcept: target.getAttribute('full-refresh-on-success-except')
-    refreshOnError: target.getAttribute('refresh-on-error')
-    refreshOnErrorExcept: target.getAttribute('full-refresh-on-error-except')
-
-  remote = new TurboGraft.Remote(options, target, target)
+  remote = setupRemoteFromTarget(target, method, 'action', target)
   remote.submit()
   return
 
