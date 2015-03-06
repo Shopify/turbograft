@@ -48,6 +48,14 @@ if browserSupportsCustomEvents
   installDocumentReadyPageEventTriggers()
   installJqueryAjaxSuccessPageUpdateTrigger()
 
+replaceNode = (newNode, oldNode) ->
+  replacedNode = oldNode.parentNode.replaceChild(newNode, oldNode)
+  triggerEvent('page:after-node-removed', replacedNode)
+
+removeNode = (node) ->
+  removedNode = node.parentNode.removeChild(node)
+  triggerEvent('page:after-node-removed', removedNode)
+
 # TODO: triggerEvent should be accessible to all these guys
 # on some kind of eventbus
 # TODO: clean up everything above me ^
@@ -129,7 +137,7 @@ class window.Turbolinks
         deleteRefreshNeverNodes(body)
 
       triggerEvent 'page:before-replace'
-      document.documentElement.replaceChild body, document.body
+      replaceNode(body, document.body)
       CSRFToken.update csrfToken if csrfToken?
       setAutofocusElement()
       executeScriptTags() if runScripts
@@ -168,7 +176,7 @@ class window.Turbolinks
 
   deleteRefreshNeverNodes = (body) ->
     for node in body.querySelectorAll('[refresh-never]')
-      node.parentNode.removeChild(node)
+      removeNode(node)
 
     return
 
@@ -189,7 +197,7 @@ class window.Turbolinks
 
       if newNode = body.querySelector("##{ nodeId }")
         newNode = newNode.cloneNode(true)
-        existingNode.parentNode.replaceChild(newNode, existingNode)
+        replaceNode(newNode, existingNode)
 
         if newNode.nodeName == 'SCRIPT' && newNode.getAttribute("data-turbolinks-eval") != "false"
           executeScriptTag(newNode)
@@ -197,7 +205,7 @@ class window.Turbolinks
           refreshedNodes.push(newNode)
 
       else if existingNode.getAttribute("refresh-always") == null
-        existingNode.parentNode.removeChild(existingNode)
+        removeNode(existingNode)
 
     refreshedNodes
 
@@ -207,7 +215,7 @@ class window.Turbolinks
         throw new Error("TurboGraft refresh: Kept nodes must have an id.")
 
       if remoteNode = body.querySelector("##{ nodeId }")
-        remoteNode.parentNode.replaceChild(existingNode, remoteNode)
+        replaceNode(existingNode, remoteNode)
 
   persistStaticElements = (body) ->
     allNodesToKeep = []

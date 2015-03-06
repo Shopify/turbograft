@@ -145,6 +145,15 @@ There is an example app that you can boot to play with TurboGraft.  Open the con
 ./server
 ```
 
+## jQuery and memory leaks
+
+When turbograft replaces or removes a node it uses native DOM API to do so. If any objects use jQuery to listen to events on a node then these objects will leak when the node is replaced because jQuery will still have references to it. To clean these up you'll need to tell jQuery that they're removed. This can be done with something like:
+
+```coffeescript
+document.addEventListener 'page:after-node-removed', (event) ->
+  $(event.data).remove()
+```
+
 ## Contributing
 
 1. Fork it ( http://github.com/Shopify/turbograft/fork )
