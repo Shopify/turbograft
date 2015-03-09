@@ -85,3 +85,110 @@ describe 'Page', ->
         onlyKeys: ['a']
 
       @replaceStateStub.calledWith mockXHR.getResponseHeader('X-XHR-Redirected-To')
+
+  describe 'onReplace', ->
+
+    beforeEach ->
+      @fakebody = """
+        <div id='fakebody'>
+          <div id='foo'>
+            <div id='bar'>
+              <div id='foobar'></div>
+            </div>
+          </div>
+          <div id='baz'>
+            <div id='bat'></div>
+          </div>
+        </div>
+      """
+      $('body').append(@fakebody)
+
+    afterEach ->
+      $('#fakebody').remove()
+
+
+    it 'calls the onReplace function only once', ->
+      node = $('#foo')[0]
+      refreshing = [$("#fakebody")[0]]
+      callback = stub()
+
+      Page.onReplace(node, callback)
+
+      triggerEvent 'page:before-partial-replace', refreshing
+      triggerEvent 'page:before-replace'
+
+      assert callback.calledOnce
+
+    it 'calls the onReplace function only once, even if someone were to mess with the number of events fired', ->
+      node = $('#foo')[0]
+      refreshing = [$("#fakebody")[0]]
+      callback = stub()
+
+      Page.onReplace(node, callback)
+
+      triggerEvent 'page:before-partial-replace', refreshing
+      triggerEvent 'page:before-partial-replace', refreshing
+      triggerEvent 'page:before-partial-replace', refreshing
+      triggerEvent 'page:before-replace'
+      triggerEvent 'page:before-replace'
+      triggerEvent 'page:before-replace'
+
+      assert callback.calledOnce
+
+    it 'throws an error not supplied enough arguments', ->
+      try
+        Page.onReplace()
+        assert false, "Page.onReplace did not throw an exception"
+      catch e
+        assert.equal "Page.onReplace: Node and callback must both be specified", e.message
+
+    it 'throws an error if onReplace is not supplied a function', ->
+      try
+        Page.onReplace(true, true)
+        assert false, "Page.onReplace did not throw an exception"
+      catch e
+        assert.equal "Page.onReplace: Callback must be a function", e.message
+
+    it 'calls the onReplace function if the replaced node is the node to which we bound', ->
+      node = $('#foo')[0]
+      refreshing = [node]
+      callback = stub()
+
+      Page.onReplace(node, callback)
+
+      triggerEvent 'page:before-partial-replace', refreshing
+
+      assert callback.calledOnce
+
+    it 'calls the onReplace function even if it wasnt a partial refresh', ->
+      node = $('#foo')[0]
+      callback = stub()
+
+      Page.onReplace(node, callback)
+
+      triggerEvent 'page:before-replace'
+
+      assert callback.calledOnce
+
+    it 'calls the onReplace function only once, even if we replaced 2 nodes that are both ancestors of the node in question', ->
+      node = $('#foobar')[0]
+      refreshing = [$('#foo')[0], $('#bar')[0]]
+      callback = stub()
+
+      Page.onReplace(node, callback)
+
+      triggerEvent 'page:before-partial-replace', refreshing
+
+      assert callback.calledOnce
+
+    it 'does not call the onReplace function if it was a parital refresh and the node did not get replaced', ->
+      node = $('#foo')[0]
+      refreshing = [$("#baz")[0]] # not a parent of #foo
+      callback = stub()
+
+      Page.onReplace(node, callback)
+
+      triggerEvent 'page:before-partial-replace', refreshing
+      # page:before-replace does not occur in this test scenario
+
+      assert.equal 0, callback.callCount
