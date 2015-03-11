@@ -114,7 +114,7 @@ class window.Turbolinks
 
     if doc = processResponse(xhr, options.partialReplace)
       reflectNewUrl url
-      nodes = changePage(extractTitleAndBody(doc)..., options.partialReplace, options.onlyKeys, options.exceptKeys)
+      nodes = changePage(extractTitleAndBody(doc)..., options)
       reflectRedirectedUrl(xhr)
       triggerEvent 'page:load', nodes
       options.onLoadFunction?()
@@ -123,19 +123,19 @@ class window.Turbolinks
 
     return
 
-  changePage = (title, body, csrfToken, runScripts, partialReplace, onlyKeys = [], exceptKeys = []) ->
+  changePage = (title, body, csrfToken, runScripts, options = {}) ->
     document.title = title if title
 
-    if onlyKeys.length
-      nodesToRefresh = [].concat(getNodesWithRefreshAlways(), getNodesMatchingRefreshKeys(onlyKeys))
+    if options.onlyKeys.length
+      nodesToRefresh = [].concat(getNodesWithRefreshAlways(), getNodesMatchingRefreshKeys(options.onlyKeys))
       nodes = refreshNodes(nodesToRefresh, body)
       setAutofocusElement() if anyAutofocusElement(nodes)
       return nodes
     else
       refreshNodes(getNodesWithRefreshAlways(), body)
       persistStaticElements(body)
-      if exceptKeys.length
-        refreshAllExceptWithKeys(exceptKeys, body)
+      if options.exceptKeys.length
+        refreshAllExceptWithKeys(options.exceptKeys, body)
       else
         deleteRefreshNeverNodes(body)
 
