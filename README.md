@@ -137,6 +137,19 @@ Examples of where this may be useful include:
 
 For the lazy developer in all of us, we can use the attribute `refresh-always` when we want to be sure we've absolutely replaced a certain element, if it exists.  An example of such a node you may want to apply this might be an unread notification count -- always being sure to update it if it exists in the response.
 
+### tg-remote-noserialize
+
+When serializing forms for tg-remote calls, turbograft will check to ensure inputs meet the following criteria:
+
+- the input has a `name` attribute
+- the input does not have the `disabled` attribute
+
+and
+
+- the input does not have the `tg-remote-noserialize`
+
+The `tg-remote-noserialize` is useful in scenarios where the input should be editable, i.e. not `disabled`, but should also not be submitted to the server.
+
 ## Example App
 
 There is an example app that you can boot to play with TurboGraft.  Open the console and network inspector and see it in action!  This same app is also used in the TurboGraft browser testing suite.

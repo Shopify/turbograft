@@ -92,7 +92,7 @@ class TurboGraft.Remote
   _iterateOverFormInputs: (form, callback) ->
     inputs = form.querySelectorAll("input:not([type='reset']):not([type='button']):not([type='submit']):not([type='image']), select, textarea")
     for input in inputs
-      inputEnabled = !input.disabled
+      inputEnabled = !input.disabled && !input.hasAttribute('tg-remote-noserialize')
       radioOrCheck = (input.type == 'checkbox' || input.type == 'radio')
 
       if inputEnabled && input.name
