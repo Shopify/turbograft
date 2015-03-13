@@ -17,9 +17,9 @@ Page.refresh = (options = {}, callback) ->
     location.href
 
   if options.response
-    onlyKeys   = options.onlyKeys   || []
-    exceptKeys = options.exceptKeys || []
-    Turbolinks.loadPage null, options.response, {partialReplace: true, onLoadFunction: callback, onlyKeys: onlyKeys, exceptKeys: exceptKeys}
+    options.partialReplace = true
+    options.onLoadFunction = callback
+    Turbolinks.loadPage null, options.response, options
   else
     options.partialReplace = true
     options.callback = callback if callback

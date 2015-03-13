@@ -125,6 +125,8 @@ class window.Turbolinks
 
   changePage = (title, body, csrfToken, runScripts, options = {}) ->
     document.title = title if title
+    options.onlyKeys ?= []
+    options.exceptKeys ?= []
 
     if options.onlyKeys.length
       nodesToRefresh = [].concat(getNodesWithRefreshAlways(), getNodesMatchingRefreshKeys(options.onlyKeys))
