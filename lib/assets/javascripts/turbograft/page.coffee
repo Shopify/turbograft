@@ -19,7 +19,9 @@ Page.refresh = (options = {}, callback) ->
   if options.response
     options.partialReplace = true
     options.onLoadFunction = callback
-    Turbolinks.loadPage null, options.response, options
+    xhr = options.response
+    delete options.response
+    Turbolinks.loadPage null, xhr, options
   else
     options.partialReplace = true
     options.callback = callback if callback

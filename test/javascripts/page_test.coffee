@@ -73,7 +73,7 @@ describe 'Page', ->
       , afterRefreshCallback
 
       assert loadPageStub.calledOnce
-      assert loadPageStub.calledWith null, xhrPlaceholder, { response: xhrPlaceholder, onlyKeys: ['a', 'b'], partialReplace: true, onLoadFunction: afterRefreshCallback }
+      assert loadPageStub.calledWith null, xhrPlaceholder, { onlyKeys: ['a', 'b'], partialReplace: true, onLoadFunction: afterRefreshCallback }
       loadPageStub.restore()
 
     it 'updates window push state when response is a redirect', ->
