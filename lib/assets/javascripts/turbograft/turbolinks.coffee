@@ -48,10 +48,6 @@ if browserSupportsCustomEvents
   installDocumentReadyPageEventTriggers()
   installJqueryAjaxSuccessPageUpdateTrigger()
 
-replaceNode = (newNode, oldNode) ->
-  replacedNode = oldNode.parentNode.replaceChild(newNode, oldNode)
-  triggerEvent('page:after-node-removed', replacedNode)
-
 removeNode = (node) ->
   removedNode = node.parentNode.removeChild(node)
   triggerEvent('page:after-node-removed', removedNode)
@@ -65,6 +61,10 @@ class window.Turbolinks
   currentState = null
   loadedAssets = null
   referer = null
+
+  @replaceNode = (newNode, oldNode) ->
+    replacedNode = oldNode.parentNode.replaceChild(newNode, oldNode)
+    triggerEvent('page:after-node-removed', replacedNode)
 
   fetch = (url, partialReplace = false, replaceContents = [], callback) ->
     return if pageChangePrevented(url)
@@ -137,7 +137,7 @@ class window.Turbolinks
         deleteRefreshNeverNodes(body)
 
       triggerEvent 'page:before-replace'
-      replaceNode(body, document.body)
+      Turbolinks.replaceNode(body, document.body)
       CSRFToken.update csrfToken if csrfToken?
       setAutofocusElement()
       executeScriptTags() if runScripts
@@ -197,7 +197,7 @@ class window.Turbolinks
 
       if newNode = body.querySelector("##{ nodeId }")
         newNode = newNode.cloneNode(true)
-        replaceNode(newNode, existingNode)
+        Turbolinks.replaceNode(newNode, existingNode)
 
         if newNode.nodeName == 'SCRIPT' && newNode.getAttribute("data-turbolinks-eval") != "false"
           executeScriptTag(newNode)
@@ -215,7 +215,7 @@ class window.Turbolinks
         throw new Error("TurboGraft refresh: Kept nodes must have an id.")
 
       if remoteNode = body.querySelector("##{ nodeId }")
-        replaceNode(existingNode, remoteNode)
+        Turbolinks.replaceNode(existingNode, remoteNode)
 
   persistStaticElements = (body) ->
     allNodesToKeep = []
