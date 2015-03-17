@@ -91,6 +91,7 @@ describe 'Remote', ->
       assert.equal "anything", request.requestHeaders["X-Header"]
 
     it 'will automatically set the X-CSRF-Token header for you', ->
+      $("meta[name='csrf-token']").remove()
       $fakeCsrfNode = $("<meta>").attr("name", "csrf-token").attr("content", "some-token")
       $("head").append($fakeCsrfNode)
 
