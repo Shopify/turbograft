@@ -66,16 +66,19 @@ class window.Turbolinks
   loadedAssets = null
   referer = null
 
-  fetch = (url, partialReplace = false, replaceContents = [], callback) ->
+  fetch = (url, options = {}) ->
     return if pageChangePrevented(url)
     url = new ComponentUrl url
 
     rememberReferer()
 
-    fetchReplacement url, partialReplace, ->
-      resetScrollPosition() unless replaceContents.length
-      callback?()
-    , replaceContents
+    options.partialReplace ?= false
+    options.onlyKeys ?= []
+    options.onLoadFunction = ->
+      resetScrollPosition() unless options.onlyKeys.length
+      options.callback?()
+
+    fetchReplacement url, options
 
   @pushState: (state, title, url) ->
     window.history.pushState(state, title, url)
@@ -83,7 +86,7 @@ class window.Turbolinks
   @replaceState: (state, title, url) ->
     window.history.replaceState(state, title, url)
 
-  fetchReplacement = (url, partialReplace, onLoadFunction, replaceContents) ->
+  fetchReplacement = (url, options) ->
     triggerEvent 'page:fetch', url: url.absolute
 
     xhr?.abort()
@@ -96,7 +99,7 @@ class window.Turbolinks
       if xhr.status >= 500
         document.location.href = url.absolute
       else
-        Turbolinks.loadPage(url, xhr, partialReplace, onLoadFunction, replaceContents)
+        Turbolinks.loadPage(url, xhr, options)
 
     xhr.onloadend = -> xhr = null
     xhr.onerror   = ->
@@ -106,33 +109,35 @@ class window.Turbolinks
 
     return
 
-  @loadPage: (url, xhr, partialReplace = false, onLoadFunction = (->), replaceContents = [], replaceAllExcept = []) ->
+  @loadPage: (url, xhr, options = {}) ->
     triggerEvent 'page:receive'
 
-    if doc = processResponse(xhr, partialReplace)
+    if doc = processResponse(xhr, options.partialReplace)
       reflectNewUrl url
-      nodes = changePage(extractTitleAndBody(doc)..., partialReplace, replaceContents, replaceAllExcept)
+      nodes = changePage(extractTitleAndBody(doc)..., options)
       reflectRedirectedUrl(xhr)
       triggerEvent 'page:load', nodes
-      onLoadFunction?()
+      options.onLoadFunction?()
     else
       document.location.href = url.absolute
 
     return
 
-  changePage = (title, body, csrfToken, runScripts, partialReplace, onlyKeys = [], exceptKeys = []) ->
+  changePage = (title, body, csrfToken, runScripts, options = {}) ->
     document.title = title if title
+    options.onlyKeys ?= []
+    options.exceptKeys ?= []
 
-    if onlyKeys.length
-      nodesToRefresh = [].concat(getNodesWithRefreshAlways(), getNodesMatchingRefreshKeys(onlyKeys))
+    if options.onlyKeys.length
+      nodesToRefresh = [].concat(getNodesWithRefreshAlways(), getNodesMatchingRefreshKeys(options.onlyKeys))
       nodes = refreshNodes(nodesToRefresh, body)
       setAutofocusElement() if anyAutofocusElement(nodes)
       return nodes
     else
       refreshNodes(getNodesWithRefreshAlways(), body)
       persistStaticElements(body)
-      if exceptKeys.length
-        refreshAllExceptWithKeys(exceptKeys, body)
+      if options.exceptKeys.length
+        refreshAllExceptWithKeys(options.exceptKeys, body)
       else
         deleteRefreshNeverNodes(body)
 

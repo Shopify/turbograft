@@ -17,11 +17,16 @@ Page.refresh = (options = {}, callback) ->
     location.href
 
   if options.response
-    onlyKeys   = options.onlyKeys   || []
-    exceptKeys = options.exceptKeys || []
-    Turbolinks.loadPage null, options.response, true, callback, onlyKeys, exceptKeys
+    options.partialReplace = true
+    options.onLoadFunction = callback
+    xhr = options.response
+    delete options.response
+    Turbolinks.loadPage null, xhr, options
   else
-    Turbolinks.visit newUrl, true, options.onlyKeys || [], -> callback?()
+    options.partialReplace = true
+    options.callback = callback if callback
+
+    Turbolinks.visit newUrl, options
 
 Page.open = ->
   window.open(arguments...)

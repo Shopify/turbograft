@@ -83,7 +83,7 @@ describe 'Turbolinks', ->
 
       window.addEventListener('page:before-change', listener)
 
-      Turbolinks.visit "/some_request", true, ['turbo-area']
+      Turbolinks.visit "/some_request", {partialReplace: true, onlyKeys: ['turbo-area']}
       assert.equal 0, @server.requests.length
 
       window.removeEventListener('page:before-change', listener)
@@ -92,7 +92,7 @@ describe 'Turbolinks', ->
       it 'uses just the part of the response body we supply', ->
         @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
 
-        Turbolinks.visit "/some_request", true, ['turbo-area']
+        Turbolinks.visit "/some_request", {partialReplace: true, onlyKeys: ['turbo-area']}
         @server.respond()
 
         assert.equal "Hi there!", document.title
@@ -106,7 +106,7 @@ describe 'Turbolinks', ->
         @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
 
         your_callback = stub()
-        Turbolinks.visit "/some_request", true, ['turbo-area'], your_callback
+        Turbolinks.visit "/some_request", {partialReplace: true, onlyKeys: ['turbo-area'], callback: your_callback}
         @server.respond()
 
         assert your_callback.calledOnce
@@ -115,7 +115,7 @@ describe 'Turbolinks', ->
         window.globalStub = stub()
         @server.respondWith([200, { "Content-Type": "text/html" }, script_response]);
 
-        Turbolinks.visit "/some_request", true, ['turbo-area']
+        Turbolinks.visit "/some_request", {partialReplace: true, onlyKeys: ['turbo-area']}
         @server.respond()
         assert globalStub.calledOnce
 
@@ -123,7 +123,7 @@ describe 'Turbolinks', ->
         window.globalStub = stub()
         @server.respondWith([200, { "Content-Type": "text/html" }, script_response_turbolinks_eval_false]);
 
-        Turbolinks.visit "/some_request", true, ['turbo-area']
+        Turbolinks.visit "/some_request", {partialReplace: true, onlyKeys: ['turbo-area']}
         @server.respond()
         assert.equal 0, globalStub.callCount
 
@@ -139,7 +139,7 @@ describe 'Turbolinks', ->
 
         @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
 
-        Turbolinks.visit "/some_request", true, ['turbo-area']
+        Turbolinks.visit "/some_request", {partialReplace: true, onlyKeys: ['turbo-area']}
         @server.respond()
 
         $(document).off 'page:load'
@@ -152,7 +152,7 @@ describe 'Turbolinks', ->
 
         @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
 
-        Turbolinks.visit "/some_request", true, ['turbo-area']
+        Turbolinks.visit "/some_request", {partialReplace: true, onlyKeys: ['turbo-area']}
         @server.respond()
 
         $(document).off 'page:before-partial-replace'
