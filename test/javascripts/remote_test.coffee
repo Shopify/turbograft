@@ -494,3 +494,43 @@ describe 'Remote', ->
 
       remote = new TurboGraft.Remote({}, form)
       assert.equal "application/x-www-form-urlencoded; charset=UTF-8", remote.xhr.requestHeaders["Content-Type"]
+
+    it 'will ignore inputs with the tg-remote-noserialize attribute on them or on an ancestor', ->
+      formDesc = """
+      <form>
+        <input type="text" name="foo" value="bar" tg-remote-noserialize>
+        <input type="text" name="faa" value="bat">
+        <input type="text" name="fii" value="bam+">
+        <textarea name="textarea">this is a test</textarea>
+        <input type="text" name="disabled" disabled value="disabled">
+        <input type="radio" name="radio1" value="A">
+        <input type="radio" name="radio1" value="B" checked>
+        <input type="checkbox" name="checkbox" value="C">
+        <input type="checkbox" name="checkbox" value="D" checked>
+        <input type="checkbox" name="disabled2" value="checked" checked disabled>
+        <select name="select1">
+          <option value="a">foo</option>
+          <option value="b">foo</option>
+          <option value="c" selected>foo</option>
+        </select>
+        <input type="text" name="foobar" value="foobat">
+        <div tg-remote-noserialize>
+          <span>
+            <input type="text" name="nope" value="nope">
+            <textarea name="textarea2" tg-remote-noserialize>this is also a test</textarea>
+            <input type="radio" name="radio2" value="Y">
+            <input type="radio" name="radio2" value="X" checked>
+            <select name="select2">
+              <option value="x">foo</option>
+              <option value="y">foo</option>
+              <option value="z" selected>foo</option>
+            </select>
+          </span>
+        </div>
+      </form>
+      """
+
+      form = $(formDesc)[0]
+
+      remote = new TurboGraft.Remote({}, form)
+      assert.equal "faa=bat&fii=bam%2B&textarea=this%20is%20a%20test&radio1=B&checkbox=D&select1=c&foobar=foobat", remote.formData
