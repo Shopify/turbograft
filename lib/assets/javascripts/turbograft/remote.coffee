@@ -90,7 +90,7 @@ class TurboGraft.Remote
     formData
 
   _iterateOverFormInputs: (form, callback) ->
-    inputs = form.querySelectorAll("input:not([type='reset']):not([type='button']):not([type='submit']):not([type='image']), select, textarea")
+    inputs = @_enabledInputs(form)
     for input in inputs
       inputEnabled = !input.disabled
       radioOrCheck = (input.type == 'checkbox' || input.type == 'radio')
@@ -98,6 +98,22 @@ class TurboGraft.Remote
       if inputEnabled && input.name
         if (radioOrCheck && input.checked) || !radioOrCheck
           callback(input)
+
+  _enabledInputs: (form) ->
+    selector = "input:not([type='reset']):not([type='button']):not([type='submit']):not([type='image']), select, textarea"
+    inputs = Array::slice.call(form.querySelectorAll(selector))
+    disabledNodes = Array::slice.call(form.querySelectorAll("[tg-remote-noserialize]"))
+
+    return inputs unless disabledNodes.length
+
+    disabledInputs = disabledNodes
+    for node in disabledNodes
+      disabledInputs = disabledInputs.concat(Array::slice.call(node.querySelectorAll(selector)))
+
+    enabledInputs = []
+    for input in inputs when disabledInputs.indexOf(input) < 0
+      enabledInputs.push(input)
+    enabledInputs
 
   onSuccess: (ev) ->
     @opts.success?()
