@@ -49,7 +49,7 @@ if browserSupportsCustomEvents
   installJqueryAjaxSuccessPageUpdateTrigger()
 
 replaceNode = (newNode, oldNode) ->
-  triggerEvent('page:before-node-removed', {newNode: newNode, oldNode: oldNode}
+  triggerEvent('page:before-node-removed', {newNode: newNode, oldNode: oldNode})
   replacedNode = oldNode.parentNode.replaceChild(newNode, oldNode)
   triggerEvent('page:after-node-removed', replacedNode)
 
