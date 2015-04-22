@@ -457,6 +457,12 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote({httpRequestType: undefined}, form)
       assert.equal "", remote.formData
 
+    it 'will create FormData object even if there is no file when useNativeEncoding specified', ->
+      form = $("<form><input type='text' name='foo' value='bar'></form>")[0]
+
+      remote = new TurboGraft.Remote({useNativeEncoding: true}, form)
+      assert (remote.formData instanceof FormData)
+
     it 'will not create FormData object if there is no file in the form', ->
       form = $("<form><input type='text' name='foo' value='bar'></form>")[0]
 

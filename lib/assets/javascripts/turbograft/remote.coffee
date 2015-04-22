@@ -4,6 +4,7 @@ class TurboGraft.Remote
     @initiator = form || target
 
     @actualRequestType = if @opts.httpRequestType?.toLowerCase() == 'get' then 'GET' else 'POST'
+    @useNativeEncoding = @opts.useNativeEncoding
 
     @formData = @createPayload(form)
 
@@ -52,7 +53,7 @@ class TurboGraft.Remote
 
   createPayload: (form) ->
     if form
-      if form.querySelectorAll("[type='file'][name]").length > 0
+      if @useNativeEncoding || form.querySelectorAll("[type='file'][name]").length > 0
         formData = @nativeEncodeForm(form)
       else # for much smaller payloads
         formData = @uriEncodeForm(form)
