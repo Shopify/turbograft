@@ -20,9 +20,10 @@ Turbograft was built with simplicity in mind. It intends to offer the smallest a
 
 ## Installation
 
-* Add `gem "turbograft"` to your Gemfile
+* Replace `gem "turbolinks"` with `gem "turbograft"` in your Gemfile
+* Replace `//= require turbolinks` with `//= require turbograft` in _app/assets/javascripts/application.js_
 * Run `bundle install`
-* Add `#= require turbograft` to _app/assets/javascripts/application.js_
+
 
 ## Usage
 ### Partial page refresh
