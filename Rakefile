@@ -3,6 +3,8 @@ require 'bundler'
 require 'bundler/gem_tasks'
 require 'rake/testtask'
 
+ENV['TEASPOON_RAILS_ENV'] = File.expand_path("../test/example/config/environment", __FILE__)
+
 APP_RAKEFILE = File.expand_path("../test/example/Rakefile", __FILE__)
 load "rails/tasks/engine.rake"
 

@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest-reporters"
   spec.add_development_dependency "capybara"
   spec.add_development_dependency "selenium-webdriver"
-  spec.add_development_dependency "teaspoon"
+  spec.add_development_dependency "teaspoon-mocha"
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "thin"
   spec.add_development_dependency "byebug"

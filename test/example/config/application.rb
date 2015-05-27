@@ -4,7 +4,7 @@ require "rails/all"
 require "turbograft"
 require "jquery-rails"
 require 'rails/all'
-require 'teaspoon'
+require 'teaspoon-mocha'
 require 'byebug'
 require 'pry'
 require 'pry-byebug'
