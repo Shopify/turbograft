@@ -242,6 +242,15 @@ class window.Turbolinks
     keepNodes(body, allNodesToKeep)
     return
 
+  createDocumentUsingFragment = (html) ->
+    head = html.match(/<head[^>]*>([\s\S.]*)<\/head>/i)?[0] or '<head></head>'
+    body = html.match(/<body[^>]*>([\s\S.]*)<\/body>/i)?[0] or '<body></body>'
+    htmlWrapper = document.createElement 'html'
+    htmlWrapper.innerHTML = head + body
+    doc = document.createDocumentFragment()
+    doc.appendChild htmlWrapper
+    doc
+
   executeScriptTags = ->
     scripts = Array::slice.call document.body.querySelectorAll 'script:not([data-turbolinks-eval="false"])'
     for script in scripts when script.type in ['', 'text/javascript']
@@ -303,7 +312,7 @@ class window.Turbolinks
       xhr.getResponseHeader('Content-Type').match /^(?:text\/html|application\/xhtml\+xml|application\/xml)(?:;|$)/
 
     extractTrackAssets = (doc) ->
-      for node in doc.head.childNodes when node.getAttribute?('data-turbolinks-track')?
+      for node in doc.querySelector('head').childNodes when node.getAttribute?('data-turbolinks-track')?
         node.getAttribute('src') or node.getAttribute('href')
 
     assetsChanged = (doc) ->
@@ -324,7 +333,7 @@ class window.Turbolinks
 
   extractTitleAndBody = (doc) ->
     title = doc.querySelector 'title'
-    [ title?.textContent, removeNoscriptTags(doc.body), CSRFToken.get(doc).token, 'runScripts' ]
+    [ title?.textContent, removeNoscriptTags(doc.querySelector('body')), CSRFToken.get(doc).token, 'runScripts' ]
 
   installHistoryChangeHandler = (event) ->
     if event.state?.turbolinks
@@ -361,16 +370,31 @@ class window.Turbolinks
     #  - DOMParser isn't defined
     #  - createDocumentUsingParser returns null due to unsupported type 'text/html' (Chrome, Safari)
     #  - createDocumentUsingDOM doesn't create a valid HTML document (safeguarding against potential edge cases)
+    # Use createDocumentUsingFragment if the previously selected parser does not
+    # correctly parse <form> tags. (Safari 7.1+ - see github.com/rails/turbolinks/issues/408)
+    buildTestsUsing = (createMethod) ->
+      buildTest = (fallback, passes) ->
+        passes: passes()
+        fallback: fallback
+
+      structureTest = buildTest createDocumentUsingWrite, =>
+        (createMethod '<html><body><p>test')?.body?.childNodes.length is 1
+
+      formNestingTest = buildTest createDocumentUsingFragment, =>
+        (createMethod '<html><body><form></form><div></div></body></html>')?.body?.childNodes.length is 2
+
+      [structureTest, formNestingTest]
+
     try
       if window.DOMParser
-        testDoc = createDocumentUsingParser '<html><body><p>test'
+        docTests = buildTestsUsing createDocumentUsingParser
         createDocumentUsingParser
     catch e
-      testDoc = createDocumentUsingDOM '<html><body><p>test'
+      docTests = buildTestsUsing createDocumentUsingDOM
       createDocumentUsingDOM
     finally
-      unless testDoc?.body?.childNodes.length is 1
-        return createDocumentUsingWrite
+      for docTest in docTests
+        return docTest.fallback unless docTest.passes
 
   if browserSupportsTurbolinks
     @visit = fetch
