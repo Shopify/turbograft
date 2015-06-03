@@ -303,7 +303,7 @@ class window.Turbolinks
       xhr.getResponseHeader('Content-Type').match /^(?:text\/html|application\/xhtml\+xml|application\/xml)(?:;|$)/
 
     extractTrackAssets = (doc) ->
-      for node in doc.head.childNodes when node.getAttribute?('data-turbolinks-track')?
+      for node in doc.querySelector('head').childNodes when node.getAttribute?('data-turbolinks-track')?
         node.getAttribute('src') or node.getAttribute('href')
 
     assetsChanged = (doc) ->
@@ -324,7 +324,7 @@ class window.Turbolinks
 
   extractTitleAndBody = (doc) ->
     title = doc.querySelector 'title'
-    [ title?.textContent, removeNoscriptTags(doc.body), CSRFToken.get(doc).token, 'runScripts' ]
+    [ title?.textContent, removeNoscriptTags(doc.querySelector('body')), CSRFToken.get(doc).token, 'runScripts' ]
 
   installHistoryChangeHandler = (event) ->
     if event.state?.turbolinks
@@ -335,48 +335,21 @@ class window.Turbolinks
   bypassOnLoadPopstate = (fn) ->
     setTimeout fn, 500
 
-  browserCompatibleDocumentParser = ->
-    createDocumentUsingParser = (html) ->
-      (new DOMParser).parseFromString html, 'text/html'
-
-    createDocumentUsingDOM = (html) ->
-      doc = document.implementation.createHTMLDocument ''
-      doc.documentElement.innerHTML = html
-      doc
-
-    createDocumentUsingWrite = (html) ->
-      doc = document.implementation.createHTMLDocument ''
-      doc.open 'replace'
-      doc.write html
-      doc.close()
-      doc
-
-    # Use createDocumentUsingParser if DOMParser is defined and natively
-    # supports 'text/html' parsing (Firefox 12+, IE 10)
-    #
-    # Use createDocumentUsingDOM if createDocumentUsingParser throws an exception
-    # due to unsupported type 'text/html' (Firefox < 12, Opera)
-    #
-    # Use createDocumentUsingWrite if:
-    #  - DOMParser isn't defined
-    #  - createDocumentUsingParser returns null due to unsupported type 'text/html' (Chrome, Safari)
-    #  - createDocumentUsingDOM doesn't create a valid HTML document (safeguarding against potential edge cases)
-    try
-      if window.DOMParser
-        testDoc = createDocumentUsingParser '<html><body><p>test'
-        createDocumentUsingParser
-    catch e
-      testDoc = createDocumentUsingDOM '<html><body><p>test'
-      createDocumentUsingDOM
-    finally
-      unless testDoc?.body?.childNodes.length is 1
-        return createDocumentUsingWrite
+  createDocument = (html) ->
+    if /<(html|body)/i.test(html)
+      doc = document.documentElement.cloneNode()
+      doc.innerHTML = html
+    else
+      doc = document.documentElement.cloneNode(true)
+      doc.querySelector('body').innerHTML = html
+    doc.head = doc.querySelector('head')
+    doc.body = doc.querySelector('body')
+    doc
 
   if browserSupportsTurbolinks
     @visit = fetch
     @rememberCurrentUrl()
     @rememberCurrentState()
-    createDocument = browserCompatibleDocumentParser()
 
     document.addEventListener 'click', Click.installHandlerLast, true
 
