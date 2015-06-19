@@ -95,6 +95,9 @@ class window.Turbolinks
     xhr.setRequestHeader 'Accept', 'text/html, application/xhtml+xml, application/xml'
     xhr.setRequestHeader 'X-XHR-Referer', referer
 
+    options.headers ?= []
+    xhr.setRequestHeader options.headers[header].key, options.headers[header].value for header of options.headers
+
     xhr.onload = ->
       if xhr.status >= 500
         document.location.href = url.absolute
