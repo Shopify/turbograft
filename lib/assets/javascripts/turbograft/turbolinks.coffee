@@ -95,8 +95,10 @@ class window.Turbolinks
     xhr.setRequestHeader 'Accept', 'text/html, application/xhtml+xml, application/xml'
     xhr.setRequestHeader 'X-XHR-Referer', referer
 
-    options.headers ?= []
-    xhr.setRequestHeader options.headers[header].key, options.headers[header].value for header of options.headers
+    options.headers ?= {}
+
+    for k,v of options.headers
+      xhr.setRequestHeader k, v
 
     xhr.onload = ->
       if xhr.status >= 500
