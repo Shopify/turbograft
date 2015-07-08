@@ -88,6 +88,16 @@ describe 'Turbolinks', ->
 
       window.removeEventListener('page:before-change', listener)
 
+    it 'supports passing request headers', ->
+      @server.respondWith([200, { "Content-Type": "text/html" }, "<html>Hello World</html>"]);
+
+      Turbolinks.visit "/some_request", {headers: {'foo': 'bar', 'fizz': 'buzz'}}
+      @server.respond()
+
+      assert.equal 1, @server.requests.length
+      assert.equal 'bar', @server.requests[0].requestHeaders['foo']
+      assert.equal 'buzz', @server.requests[0].requestHeaders['fizz']
+
     describe 'with partial page replacement', ->
       it 'uses just the part of the response body we supply', ->
         @server.respondWith([200, { "Content-Type": "text/html" }, html_one]);
