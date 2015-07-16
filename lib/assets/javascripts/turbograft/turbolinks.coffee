@@ -115,6 +115,8 @@ class window.Turbolinks
     return
 
   @loadPage: (url, xhr, options = {}) ->
+    rememberReferer()
+
     triggerEvent 'page:receive'
     options.updatePushState ?= true
 

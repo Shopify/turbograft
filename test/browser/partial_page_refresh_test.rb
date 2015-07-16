@@ -143,4 +143,31 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     refute page.has_content?("Please confirm that you want to delete this foo.")
     assert page.has_content?("Your foo has been destroyed.")
   end
+
+  test "tg-remote refreshing the same URL will not push onto history stack" do
+    visit "/pages/2"
+
+    expect_sections_a_and_b_differ do
+      click_link "Perform a partial page refresh of the current page"
+    end
+
+    expect_sections_a_and_b_differ do
+      click_link "Perform a partial page refresh of the current page"
+    end
+
+    page.evaluate_script('window.history.back()')
+
+    assert page.has_content?("page 1")
+
+  end
+
+  def expect_sections_a_and_b_differ(&block)
+    assert random_a = find('#random-number-a').text
+    assert random_b = find('#random-number-b').text
+
+    yield
+
+    assert_not_equal random_a, find('#random-number-a').text
+    assert_not_equal random_b, find('#random-number-b').text
+  end
 end

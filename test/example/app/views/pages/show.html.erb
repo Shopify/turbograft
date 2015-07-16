@@ -198,7 +198,14 @@
 <a href="<%= error_422_with_show_pages_path %>" data-tg-remote="GET" data-tg-full-refresh-on-error-except="section-a">data-tg-remote GET to response of 422 replaces everything except side-bar-a</a>
 </div>
 
-<h3>data-tg-remote links of various method types, with data-tg-remote-norefresh</h3>
+<div class="prepend-pre">
+<%= link_to "Perform a partial page refresh of the current page", page_path(@id), "data-tg-remote" => "GET", "data-tg-refresh-on-success" => "page section-a section-b" %>
+</div>
+<p>
+  The above is useful to re-update just parts of the page (should they have changed since the user last visited it).
+</p>
+
+<h3>tg-remote links of various method types, with tg-remote-norefresh</h3>
 <p>No visible side effects here, so open your Network inspector to see them in action.</p>
 <div class="prepend-pre">
 <a href="/pages/method_agnostic" data-tg-remote="GET" data-tg-remote-norefresh>data-tg-remote GET</a><br>
