@@ -21,29 +21,21 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     assert_equal random_b, find('#random-number-b').text
   end
 
-  test "can refresh just one section at a time" do
-    random_a = find('#random-number-a').text
-    random_b = find('#random-number-b').text
-
-    assert random_a
-    assert random_b
-
-    click_button "Refresh Section A"
+  test "can refresh just section A, section B, or section A&B at the same time" do
+    expect_section_a_differs do
+      click_button "Refresh Section A"
+    end
     assert page.has_content?("page 1")
-    assert_not_equal random_a, find('#random-number-a').text
-    assert_equal random_b, find('#random-number-b').text
 
-    random_a = find('#random-number-a').text
-    click_button "Refresh Section B"
+    expect_section_b_differs do
+      click_button "Refresh Section B"
+    end
     assert page.has_content?("page 1")
-    assert_equal random_a, find('#random-number-a').text
-    assert_not_equal random_b, find('#random-number-b').text
 
-    random_b = find('#random-number-b').text
-    click_button "Refresh Section A and B"
+    expect_sections_a_and_b_differ do
+      click_button "Refresh Section A and B"
+    end
     assert page.has_content?("page 1")
-    assert_not_equal random_a, find('#random-number-a').text
-    assert_not_equal random_b, find('#random-number-b').text
   end
 
   test "when I use an XHR and POST to an endpoint that returns me a 302, I should see the URL reflecting that redirect too" do
@@ -144,13 +136,12 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     assert page.has_content?("Your foo has been destroyed.")
   end
 
-  test "tg-remote refreshing the same URL will not push onto history stack" do
+  test "tg-remote refreshing the same URL multiple times will not push copies onto the history stack" do
     visit "/pages/2"
 
     expect_sections_a_and_b_differ do
       click_link "Perform a partial page refresh of the current page"
     end
-
     expect_sections_a_and_b_differ do
       click_link "Perform a partial page refresh of the current page"
     end
@@ -158,7 +149,6 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     page.evaluate_script('window.history.back()')
 
     assert page.has_content?("page 1")
-
   end
 
   def expect_sections_a_and_b_differ(&block)
@@ -168,6 +158,26 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     yield
 
     assert_not_equal random_a, find('#random-number-a').text
+    assert_not_equal random_b, find('#random-number-b').text
+  end
+
+  def expect_section_a_differs(&block)
+    assert random_a = find('#random-number-a').text
+    assert random_b = find('#random-number-b').text
+
+    yield
+
+    assert_not_equal random_a, find('#random-number-a').text
+    assert_equal random_b, find('#random-number-b').text
+  end
+
+  def expect_section_b_differs(&block)
+    assert random_a = find('#random-number-a').text
+    assert random_b = find('#random-number-b').text
+
+    yield
+
+    assert_equal random_a, find('#random-number-a').text
     assert_not_equal random_b, find('#random-number-b').text
   end
 end
