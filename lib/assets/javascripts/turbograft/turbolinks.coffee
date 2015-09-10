@@ -138,6 +138,7 @@ class window.Turbolinks
       nodesToRefresh = [].concat(getNodesWithRefreshAlways(), getNodesMatchingRefreshKeys(options.onlyKeys))
       nodes = refreshNodes(nodesToRefresh, body)
       setAutofocusElement() if anyAutofocusElement(nodes)
+      executeScriptTags() if runScripts
       return nodes
     else
       refreshNodes(getNodesWithRefreshAlways(), body)
