@@ -301,7 +301,7 @@ class window.Turbolinks
 
   processResponse = (xhr, partial = false) ->
     clientOrServerError = ->
-      return false if xhr.status == 422 # we want to render form validations
+      return false if xhr.status in [422, 429] # we want to render form validations
       400 <= xhr.status < 600
 
     validContent = ->
