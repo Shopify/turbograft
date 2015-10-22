@@ -1,9 +1,14 @@
 require 'test_helper'
 
 class PagesControllerTest < ActionController::TestCase
-  test "set_request_method_cookie sets request method" do
+  test "set_request_method_cookie does not set cookie for GET requests" do
     get :show
-    assert_equal 'GET', cookies[:request_method]
+    refute response.headers.key?('Set-Cookie')
+  end
+
+  test "set_request_method_cookie sets request method for non GET requests" do
+    post :show
+    assert_equal 'POST', cookies[:request_method]
   end
 
   test "redirect_via_turbolinks_to sets response body and status" do
