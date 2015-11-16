@@ -5,28 +5,30 @@ nodeIsDisabled = (node) ->
    node.getAttribute('disabled') || hasClass(node, 'disabled')
 
 setupRemoteFromTarget = (target, httpRequestType, urlAttribute, form = null) ->
-  httpUrl = target.getAttribute(urlAttribute)
+  httpUrl = target.getAttribute("data-#{urlAttribute}") || target.getAttribute(urlAttribute)
 
-  throw new Error("Turbograft developer error: You did not provide a URL ('#{urlAttribute}' attribute) for tg-remote") unless httpUrl
+  throw new Error("Turbograft developer error: You did not provide a URL ('data-#{urlAttribute}' attribute) for data-tg-remote") unless httpUrl
 
-  if target.getAttribute("remote-once")
+  if target.getAttribute("data-remote-once") || target.getAttribute("remote-once")
+    target.removeAttribute("data-remote-once")
     target.removeAttribute("remote-once")
+    target.removeAttribute("data-tg-remote")
     target.removeAttribute("tg-remote")
 
   options =
     httpRequestType: httpRequestType
     httpUrl: httpUrl
-    fullRefresh: target.getAttribute('full-refresh')?
-    refreshOnSuccess: target.getAttribute('refresh-on-success')
-    refreshOnSuccessExcept: target.getAttribute('full-refresh-on-success-except')
-    refreshOnError: target.getAttribute('refresh-on-error')
-    refreshOnErrorExcept: target.getAttribute('full-refresh-on-error-except')
+    fullRefresh: target.getAttribute('data-full-refresh')? || target.getAttribute('full-refresh')?
+    refreshOnSuccess: target.getAttribute('data-refresh-on-success') || target.getAttribute('refresh-on-success')
+    refreshOnSuccessExcept: target.getAttribute('data-full-refresh-on-success-except') || target.getAttribute('full-refresh-on-success-except')
+    refreshOnError: target.getAttribute('data-refresh-on-error') || target.getAttribute('refresh-on-error')
+    refreshOnErrorExcept: target.getAttribute('data-full-refresh-on-error-except') || target.getAttribute('full-refresh-on-error-except')
 
   new TurboGraft.Remote(options, form, target)
 
 TurboGraft.handlers.remoteMethodHandler = (ev) ->
   target = ev.clickTarget
-  httpRequestType = target.getAttribute('tg-remote')
+  httpRequestType = target.getAttribute('data-tg-remote') || target.getAttribute('tg-remote')
 
   return unless httpRequestType
   ev.preventDefault()
@@ -39,7 +41,7 @@ TurboGraft.handlers.remoteFormHandler = (ev) ->
   target = ev.target
   method = target.getAttribute('method')
 
-  return unless target.getAttribute('tg-remote')?
+  return unless target.getAttribute('data-tg-remote')? || target.getAttribute('tg-remote')?
   ev.preventDefault()
 
   remote = setupRemoteFromTarget(target, method, 'action', target)

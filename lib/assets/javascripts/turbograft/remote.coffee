@@ -103,7 +103,7 @@ class TurboGraft.Remote
   _enabledInputs: (form) ->
     selector = "input:not([type='reset']):not([type='button']):not([type='submit']):not([type='image']), select, textarea"
     inputs = Array::slice.call(form.querySelectorAll(selector))
-    disabledNodes = Array::slice.call(form.querySelectorAll("[tg-remote-noserialize]"))
+    disabledNodes = Array::slice.call(form.querySelectorAll("[data-tg-remote-noserialize], [tg-remote-noserialize]"))
 
     return inputs unless disabledNodes.length
 
@@ -128,7 +128,7 @@ class TurboGraft.Remote
       Page.visit(redirect, reload: true)
       return
 
-    unless @initiator.hasAttribute('tg-remote-norefresh')
+    unless @initiator.hasAttribute('data-tg-remote-norefresh') || @initiator.hasAttribute('tg-remote-norefresh')
       if @opts.fullRefresh && @refreshOnSuccess
         Page.refresh(onlyKeys: @refreshOnSuccess)
       else if @opts.fullRefresh

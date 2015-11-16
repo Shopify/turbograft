@@ -161,14 +161,14 @@ class window.Turbolinks
   getNodesMatchingRefreshKeys = (keys) ->
     matchingNodes = []
     for key in keys
-      for node in document.querySelectorAll("[refresh=#{key}]")
+      for node in document.querySelectorAll("[data-refresh=#{key}], [refresh=#{key}]")
         matchingNodes.push(node)
 
     return matchingNodes
 
   getNodesWithRefreshAlways = ->
     matchingNodes = []
-    for node in document.querySelectorAll("[refresh-always]")
+    for node in document.querySelectorAll("[data-refresh-always], [refresh-always]")
       matchingNodes.push(node)
 
     return matchingNodes
@@ -186,7 +186,7 @@ class window.Turbolinks
       autofocusElement.focus()
 
   deleteRefreshNeverNodes = (body) ->
-    for node in body.querySelectorAll('[refresh-never]')
+    for node in body.querySelectorAll('[data-refresh-never], [refresh-never]')
       removeNode(node)
 
     return
@@ -215,7 +215,7 @@ class window.Turbolinks
         else
           refreshedNodes.push(newNode)
 
-      else if existingNode.getAttribute("refresh-always") == null
+      else if existingNode.getAttribute("data-refresh-always") == null && existingNode.getAttribute("refresh-always") == null
         removeNode(existingNode)
 
     refreshedNodes
@@ -231,7 +231,7 @@ class window.Turbolinks
   persistStaticElements = (body) ->
     allNodesToKeep = []
 
-    nodes = document.querySelectorAll("[tg-static]")
+    nodes = document.querySelectorAll("[data-tg-static], [tg-static]")
     allNodesToKeep.push(node) for node in nodes
 
     keepNodes(body, allNodesToKeep)
@@ -241,7 +241,7 @@ class window.Turbolinks
     allNodesToKeep = []
 
     for key in keys
-      for node in document.querySelectorAll("[refresh=#{key}]")
+      for node in document.querySelectorAll("[data-refresh=#{key}], [refresh=#{key}]")
         allNodesToKeep.push(node)
 
     keepNodes(body, allNodesToKeep)
