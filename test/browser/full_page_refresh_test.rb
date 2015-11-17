@@ -69,6 +69,9 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
     click_link "Perform a full page refresh"
     assert_equal "tg-static innards", find_field("badgeinput").value
     click_link "Perform a partial page refresh and refresh the navigation section"
+    while !page.has_content?
+      sleep 500
+    end
     assert_equal "", find_field("badgeinput").value
   end
 
