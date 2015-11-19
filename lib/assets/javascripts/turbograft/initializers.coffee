@@ -1,3 +1,22 @@
+tgAttribute = (attr) ->
+  tgAttr = if attr[0...3] == 'tg-'
+    "data-#{attr}"
+  else
+    "data-tg-#{attr}"
+
+getTGAttribute = (node, attr) ->
+  tgAttr = tgAttribute(attr)
+  node.getAttribute(tgAttr) || node.getAttribute(attr)
+
+removeTGAttribute = (node, attr) ->
+  tgAttr = tgAttribute(attr)
+  node.removeAttribute(tgAttr)
+  node.removeAttribute(attr)
+
+tgAttributeExists = (node, attr) ->
+  tgAttr = tgAttribute(attr)
+  node.getAttribute(tgAttr)? || node.getAttribute(attr)?
+
 hasClass = (node, search) ->
   node.classList.contains(search)
 
@@ -7,28 +26,26 @@ nodeIsDisabled = (node) ->
 setupRemoteFromTarget = (target, httpRequestType, form = null) ->
   httpUrl = target.getAttribute('href') || target.getAttribute('action')
 
-  throw new Error("Turbograft developer error: You did not provide a URL ('data-tg-#{urlAttribute}' attribute) for data-tg-remote") unless httpUrl
+  throw new Error("Turbograft developer error: You did not provide a URL ('#{urlAttribute}' attribute) for data-tg-remote") unless httpUrl
 
-  if target.getAttribute("data-tg-remote-once") || target.getAttribute("remote-once")
-    target.removeAttribute("data-tg-remote-once")
-    target.removeAttribute("remote-once")
-    target.removeAttribute("data-tg-remote")
-    target.removeAttribute("tg-remote")
+  if getTGAttribute(target, "remote-once")
+    removeTGAttribute(target, "remote-once")
+    removeTGAttribute(target, "tg-remote")
 
   options =
     httpRequestType: httpRequestType
     httpUrl: httpUrl
-    fullRefresh: target.getAttribute('data-tg-full-refresh')? || target.getAttribute('full-refresh')?
-    refreshOnSuccess: target.getAttribute('data-tg-refresh-on-success') || target.getAttribute('refresh-on-success')
-    refreshOnSuccessExcept: target.getAttribute('data-tg-full-refresh-on-success-except') || target.getAttribute('full-refresh-on-success-except')
-    refreshOnError: target.getAttribute('data-tg-refresh-on-error') || target.getAttribute('refresh-on-error')
-    refreshOnErrorExcept: target.getAttribute('data-tg-full-refresh-on-error-except') || target.getAttribute('full-refresh-on-error-except')
+    fullRefresh: getTGAttribute(target, 'full-refresh')?
+    refreshOnSuccess: getTGAttribute(target, 'refresh-on-success')
+    refreshOnSuccessExcept: getTGAttribute(target, 'full-refresh-on-success-except')
+    refreshOnError: getTGAttribute(target, 'refresh-on-error')
+    refreshOnErrorExcept: getTGAttribute(target, 'full-refresh-on-error-except')
 
   new TurboGraft.Remote(options, form, target)
 
 TurboGraft.handlers.remoteMethodHandler = (ev) ->
   target = ev.clickTarget
-  httpRequestType = target.getAttribute('data-tg-remote') || target.getAttribute('tg-remote')
+  httpRequestType = getTGAttribute(target, 'tg-remote')
 
   return unless httpRequestType
   ev.preventDefault()
@@ -41,7 +58,7 @@ TurboGraft.handlers.remoteFormHandler = (ev) ->
   target = ev.target
   method = target.getAttribute('method')
 
-  return unless target.getAttribute('data-tg-remote')? || target.getAttribute('tg-remote')?
+  return unless tgAttributeExists(target, 'tg-remote')
   ev.preventDefault()
 
   remote = setupRemoteFromTarget(target, method, target)
