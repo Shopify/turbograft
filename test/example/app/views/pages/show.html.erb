@@ -1,16 +1,16 @@
 
 
 <% content_for :sidebar do %>
-  <div id="page-header" refresh="page">
+  <div id="page-header" data-tg-refresh="page">
     <h1>You're on page <span id='page-number'><%= @id %></span></h1>
     <p>Click the links below to perform a full page refresh:</p>
     <p><%= link_to "back", :back %> | <%= link_to "next", page_path(@next_id) %></p>
   </div>
-  <div id='section-a' refresh='section-a' style="padding: 1em; margin: 1em; background: <%= random_light_rgb() %>; color: black;">
+  <div id='section-a' data-tg-refresh='section-a' style="padding: 1em; margin: 1em; background: <%= random_light_rgb() %>; color: black;">
     <span>Section A:</span>
     <span id="random-number-a"><%= rand(1000) %></span>
   </div>
-  <div id='section-b' refresh='section-b' style="padding: 1em; margin: 1em; background: <%= random_light_rgb() %>; color: black;">
+  <div id='section-b' data-tg-refresh='section-b' style="padding: 1em; margin: 1em; background: <%= random_light_rgb() %>; color: black;">
     <span>Section B:</span>
     <span id="random-number-b"><%= rand(1000) %></span>
   </div>
@@ -18,24 +18,24 @@
 
 <section>
   <h1>Static Elements</h1>
-  <p>With the <code>tg-static</code> attribute decorating a node, we can make sure that this node is not replaced during a fullpage refresh.</p>
-  <p>In the example below, we demonstrate a fullpage refresh where the contents of the input will remain even though the entire page has been swapped out.  We also demonstrate a partial page refresh which swaps out specifically the input element.  Thus, we can still replace elements inside of a <code>tg-static</code> node.</p>
-  <p>Though, if you were to refresh the page at a higher level -- e.g., refreshing an ancestor of the <code>tg-static</code>, the static aspect is no longer obeyed and it is replaced.</p>
+  <p>With the <code>data-tg-static</code> attribute decorating a node, we can make sure that this node is not replaced during a fullpage refresh.</p>
+  <p>In the example below, we demonstrate a fullpage refresh where the contents of the input will remain even though the entire page has been swapped out.  We also demonstrate a partial page refresh which swaps out specifically the input element.  Thus, we can still replace elements inside of a <code>data-tg-static</code> node.</p>
+  <p>Though, if you were to refresh the page at a higher level -- e.g., refreshing an ancestor of the <code>data-tg-static</code>, the static aspect is no longer obeyed and it is replaced.</p>
 
 <div class="prepend-pre">
-<nav id="static" tg-static>
+<nav id="static" data-tg-static>
   <ul>
-    <li>Navigation <i id='badge1' refresh='navigation'><input type="text" name="badgeinput"></i></li>
-    <li>Always Refresh: <i id="badge2" refresh-always><input type="text" name="badgeinput2"></i></li>
+    <li>Navigation <i id='badge1' data-tg-refresh='navigation'><input type="text" name="badgeinput"></i></li>
+    <li>Always Refresh: <i id="badge2" data-tg-refresh-always><input type="text" name="badgeinput2"></i></li>
     <li>Home</li>
   </ul>
 </nav>
-<div id="refresh-always-section" refresh-always>refresh-always outside of tg-static: <%= rand(1000) %></div>
+<div id="refresh-always-section" data-tg-refresh-always>data-tg-refresh-always outside of data-tg-static: <%= rand(1000) %></div>
 </div>
 
 <div class="prepend-pre">
 <%= link_to "Perform a full page refresh", page_path(@next_id) %><br>
-<%= link_to "Perform a partial page refresh and refresh the navigation section", redirect_to_somewhere_else_after_POST_pages_path, "tg-remote" => "POST", "refresh-on-success" => "navigation" %>
+<%= link_to "Perform a partial page refresh and refresh the navigation section", redirect_to_somewhere_else_after_POST_pages_path, "data-tg-remote" => "POST", "data-tg-refresh-on-success" => "navigation" %>
 </div>
 
 </section>
@@ -57,12 +57,12 @@
 
   <p>Now click this link to partially refresh only the header of this page.</p>
 <div class="prepend-pre">
-<a href="#" id="partial-refresh-page" refresh="page" onclick="event.preventDefault(); Page.refresh({
+<a href="#" id="partial-refresh-page" data-tg-refresh="page" onclick="event.preventDefault(); Page.refresh({
   url: '<%= page_path(@next_id) %>',
   onlyKeys: ['page']
 });">Go to next page via partial refresh</a>
 </div>
-  <p>You'll notice that the content you entered into the fields above did not disappear, even though we did a GET of a new page.  Using the <code>refresh</code> attribute, coupled with an <code>id</code> attribute, we tell TurboGraft to grab the new page, but only refresh elements that have the <code>refresh</code> attribute of <code>page</code>.</p>
+  <p>You'll notice that the content you entered into the fields above did not disappear, even though we did a GET of a new page.  Using the <code>data-tg-refresh</code> attribute, coupled with an <code>id</code> attribute, we tell TurboGraft to grab the new page, but only refresh elements that have the <code>data-tg-refresh</code> attribute of <code>page</code>.</p>
 
 
   <% @id ||= 1 %>
@@ -93,13 +93,13 @@
 </section>
 
 <section>
-  <h1>refresh-never</h1>
+  <h1>data-tg-refresh-never</h1>
   <div>
-    <p>If you add the <code>refresh-never</code> attribute to a node, it will only show up in the <code>body</code> of the document once.  This is useful when you want to include and initialize a tracking script just once inside the body, and never have it fire again.</p>
+    <p>If you add the <code>data-tg-refresh-never</code> attribute to a node, it will only show up in the <code>body</code> of the document once.  This is useful when you want to include and initialize a tracking script just once inside the body, and never have it fire again.</p>
   </div>
 <div class="prepend-pre">
-<div refresh-never>
-  <p><strong><%= link_to "I should never be refreshed.  I will disappear after a full page refresh.", page_path(@next_id), id: "next-page-refresh-never", refresh: "page" %></strong></p>
+<div data-tg-refresh-never>
+  <p><strong><%= link_to "I should never be refreshed.  I will disappear after a full page refresh.", page_path(@next_id), id: "next-page-refresh-never", "data-tg-refresh" => "page" %></strong></p>
 </div>
 </div>
   <p>This is useful for tracking pixels or scripts that you wish to only include into the page once.</p>
@@ -153,18 +153,18 @@
 </section>
 
 <section>
-  <h1>tg-remote links</h1>
+  <h1>data-tg-remote links</h1>
   <p>This provides functionality similar to rails version of link_to for methods other than GET, allowing you to query methods on different endpoints, and partial page replacing different refresh keys depending on the response status.</p>
   <p>It requires your node to be marked up with:</p>
   <ul>
-    <li><code>tg-remote</code>: the HTTP method you wish to call on your endpoint</li>
+    <li><code>data-tg-remote</code>: the HTTP method you wish to call on your endpoint</li>
     <li><code>href</code>: the URL of the endpoint you wish to hit</li>
-    <li><code>refresh-on-success</code>: (optional, but you'll almost always want it) which refresh keys will get refreshed, using the body of the response. This is space-delimited</li>
-    <li><code>refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
-    <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
-    <li><code>remote-once</code>: (optional) Only do this once. Removes <code>tg-remote</code> and <code>remote-once</code> from element after consumption</li>
-    <li><code>full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.</li>
-    <li><code>tg-remote-norefresh</code>: (valueless)  Adding this attribute this will perform your action without refreshing anything on the page.  This can be used for actions that have no visible side-effects.</li>
+    <li><code>data-tg-refresh-on-success</code>: (optional, but you'll almost always want it) which refresh keys will get refreshed, using the body of the response. This is space-delimited</li>
+    <li><code>data-tg-refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
+    <li><code>data-tg-full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
+    <li><code>data-tg-remote-once</code>: (optional) Only do this once. Removes <code>data-tg-remote</code> and <code>data-tg-remote-once</code> from element after consumption</li>
+    <li><code>data-tg-full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.</li>
+    <li><code>data-tg-remote-norefresh</code>: (valueless)  Adding this attribute this will perform your action without refreshing anything on the page.  This can be used for actions that have no visible side-effects.</li>
   </ul>
   <p>It emits a few events:</p>
   <ul>
@@ -173,58 +173,58 @@
     <li><code>turbograft:remote:always</code>: always fires when XHR is done</li>
     <li><code>turbograft:remote:success</code>: always fires when XHR was successful</li>
     <li><code>turbograft:remote:fail</code>: always fires when XHR failed</li>
-    <li><code>turbograft:remote:fail:unhandled</code>: fires after the above event, but when we didn't partially replace anything with refresh-on-error (because there was no refresh-on-error supplied)</li>
+    <li><code>turbograft:remote:fail:unhandled</code>: fires after the above event, but when we didn't partially replace anything with data-tg-refresh-on-error (because there was no data-tg-refresh-on-error supplied)</li>
   </ul>
   <p>Each event also is sent with a copy of the xhr in case you need to look at anything in there, as well as a reference to the element that initated the <code>remote</code>.</p>
 
 
 <div class="prepend-pre">
-<a href="<%= page_path(rand(100)) %>" tg-remote="GET" refresh-on-success="page section-a section-b">
-  <i>tg-remote GET to response of 200</i>
+<a href="<%= page_path(rand(100)) %>" data-tg-remote="GET" data-tg-refresh-on-success="page section-a section-b">
+  <i>data-tg-remote GET to response of 200</i>
 </a>
 </div>
 
 <div class="prepend-pre">
-<a href="<%= page_path(rand(100)) %>" tg-remote="GET" full-refresh-on-success-except="section-a">
-  <i>tg-remote GET to response of 200 with full-refresh-on-success-except</i>
+<a href="<%= page_path(rand(100)) %>" data-tg-remote="GET" data-tg-full-refresh-on-success-except="section-a">
+  <i>data-tg-remote GET to response of 200 with data-tg-full-refresh-on-success-except</i>
 </a>
 </div>
 
 <div class="prepend-pre">
-<a href="<%= error_422_pages_path %>" tg-remote="GET" refresh-on-error="page">tg-remote GET to response of 422</a>
+<a href="<%= error_422_pages_path %>" data-tg-remote="GET" data-tg-refresh-on-error="page">data-tg-remote GET to response of 422</a>
 </div>
 
 <div class="prepend-pre">
-<a href="<%= error_422_with_show_pages_path %>" tg-remote="GET" full-refresh-on-error-except="section-a">tg-remote GET to response of 422 replaces everything except side-bar-a</a>
+<a href="<%= error_422_with_show_pages_path %>" data-tg-remote="GET" data-tg-full-refresh-on-error-except="section-a">data-tg-remote GET to response of 422 replaces everything except side-bar-a</a>
 </div>
 
-<h3>tg-remote links of various method types, with tg-remote-norefresh</h3>
+<h3>data-tg-remote links of various method types, with data-tg-remote-norefresh</h3>
 <p>No visible side effects here, so open your Network inspector to see them in action.</p>
 <div class="prepend-pre">
-<a href="/pages/method_agnostic" tg-remote="GET" tg-remote-norefresh>tg-remote GET</a><br>
-<a href="/pages/method_agnostic" tg-remote="POST" tg-remote-norefresh>tg-remote POST</a><br>
-<a href="/pages/method_agnostic" tg-remote="PATCH" tg-remote-norefresh>tg-remote PATCH</a><br>
-<a href="/pages/method_agnostic" tg-remote="PUT" tg-remote-norefresh>tg-remote PUT</a><br>
-<a href="/pages/method_agnostic" tg-remote="DELETE" tg-remote-norefresh>tg-remote DELETE</a>
+<a href="/pages/method_agnostic" data-tg-remote="GET" data-tg-remote-norefresh>data-tg-remote GET</a><br>
+<a href="/pages/method_agnostic" data-tg-remote="POST" data-tg-remote-norefresh>data-tg-remote POST</a><br>
+<a href="/pages/method_agnostic" data-tg-remote="PATCH" data-tg-remote-norefresh>data-tg-remote PATCH</a><br>
+<a href="/pages/method_agnostic" data-tg-remote="PUT" data-tg-remote-norefresh>data-tg-remote PUT</a><br>
+<a href="/pages/method_agnostic" data-tg-remote="DELETE" data-tg-remote-norefresh>data-tg-remote DELETE</a>
 </div>
 
 <div class="prepend-pre">
-<a href="<%= error_404_pages_path %>" tg-remote="GET">tg-remote GET to response of 404</a>
+<a href="<%= error_404_pages_path %>" data-tg-remote="GET">data-tg-remote GET to response of 404</a>
 </div>
-  <p><code>refresh-on-error</code> only works for error 422.  This is mainly so you can refresh certain a part of a form (e.g., validation error div) when returning 422.  Nothing changes if the XHR errors out if you do not supply a <code>refresh-on-error</code>.</p>
+  <p><code>data-tg-refresh-on-error</code> only works for error 422.  This is mainly so you can refresh certain a part of a form (e.g., validation error div) when returning 422.  Nothing changes if the XHR errors out if you do not supply a <code>data-tg-refresh-on-error</code>.</p>
 </section>
 
 <section>
-  <h1>tg-remote forms</h1>
+  <h1>data-tg-remote forms</h1>
   <p>It requires your <code>form</code> to be marked up with:</p>
   <ul>
-    <li><code>tg-remote</code>: an attribute that doesn't need a value</li>
+    <li><code>data-tg-remote</code>: an attribute that doesn't need a value</li>
     <li><code>action</code>: you should have one of these already</li>
-    <li><code>refresh-on-success</code>: (optional, but you'll almost always want it) which refresh keys will get refreshed, using the body of the response. This is space-delimited</li>
-    <li><code>refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
-    <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
-    <li><code>full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.</li>
-    <li><code>tg-remote-norefresh</code>: (valueless)  Adding this attribute this will perform your action without refreshing anything on the page.  This can be used for actions that have no visible side-effects.</li>
+    <li><code>data-tg-refresh-on-success</code>: (optional, but you'll almost always want it) which refresh keys will get refreshed, using the body of the response. This is space-delimited</li>
+    <li><code>data-tg-refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
+    <li><code>data-tg-full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
+    <li><code>data-tg-full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.</li>
+    <li><code>data-tg-remote-norefresh</code>: (valueless)  Adding this attribute this will perform your action without refreshing anything on the page.  This can be used for actions that have no visible side-effects.</li>
   </ul>
   <p>It emits a few events:</p>
   <ul>
@@ -233,65 +233,65 @@
     <li><code>turbograft:remote:always</code>: always fires when XHR is done</li>
     <li><code>turbograft:remote:success</code>: always fires when XHR was successful</li>
     <li><code>turbograft:remote:fail</code>: always fires when XHR failed</li>
-    <li><code>turbograft:remote:fail:unhandled</code>: fires after the above event, but when we didn't partially replace anything with refresh-on-error (because there was no refresh-on-error supplied)</li>
+    <li><code>turbograft:remote:fail:unhandled</code>: fires after the above event, but when we didn't partially replace anything with data-tg-refresh-on-error (because there was no data-tg-refresh-on-error supplied)</li>
   </ul>
 
-<h3>Example of tg-remote form: POST</h3>
+<h3>Example of data-tg-remote form: POST</h3>
 <div class="prepend-pre">
 <div id="foo-results-post" refresh="foo-results-post">
   Use the field below to submit some content, and get a result.
 </div>
-<form tg-remote action="/pages/post_foo" method="post" refresh-on-success="foo-results-post" refresh-on-error="foo-results-post">
+<form data-tg-remote action="/pages/post_foo" method="post" data-tg-refresh-on-success="foo-results-post" data-tg-refresh-on-error="foo-results-post">
   <input id="foopost" name="foopost" type="text">
-  <button type="submit">Submit tg-remote POST</button>
+  <button type="submit">Submit data-tg-remote POST</button>
 </form>
 </div>
 </section>
 
-<h3>Example of tg-remote form: GET</h3>
+<h3>Example of data-tg-remote form: GET</h3>
 <div class="prepend-pre">
-<div id="foo-results-get" refresh="foo-results-get">
+<div id="foo-results-get" data-tg-refresh="foo-results-get">
   Use the field below to get a foo of your choice.
 </div>
-<form tg-remote action="/pages/get_foo" method="get" refresh-on-success="foo-results-get" refresh-on-error="foo-results-get">
+<form data-tg-remote action="/pages/get_foo" method="get" data-tg-refresh-on-success="foo-results-get" data-tg-refresh-on-error="foo-results-get">
   <input id="fooget" name="fooget" type="text">
-  <button type="submit">Submit tg-remote GET</button>
+  <button type="submit">Submit data-tg-remote GET</button>
 </form>
 </div>
 </section>
 
-<h3>Example of tg-remote form: PUT</h3>
+<h3>Example of data-tg-remote form: PUT</h3>
 <div class="prepend-pre">
-<div id="foo-results-put" refresh="foo-results-put">
+<div id="foo-results-put" data-tg-refresh="foo-results-put">
 
 </div>
-<form tg-remote action="/pages/put_foo" method="put" refresh-on-success="foo-results-put" refresh-on-error="foo-results-put">
+<form data-tg-remote action="/pages/put_foo" method="put" data-tg-refresh-on-success="foo-results-put" data-tg-refresh-on-error="foo-results-put">
   <input id="fooput" name="fooput" type="text">
-  <button type="submit">Submit tg-remote PUT</button>
+  <button type="submit">Submit data-tg-remote PUT</button>
 </form>
 </div>
 </section>
 
-<h3>Example of tg-remote form: DELETE</h3>
+<h3>Example of data-tg-remote form: DELETE</h3>
 <div class="prepend-pre">
-<div id="foo-results-delete" refresh="foo-results-delete">
+<div id="foo-results-delete" data-tg-refresh="foo-results-delete">
 
 </div>
-<form tg-remote action="/pages/delete_foo" method="delete" refresh-on-success="foo-results-delete" refresh-on-error="foo-results-delete">
+<form data-tg-remote action="/pages/delete_foo" method="delete" data-tg-refresh-on-success="foo-results-delete" data-tg-refresh-on-error="foo-results-delete">
   <label>
     <input type="checkbox" id="foodelete" name="foodelete" value="0"> Really delete this foo?
   </label>
-  <button type="submit">Submit tg-remote DELETE</button>
+  <button type="submit">Submit data-tg-remote DELETE</button>
 </form>
 </div>
 </section>
 
-<h3>Example of tg-remote form: PATCH</h3>
+<h3>Example of data-tg-remote form: PATCH</h3>
 <div class="prepend-pre">
-<div id="foo-results-patch" refresh="foo-results-patch">
+<div id="foo-results-patch" data-tg-refresh="foo-results-patch">
 
 </div>
-<form tg-remote action="/pages/patch_foo" method="post" refresh-on-success="foo-results-patch">
+<form data-tg-remote action="/pages/patch_foo" method="post" data-tg-refresh-on-success="foo-results-patch">
   <input type="hidden" name="_method" value="patch">
   <input type="radio" name="someradio" value="A">
   <input type="radio" name="someradio" value="B">
@@ -300,7 +300,7 @@
   <input type="text" name="disabled_textbox" disabled value="Disabled">
   <input type="text" name="readonly_textbox" readonly value="Readonly">
   <br>
-  <input type="submit" value="Submit tg-remote PATCH">
+  <input type="submit" value="Submit data-tg-remote PATCH">
 </form>
 </div>
 

@@ -1,0 +1,22 @@
+<div class="prepend-pre">
+<noscript>Please enable JavaScript!</noscript>
+</div>
+<p><code>noscript</code> tags will be ignored and will not be inserted into the page.  If you now refresh this page manually, you can see the code that would have been there, had you not come from TurboGraft.</p>
+<div>Some text</div>
+
+<div class="prepend-pre">
+<script>
+  $("#from-a-script").append("<div class='eval-true'>Hi there, from a script!</div>");
+</script>
+<div id="from-a-script"></div>
+</div>
+
+<p>When navigating into this page, the script above will be run.</p>
+
+<div class="prepend-pre">
+<script data-turbolinks-eval="false">
+  $("#not-from-a-script").append("<div class='eval-false'>Not going to see me, turbolinks will ignore</div>");
+</script>
+<div id="not-from-a-script"></div>
+</div>
+<p>If a script has <code>data-turbolinks-eval="false"</code>, it will not be present when navigating in.</p>

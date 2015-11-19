@@ -1,11 +1,11 @@
 require 'test_helper'
 require 'benchmark'
 
-class PartialPageRefreshTest < ActionDispatch::IntegrationTest
+class LegacyPagesPartialPageRefreshTest < ActionDispatch::IntegrationTest
   include Capybara::DSL
 
   setup do
-    visit "/pages/1"
+    visit "/legacy_pages/1"
   end
 
   test "will refresh just parts of the page" do
@@ -59,24 +59,24 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "data-tg-remote on a link with GET and data-tg-refresh-on-success and status 200" do
+  test "tg-remote on a link with GET and refresh-on-success and status 200" do
     assert page.has_content?("page 1")
     old_location = current_url
 
-    click_link "data-tg-remote GET to response of 200"
+    click_link "tg-remote GET to response of 200"
 
     new_location = current_url
     refute page.has_content?("Page 1")
     assert_equal new_location, old_location
   end
 
-  test "data-tg-remote on a link with GET and data-tg-full-refresh-on-success-except and status 200" do
+  test "tg-remote on a link with GET and full-refresh-on-success-except and status 200" do
     random_a = find('#random-number-a').text
 
     assert page.has_content?("page 1")
     old_location = current_url
 
-    click_link "data-tg-remote GET to response of 200 with data-tg-full-refresh-on-success-except"
+    click_link "tg-remote GET to response of 200 with full-refresh-on-success-except"
 
     new_location = current_url
     refute page.has_content?("Page 1")
@@ -84,61 +84,61 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
     assert_equal new_location, old_location
   end
 
-  test "data-tg-remote on a link with GET and data-tg-refresh-on-error and status 422" do
+  test "tg-remote on a link with GET and refresh-on-error and status 422" do
     assert page.has_content?("page 1")
     old_location = current_url
 
-    click_link "data-tg-remote GET to response of 422"
+    click_link "tg-remote GET to response of 422"
 
     new_location = current_url
     assert page.has_content?("Error 422!")
     assert_equal new_location, old_location
   end
 
-  test "data-tg-remote on a form with post, in status codes: 422 and 200" do
-    click_button "Submit data-tg-remote POST"
+  test "tg-remote on a form with post, in status codes: 422 and 200" do
+    click_button "Submit tg-remote POST"
     assert page.has_content?("Please supply a foo!")
 
     page.fill_in 'foopost', :with => 'some text'
-    click_button "Submit data-tg-remote POST"
+    click_button "Submit tg-remote POST"
 
     refute page.has_content?("Please supply a foo!")
     assert page.has_content?("Thanks for the foo! We'll consider it.")
   end
 
-  test "data-tg-remote on a form with get" do
-    click_button "Submit data-tg-remote GET"
+  test "tg-remote on a form with get" do
+    click_button "Submit tg-remote GET"
     assert page.has_content?("Please supply a foo!")
 
     page.fill_in 'fooget', :with => 'some text'
-    click_button "Submit data-tg-remote GET"
+    click_button "Submit tg-remote GET"
 
     refute page.has_content?("Please supply a foo!")
     assert page.has_content?("We found no results for some text :(")
   end
 
-  test "data-tg-remote on a form with patch" do
-    click_button "Submit data-tg-remote PATCH"
+  test "tg-remote on a form with patch" do
+    click_button "Submit tg-remote PATCH"
     assert page.has_content?("Thanks, we got your patch.")
   end
 
-  test "data-tg-remote on a form with put" do
-    click_button "Submit data-tg-remote PUT"
+  test "tg-remote on a form with put" do
+    click_button "Submit tg-remote PUT"
     assert page.has_content?("Please supply a foo!")
 
     page.fill_in 'fooput', :with => 'some text'
-    click_button "Submit data-tg-remote PUT"
+    click_button "Submit tg-remote PUT"
 
     refute page.has_content?("Please supply a foo!")
     assert page.has_content?("Thanks, we replaced your foo with a new one.")
   end
 
-  test "data-tg-remote on a form with delete" do
-    click_button "Submit data-tg-remote DELETE"
+  test "tg-remote on a form with delete" do
+    click_button "Submit tg-remote DELETE"
     assert page.has_content?("Please confirm that you want to delete this foo.")
 
     page.check 'foodelete'
-    click_button "Submit data-tg-remote DELETE"
+    click_button "Submit tg-remote DELETE"
 
     refute page.has_content?("Please confirm that you want to delete this foo.")
     assert page.has_content?("Your foo has been destroyed.")
