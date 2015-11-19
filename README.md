@@ -26,6 +26,11 @@ Turbograft was built with simplicity in mind. It intends to offer the smallest a
 
 
 ## Usage
+
+Much of Turbograft’s functionality relies on attributes HTML elements. These attributes are currently namespaced to `data-tg-*` (e.g. `data-tg-refresh`).
+
+Versions of Turbograft older than 0.2.0 did not use this namespacing. The old attribute names (e.g. `refresh`) are deprecated.
+
 ### Partial page refresh
 
 ```html
