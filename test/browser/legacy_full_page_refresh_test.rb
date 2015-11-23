@@ -1,11 +1,11 @@
 require 'test_helper'
 require 'benchmark'
 
-class FullPageRefreshTest < ActionDispatch::IntegrationTest
+class LegacyPagesFullPageRefreshTest < ActionDispatch::IntegrationTest
   include Capybara::DSL
 
   setup do
-    visit "/pages/1"
+    visit "/legacy_pages/1"
   end
 
   test "will strip noscript tags" do
@@ -32,10 +32,10 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
     refute page.has_selector?("div.eval-false")
   end
 
-  test "will not keep any data-tg-refresh-never nodes around" do
-    assert page.has_selector?("[data-tg-refresh-never]")
+  test "will not keep any refresh-never nodes around" do
+    assert page.has_selector?("[refresh-never]")
     click_link "next"
-    refute page.has_selector?("[data-tg-refresh-never]")
+    refute page.has_selector?("[refresh-never]")
   end
 
   test "going to a URL that will error 500, and hitting the browser back button, we see the correct page (and not the 500)" do
@@ -64,10 +64,10 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
     assert_equal "Sample Turbograft Application", page.title
   end
 
-  test "data-tg-static preserves client-side state of innards on full refresh, but will replaces contents if we specifically data-tg-partially-refresh a section inside of it" do
-    page.fill_in 'badgeinput', :with => 'data-tg-static innards'
+  test "tg-static preserves client-side state of innards on full refresh, but will replaces contents if we specifically partially-refresh a section inside of it" do
+    page.fill_in 'badgeinput', :with => 'tg-static innards'
     click_link "Perform a full page refresh"
-    assert_equal "data-tg-static innards", find_field("badgeinput").value
+    assert_equal "tg-static innards", find_field("badgeinput").value
     click_link "Perform a partial page refresh and refresh the navigation section"
     while !page.has_content?
       sleep 500
@@ -75,7 +75,7 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
     assert_equal "", find_field("badgeinput").value
   end
 
-  test "data-tg-refresh-always will always refresh the annotated nodes, regardless of refresh type" do
+  test "refresh-always will always refresh the annotated nodes, regardless of refresh type" do
     page.fill_in 'badgeinput2', :with => 'some innards 523'
     click_link "Perform a full page refresh"
     page.assert_no_text "some innards 523"
@@ -86,11 +86,11 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
     assert_equal "", find_field("badgeinput2").value
   end
 
-  test "data-tg-refresh-always will not destroy or remove the node on a full page refresh" do
-    assert page.has_content?('data-tg-refresh-always outside of data-tg-static')
+  test "refresh-always will not destroy or remove the node on a full page refresh" do
+    assert page.has_content?('refresh-always outside of tg-static')
     assert page.has_content?("You're on page 1")
     click_link 'next'
     assert page.has_content?("You're on page 2")
-    assert page.has_content?('data-tg-refresh-always outside of data-tg-static')
+    assert page.has_content?('refresh-always outside of tg-static')
   end
 end

@@ -26,22 +26,27 @@ Turbograft was built with simplicity in mind. It intends to offer the smallest a
 
 
 ## Usage
+
+Much of Turbograft’s functionality relies on attributes HTML elements. These attributes are currently namespaced to `data-tg-*` (e.g. `data-tg-refresh`).
+
+Versions of Turbograft older than 0.2.0 did not use this namespacing. The old attribute names (e.g. `refresh`) are deprecated.
+
 ### Partial page refresh
 
 ```html
-<div id="content" refresh="page">
+<div id="content" data-tg-refresh="page">
   ...
 </div>
 ```
 
 
 ```html
-<a href="#" id="partial-refresh-page" refresh="page" onclick="event.preventDefault(); Page.refresh({url: '<%= page_path(@next_id) %>',onlyKeys: ['page']});">Refresh the page</a>
+<a href="#" id="partial-refresh-page" data-tg-refresh="page" onclick="event.preventDefault(); Page.refresh({url: '<%= page_path(@next_id) %>',onlyKeys: ['page']});">Refresh the page</a>
 ```
 
-This performs a `GET` request, but our client state is maintained. Using the refresh attribute, we tell TurboGraft to grab the new page, but only refresh elements where refresh="page".  This is the lowest-level way to use TurboGraft.
+This performs a `GET` request, but our client state is maintained. Using the `data-tg-refresh` attribute, we tell TurboGraft to grab the new page, but only refresh elements where `data-tg-refresh="page"`.  This is the lowest-level way to use TurboGraft.
 
-`refresh` attributes on your DOM nodes can be considered somewhat analoguous to how `class` will apply styles to any nodes with that class.  That is to say, many nodes can be decorated `refresh="foo"` and all matching nodes will be replaced with `onlyKeys: ['foo']`.  Each node with `refresh` must have its own unique ID (this is how nodes are matched during the replacement stage).  At the moment, `refresh` does not support multiple keys (e.g., `refresh="foo bar"`) like the `class` attribute does.
+`data-tg-refresh` attributes on your DOM nodes can be considered somewhat analoguous to how `class` will apply styles to any nodes with that class.  That is to say, many nodes can be decorated `data-tg-refresh="foo"` and all matching nodes will be replaced with `onlyKeys: ['foo']`.  Each node with `data-tg-refresh` must have its own unique ID (this is how nodes are matched during the replacement stage).  At the moment, `data-tg-refresh` does not support multiple keys (e.g., `data-tg-refresh="foo bar"`) like the `class` attribute does.
 
 ### onlyKeys
 You can specify multiple refresh keys on a page, and you can tell TurboGraft to refresh on one or more refresh keys for a given action.
@@ -57,54 +62,54 @@ You can also tell TurboGraft to refresh the page, but exclude certain elements f
 <button id='refresh-a-and-b' href="<%= page_path(@id) %>" onclick="event.preventDefault(); Page.refresh({url: '<%= page_path(@id) %>', exceptKeys: ['section-a', 'section-b']});">Refresh everything but Section A and B</button>
 ```
 
-### refresh-never
-The `refresh-never` attribute will cause a node only appear once in the `body` of the document. This can be used to include and initialize a tracking pixel or script just once inside the body.
+### data-tg-refresh-never
+The `data-tg-refresh-never` attribute will cause a node only appear once in the `body` of the document. This can be used to include and initialize a tracking pixel or script just once inside the body.
 
 ```html
-<div refresh-never>
-  <%= link_to "Never refresh", page_path(@next_id), id: "next-page-refresh-never", refresh: "page" %>
+<div data-tg-refresh-never>
+  <%= link_to "Never refresh", page_path(@next_id), id: "next-page-refresh-never", "data-tg-refresh" => "page" %>
 </div>
 ```
 
-## tg-remote
+## data-tg-remote
 
-The `tg-remote` option allows you to query methods on or submit forms to different endpoints, and gives partial page replacement on specified refresh keys depending on the response status.
+The `data-tg-remote` option allows you to query methods on or submit forms to different endpoints, and gives partial page replacement on specified refresh keys depending on the response status.
 
 It requires your `<form>`, `<a>`, or `<button>` to be marked up with:
 
-* `tg-remote`: (optionally valueless for `<form>`, but requires an HTTP method for links) the HTTP method you wish to call on your endpoint
+* `data-tg-remote`: (optionally valueless for `<form>`, but requires an HTTP method for links) the HTTP method you wish to call on your endpoint
 * `href`: (if node is `<a>` or `<button>`) the URL of the endpoint you wish to hit
-* `refresh-on-success`: (optional) The refresh keys to be refreshed, using the body of the response. This is space-delimited
-* `full-refresh-on-success-except`: (optional) Replaces body except for specififed refresh keys, using the body of the XHR which has succeeded
-* `refresh-on-error`: (optional) The refresh keys to be refreshed, but using body of XHR which has failed. Only works with error 422. If the XHR returns and error and you do not supply a refresh-on-error, nothing is changed
-* `full-refresh-on-error-except`: (optional) Replaces body except for specified refresh keys, using the body of the XHR which has failed.  Only works with error 422
-* `remote-once`: (optional) The action will only be performed once. Removes `remote-method` and `remote-once` from element after consumption
-* `full-refresh`: Rather than using the content of the XHR response for partial page replacement, a full page refresh is performed. If `refresh-on-success` is defined, the page will be reloaded on these keys. If `refresh-on-success` is not defined, a full page refresh is performed. Defaults to true if neither refresh-on-success nor refresh-on-error are provided
-* `tg-remote-norefresh`: Prevents `Page.refresh()` from being called, allowing methods to be executed without updating client state
+* `data-tg-refresh-on-success`: (optional) The refresh keys to be refreshed, using the body of the response. This is space-delimited
+* `data-tg-full-refresh-on-success-except`: (optional) Replaces body except for specififed refresh keys, using the body of the XHR which has succeeded
+* `data-tg-refresh-on-error`: (optional) The refresh keys to be refreshed, but using body of XHR which has failed. Only works with error 422. If the XHR returns and error and you do not supply a refresh-on-error, nothing is changed
+* `data-tg-full-refresh-on-error-except`: (optional) Replaces body except for specified refresh keys, using the body of the XHR which has failed.  Only works with error 422
+* `data-tg-remote-once`: (optional) The action will only be performed once. Removes `data-tg-remote-method` and `data-tg-remote-once` from element after consumption
+* `data-tg-full-refresh`: Rather than using the content of the XHR response for partial page replacement, a full page refresh is performed. If `data-tg-refresh-on-success` is defined, the page will be reloaded on these keys. If `data-tg-refresh-on-success` is not defined, a full page refresh is performed. Defaults to true if neither refresh-on-success nor refresh-on-error are provided
+* `data-tg-remote-norefresh`: Prevents `Page.refresh()` from being called, allowing methods to be executed without updating client state
 
-Note that as `refresh-on-*` pertains to partial refreshes and `full-refresh-on-*-except` pertains to full refreshes, they are incompatible with each other and should not be combined.
+Note that as `data-tg-refresh-on-*` pertains to partial refreshes and `data-tg-full-refresh-on-*-except` pertains to full refreshes, they are incompatible with each other and should not be combined.
 
 ### Examples
 
 Call a remote method:
 
 ```html
-<a href="#" tg-remote="post" refresh-on-success="page section-a section-b">Remote-method</a>
+<a href="#" data-tg-remote="post" data-tg-refresh-on-success="page section-a section-b">Remote-method</a>
 ```
 
 The Rails way:
 
 ```erb
-<%= link_to "Remote method", method_path, 'refresh-on-success' => 'page section-a section-b', 'full-refresh' => 'true', 'tg-remote' => 'post' %>
+<%= link_to "Remote method", method_path, 'data-tg-refresh-on-success' => 'page section-a section-b', 'data-tg-full-refresh' => 'true', 'data-tg-remote' => 'post' %>
 ```
 
 Post to a remote form:
 
 ```html
-<div id="results" refresh="results">
+<div id="results" data-tg-refresh="results">
   Use the field below to submit some content, and get a result.
 </div>
-<form tg-remote="" action="/pages/submit" method="post" refresh-on-success="results" refresh-on-error="results">
+<form data-tg-remote="" action="/pages/submit" method="post" data-tg-refresh-on-success="results" data-tg-refresh-on-error="results">
   <input name="form-input" type="text">
   <button type="submit">Submit</button>
 </form>
@@ -117,28 +122,28 @@ Post to a remote form:
 * `turbograft:remote:always`: Always fires when XHR is complete
 * `turbograft:remote:success`: Always fires when XHR was successful
 * `turbograft:remote:fail`: Always fires when XHR failed
-* `turbograft:remote:fail:unhandled`: Fires after `turbograft:remote:fail`, but when no partial replacement with refresh-on-error was performed (because no `refresh-on-error` was supplied)
+* `turbograft:remote:fail:unhandled`: Fires after `turbograft:remote:fail`, but when no partial replacement with refresh-on-error was performed (because no `data-tg-refresh-on-error` was supplied)
 
-Each event also is sent with a copy of the XHR, as well as a reference to the element that initated the `remote-method`.
+Each event also is sent with a copy of the XHR, as well as a reference to the element that initated the `data-tg-remote-method`.
 
-### tg-static
+### data-tg-static
 
-With the `tg-static` attribute decorating a node, we can make sure that this node is not replaced during a fullpage refresh.  Contrast this to partial page refreshes, where we normally specify the set of elements that need to change.  With `tg-static`, we can define a set of elements (by annotating them with this attribute) that must never change.
+With the `data-tg-static` attribute decorating a node, we can make sure that this node is not replaced during a fullpage refresh.  Contrast this to partial page refreshes, where we normally specify the set of elements that need to change.  With `data-tg-static`, we can define a set of elements (by annotating them with this attribute) that must never change.
 
-The internal state of any nodes marked with `tg-static` will remain, even though the entire page has been swapped out.  A partial page refresh with `onlyKeys` targeting a node inside of the `tg-static` node is also possible, persisting your static element but swapping the innards.
+The internal state of any nodes marked with `data-tg-static` will remain, even though the entire page has been swapped out.  A partial page refresh with `onlyKeys` targeting a node inside of the `data-tg-static` node is also possible, persisting your static element but swapping the innards.
 
-Though, if you were to refresh the page at a higher level -- e.g., refreshing an ancestor of the `tg-static`, the static aspect is no longer obeyed and it is replaced!
+Though, if you were to refresh the page at a higher level -- e.g., refreshing an ancestor of the `data-tg-static`, the static aspect is no longer obeyed and it is replaced!
 
 Examples of where this may be useful include:
 
 - running `<video>` or `<audio>` element
 - a client-controlled static nav
 
-### refresh-always
+### data-tg-refresh-always
 
-For the lazy developer in all of us, we can use the attribute `refresh-always` when we want to be sure we've absolutely replaced a certain element, if it exists.  An example of such a node you may want to apply this might be an unread notification count -- always being sure to update it if it exists in the response.
+For the lazy developer in all of us, we can use the attribute `data-tg-refresh-always` when we want to be sure we've absolutely replaced a certain element, if it exists.  An example of such a node you may want to apply this might be an unread notification count -- always being sure to update it if it exists in the response.
 
-### tg-remote-noserialize
+### data-tg-remote-noserialize
 
 When serializing forms for tg-remote calls, turbograft will check to ensure inputs meet the following criteria:
 
@@ -147,10 +152,10 @@ When serializing forms for tg-remote calls, turbograft will check to ensure inpu
 
 and
 
-- the input does not have the `tg-remote-noserialize` attribute
-- no ancestor of the input has the `tg-remote-noserialize` attribute
+- the input does not have the `data-tg-remote-noserialize` attribute
+- no ancestor of the input has the `data-tg-remote-noserialize` attribute
 
-The `tg-remote-noserialize` is useful in scenarios where a whole section of the page should be editable, i.e. not `disabled`, but should only conditionally be submitted to the server.
+The `data-tg-remote-noserialize` is useful in scenarios where a whole section of the page should be editable, i.e. not `disabled`, but should only conditionally be submitted to the server.
 
 ## Example App
 

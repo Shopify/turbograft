@@ -1,0 +1,310 @@
+
+
+<% content_for :sidebar do %>
+  <div id="page-header" refresh="page">
+    <h1>You're on page <span id='page-number'><%= @id %></span></h1>
+    <p>Click the links below to perform a full page refresh:</p>
+    <p><%= link_to "back", :back %> | <%= link_to "next", legacy_page_path(@next_id) %></p>
+  </div>
+  <div id='section-a' refresh='section-a' style="padding: 1em; margin: 1em; background: <%= random_light_rgb() %>; color: black;">
+    <span>Section A:</span>
+    <span id="random-number-a"><%= rand(1000) %></span>
+  </div>
+  <div id='section-b' refresh='section-b' style="padding: 1em; margin: 1em; background: <%= random_light_rgb() %>; color: black;">
+    <span>Section B:</span>
+    <span id="random-number-b"><%= rand(1000) %></span>
+  </div>
+<% end %>
+
+<section>
+  <h1>Static Elements</h1>
+  <p>With the <code>tg-static</code> attribute decorating a node, we can make sure that this node is not replaced during a fullpage refresh.</p>
+  <p>In the example below, we demonstrate a fullpage refresh where the contents of the input will remain even though the entire page has been swapped out.  We also demonstrate a partial page refresh which swaps out specifically the input element.  Thus, we can still replace elements inside of a <code>tg-static</code> node.</p>
+  <p>Though, if you were to refresh the page at a higher level -- e.g., refreshing an ancestor of the <code>tg-static</code>, the static aspect is no longer obeyed and it is replaced.</p>
+
+<div class="prepend-pre">
+<nav id="static" tg-static>
+  <ul>
+    <li>Navigation <i id='badge1' refresh='navigation'><input type="text" name="badgeinput"></i></li>
+    <li>Always Refresh: <i id="badge2" refresh-always><input type="text" name="badgeinput2"></i></li>
+    <li>Home</li>
+  </ul>
+</nav>
+<div id="refresh-always-section" refresh-always>refresh-always outside of tg-static: <%= rand(1000) %></div>
+</div>
+
+<div class="prepend-pre">
+<%= link_to "Perform a full page refresh", legacy_page_path(@next_id) %><br>
+<%= link_to "Perform a partial page refresh and refresh the navigation section", redirect_to_somewhere_else_after_POST_legacy_pages_path, "tg-remote" => "POST", "refresh-on-success" => "navigation" %>
+</div>
+
+</section>
+
+<section>
+  <h1>Partial page refresh</h1>
+
+  <p>Here's a fieldset, vaguely representing some client state.  Enter some values.</p>
+  <fieldset>
+    <div class="field">
+      <%= label_tag :name, "Name" %>
+      <%= text_field_tag :name %>
+    </div>
+    <div class="field">
+      <%= label_tag :nickname, "Nickname" %>
+      <%= text_field_tag :nickname %>
+    </div>
+  </fieldset>
+
+  <p>Now click this link to partially refresh only the header of this page.</p>
+<div class="prepend-pre">
+<a href="#" id="partial-refresh-page" refresh="page" onclick="event.preventDefault(); Page.refresh({
+  url: '<%= legacy_page_path(@next_id) %>',
+  onlyKeys: ['page']
+});">Go to next page via partial refresh</a>
+</div>
+  <p>You'll notice that the content you entered into the fields above did not disappear, even though we did a GET of a new page.  Using the <code>refresh</code> attribute, coupled with an <code>id</code> attribute, we tell TurboGraft to grab the new page, but only refresh elements that have the <code>refresh</code> attribute of <code>page</code>.</p>
+
+
+  <% @id ||= 1 %>
+
+  <p>Here are some buttons that do the same, but illustrate how your choice of <code>onlyKeys</code> allows you to tell TurboGraft which part of the page to replace.</p>
+
+<div class="prepend-pre">
+<button id='refresh-a' href="<%= legacy_page_path(@id) %>"
+  onclick="event.preventDefault(); Page.refresh({
+    url: '<%= legacy_page_path(@id) %>',
+    onlyKeys: ['section-a']
+  });">Refresh Section A</button>
+</div>
+<div class="prepend-pre">
+<button id='refresh-b' href="<%= legacy_page_path(@id) %>"
+  onclick="event.preventDefault(); Page.refresh({
+    url: '<%= legacy_page_path(@id) %>',
+    onlyKeys: ['section-b']
+  });">Refresh Section B</button>
+</div>
+<div class="prepend-pre">
+<button id='refresh-a-and-b' href="<%= legacy_page_path(@id) %>"
+  onclick="event.preventDefault(); Page.refresh({
+    url: '<%= legacy_page_path(@id) %>',
+    onlyKeys: ['section-a', 'section-b']
+  });">Refresh Section A and B</button>
+</div>
+</section>
+
+<section>
+  <h1>refresh-never</h1>
+  <div>
+    <p>If you add the <code>refresh-never</code> attribute to a node, it will only show up in the <code>body</code> of the document once.  This is useful when you want to include and initialize a tracking script just once inside the body, and never have it fire again.</p>
+  </div>
+<div class="prepend-pre">
+<div refresh-never>
+  <p><strong><%= link_to "I should never be refreshed.  I will disappear after a full page refresh.", legacy_page_path(@next_id), id: "next-page-refresh-never", refresh: "page" %></strong></p>
+</div>
+</div>
+  <p>This is useful for tracking pixels or scripts that you wish to only include into the page once.</p>
+
+</section>
+
+<section>
+  <h1>Encountering HTTP Errors:</h1>
+  <p>TurboGraft plays nicely with 404 and 500, and other errors.</p>
+  <p>
+    <%= link_to "I will throw an error 500", error_500_legacy_pages_path %>
+  </p>
+  <p>
+    <%= link_to "I will throw an error 404", error_404_legacy_pages_path %>
+  </p>
+  <p>When you hit the back button of your browser after clicking the link above, you will see this page again.</p>
+</section>
+
+<section>
+  <h1>Re-directing after a POST</h1>
+  <p>This button below performs a standard form POST:</p>
+<div class="prepend-pre">
+<%= form_tag redirect_to_somewhere_else_after_POST_legacy_pages_path, method: "POST" do %>
+  <%= button_tag "Redirect to somewhere else after POST", type: :submit  %>
+<% end %>
+</div>
+
+  <p>This button below performs a POST via XHR, then uses <code>Page.refresh</code> to reload the page with the response:</p>
+
+<div class="prepend-pre">
+<script>
+  window.postToXHR = function() {
+    operation = $.ajax({
+      type: "POST",
+      url: "<%= redirect_to_somewhere_else_after_POST_legacy_pages_path %>",
+      data: {},
+      beforeSend: function (request) {
+        request.setRequestHeader("X-XHR-Referer", document.location.href);
+      }
+    });
+
+    operation.done(function(results, status, xhr) {
+      Page.refresh({response: xhr, onlyKeys: ["page"]})
+    });
+  };
+</script>
+<%= button_tag "Post via XHR and see X-XHR-Redirected-To", type: :submit, onclick: "postToXHR()" %>
+</div>
+
+  <p>You'll notice that your scrolling position doesn't change, unlike the button above, but the location in your URL bar will.</p>
+</section>
+
+<section>
+  <h1>tg-remote links</h1>
+  <p>This provides functionality similar to rails version of link_to for methods other than GET, allowing you to query methods on different endpoints, and partial page replacing different refresh keys depending on the response status.</p>
+  <p>It requires your node to be marked up with:</p>
+  <ul>
+    <li><code>tg-remote</code>: the HTTP method you wish to call on your endpoint</li>
+    <li><code>href</code>: the URL of the endpoint you wish to hit</li>
+    <li><code>refresh-on-success</code>: (optional, but you'll almost always want it) which refresh keys will get refreshed, using the body of the response. This is space-delimited</li>
+    <li><code>refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
+    <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
+    <li><code>remote-once</code>: (optional) Only do this once. Removes <code>tg-remote</code> and <code>remote-once</code> from element after consumption</li>
+    <li><code>full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.</li>
+    <li><code>tg-remote-norefresh</code>: (valueless)  Adding this attribute this will perform your action without refreshing anything on the page.  This can be used for actions that have no visible side-effects.</li>
+  </ul>
+  <p>It emits a few events:</p>
+  <ul>
+    <li><code>turbograft:remote:init</code>: before XHR is sent</li>
+    <li><code>turbograft:remote:start</code>: when XHR is sent</li>
+    <li><code>turbograft:remote:always</code>: always fires when XHR is done</li>
+    <li><code>turbograft:remote:success</code>: always fires when XHR was successful</li>
+    <li><code>turbograft:remote:fail</code>: always fires when XHR failed</li>
+    <li><code>turbograft:remote:fail:unhandled</code>: fires after the above event, but when we didn't partially replace anything with refresh-on-error (because there was no refresh-on-error supplied)</li>
+  </ul>
+  <p>Each event also is sent with a copy of the xhr in case you need to look at anything in there, as well as a reference to the element that initated the <code>remote</code>.</p>
+
+
+<div class="prepend-pre">
+<a href="<%= legacy_page_path(rand(100)) %>" tg-remote="GET" refresh-on-success="page section-a section-b">
+  <i>tg-remote GET to response of 200</i>
+</a>
+</div>
+
+<div class="prepend-pre">
+<a href="<%= legacy_page_path(rand(100)) %>" tg-remote="GET" full-refresh-on-success-except="section-a">
+  <i>tg-remote GET to response of 200 with full-refresh-on-success-except</i>
+</a>
+</div>
+
+<div class="prepend-pre">
+<a href="<%= error_422_legacy_pages_path %>" tg-remote="GET" refresh-on-error="page">tg-remote GET to response of 422</a>
+</div>
+
+<div class="prepend-pre">
+<a href="<%= error_422_with_show_legacy_pages_path %>" tg-remote="GET" full-refresh-on-error-except="section-a">tg-remote GET to response of 422 replaces everything except side-bar-a</a>
+</div>
+
+<h3>tg-remote links of various method types, with tg-remote-norefresh</h3>
+<p>No visible side effects here, so open your Network inspector to see them in action.</p>
+<div class="prepend-pre">
+<a href="/legacy_pages/method_agnostic" tg-remote="GET" tg-remote-norefresh>tg-remote GET</a><br>
+<a href="/legacy_pages/method_agnostic" tg-remote="POST" tg-remote-norefresh>tg-remote POST</a><br>
+<a href="/legacy_pages/method_agnostic" tg-remote="PATCH" tg-remote-norefresh>tg-remote PATCH</a><br>
+<a href="/legacy_pages/method_agnostic" tg-remote="PUT" tg-remote-norefresh>tg-remote PUT</a><br>
+<a href="/legacy_pages/method_agnostic" tg-remote="DELETE" tg-remote-norefresh>tg-remote DELETE</a>
+</div>
+
+<div class="prepend-pre">
+<a href="<%= error_404_legacy_pages_path %>" tg-remote="GET">tg-remote GET to response of 404</a>
+</div>
+  <p><code>refresh-on-error</code> only works for error 422.  This is mainly so you can refresh certain a part of a form (e.g., validation error div) when returning 422.  Nothing changes if the XHR errors out if you do not supply a <code>refresh-on-error</code>.</p>
+</section>
+
+<section>
+  <h1>tg-remote forms</h1>
+  <p>It requires your <code>form</code> to be marked up with:</p>
+  <ul>
+    <li><code>tg-remote</code>: an attribute that doesn't need a value</li>
+    <li><code>action</code>: you should have one of these already</li>
+    <li><code>refresh-on-success</code>: (optional, but you'll almost always want it) which refresh keys will get refreshed, using the body of the response. This is space-delimited</li>
+    <li><code>refresh-on-error</code>: (optional) see above, but using body of XHR that has failed.  Only works with error 422</li>
+    <li><code>full-refresh-on-error-except</code>: (optional) replaces body except passed id, but using body of XHR that has failed.  Only works with error 422</li>
+    <li><code>full-refresh</code>: Instead of using the content of the XHR response for partial page replacement, we will instead re-GET the URL in question.</li>
+    <li><code>tg-remote-norefresh</code>: (valueless)  Adding this attribute this will perform your action without refreshing anything on the page.  This can be used for actions that have no visible side-effects.</li>
+  </ul>
+  <p>It emits a few events:</p>
+  <ul>
+    <li><code>turbograft:remote:init</code>: before XHR is sent</li>
+    <li><code>turbograft:remote:start</code>: when XHR is sent</li>
+    <li><code>turbograft:remote:always</code>: always fires when XHR is done</li>
+    <li><code>turbograft:remote:success</code>: always fires when XHR was successful</li>
+    <li><code>turbograft:remote:fail</code>: always fires when XHR failed</li>
+    <li><code>turbograft:remote:fail:unhandled</code>: fires after the above event, but when we didn't partially replace anything with refresh-on-error (because there was no refresh-on-error supplied)</li>
+  </ul>
+
+<h3>Example of tg-remote form: POST</h3>
+<div class="prepend-pre">
+<div id="foo-results-post" refresh="foo-results-post">
+  Use the field below to submit some content, and get a result.
+</div>
+<form tg-remote action="/legacy_pages/post_foo" method="post" refresh-on-success="foo-results-post" refresh-on-error="foo-results-post">
+  <input id="foopost" name="foopost" type="text">
+  <button type="submit">Submit tg-remote POST</button>
+</form>
+</div>
+</section>
+
+<h3>Example of tg-remote form: GET</h3>
+<div class="prepend-pre">
+<div id="foo-results-get" refresh="foo-results-get">
+  Use the field below to get a foo of your choice.
+</div>
+<form tg-remote action="/legacy_pages/get_foo" method="get" refresh-on-success="foo-results-get" refresh-on-error="foo-results-get">
+  <input id="fooget" name="fooget" type="text">
+  <button type="submit">Submit tg-remote GET</button>
+</form>
+</div>
+</section>
+
+<h3>Example of tg-remote form: PUT</h3>
+<div class="prepend-pre">
+<div id="foo-results-put" refresh="foo-results-put">
+
+</div>
+<form tg-remote action="/legacy_pages/put_foo" method="put" refresh-on-success="foo-results-put" refresh-on-error="foo-results-put">
+  <input id="fooput" name="fooput" type="text">
+  <button type="submit">Submit tg-remote PUT</button>
+</form>
+</div>
+</section>
+
+<h3>Example of tg-remote form: DELETE</h3>
+<div class="prepend-pre">
+<div id="foo-results-delete" refresh="foo-results-delete">
+
+</div>
+<form tg-remote action="/legacy_pages/delete_foo" method="delete" refresh-on-success="foo-results-delete" refresh-on-error="foo-results-delete">
+  <label>
+    <input type="checkbox" id="foodelete" name="foodelete" value="0"> Really delete this foo?
+  </label>
+  <button type="submit">Submit tg-remote DELETE</button>
+</form>
+</div>
+</section>
+
+<h3>Example of tg-remote form: PATCH</h3>
+<div class="prepend-pre">
+<div id="foo-results-patch" refresh="foo-results-patch">
+
+</div>
+<form tg-remote action="/legacy_pages/patch_foo" method="post" refresh-on-success="foo-results-patch">
+  <input type="hidden" name="_method" value="patch">
+  <input type="radio" name="someradio" value="A">
+  <input type="radio" name="someradio" value="B">
+  <input type="radio" name="someradio" value="C">
+  <input type="checkbox" name="somecheck" value="1">
+  <input type="text" name="disabled_textbox" disabled value="Disabled">
+  <input type="text" name="readonly_textbox" readonly value="Readonly">
+  <br>
+  <input type="submit" value="Submit tg-remote PATCH">
+</form>
+</div>
+
+<section>
+  <h1>Other features</h1>
+  <%= link_to "Perform a full navigation to learn more", html_with_noscript_legacy_pages_path %>
+</section>
