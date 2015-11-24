@@ -179,10 +179,13 @@
 
 
 <div class="prepend-pre">
-<a href="<%= page_path(rand(100)) %>" data-tg-remote="GET" data-tg-refresh-on-success="page section-a section-b">
+<a id='random-page-link' refresh='page' href="<%= page_path(rand(100)) %>" data-tg-remote="GET" data-tg-refresh-on-success="page section-a section-b">
   <i>data-tg-remote GET to response of 200</i>
 </a>
 </div>
+<p>
+  The above is useful to navigate elsewhere while refreshing part of the page.
+</p>
 
 <div class="prepend-pre">
 <a href="<%= page_path(rand(100)) %>" data-tg-remote="GET" data-tg-full-refresh-on-success-except="section-a">

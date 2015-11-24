@@ -130,19 +130,25 @@ class TurboGraft.Remote
 
     unless TurboGraft.hasTGAttribute(@initiator, 'tg-remote-norefresh')
       if @opts.fullRefresh && @refreshOnSuccess
-        Page.refresh(onlyKeys: @refreshOnSuccess)
+        Page.refresh
+          url: @opts.httpUrl
+          onlyKeys: @refreshOnSuccess
       else if @opts.fullRefresh
-        Page.refresh()
+        Page.refresh
+          url: @opts.httpUrl
       else if @refreshOnSuccess
         Page.refresh
+          url: @opts.httpUrl
           response: xhr
           onlyKeys: @refreshOnSuccess
       else if @refreshOnSuccessExcept
         Page.refresh
+          url: @opts.httpUrl
           response: xhr
           exceptKeys: @refreshOnSuccessExcept
       else
         Page.refresh
+          url: @opts.httpUrl
           response: xhr
 
   onError: (ev) ->
@@ -155,10 +161,12 @@ class TurboGraft.Remote
 
     if @refreshOnError
       Page.refresh
+        url: @opts.httpUrl
         response: xhr
         onlyKeys: @refreshOnError
     else if @refreshOnErrorExcept
       Page.refresh
+        url: @opts.httpUrl
         response: xhr
         exceptKeys: @refreshOnErrorExcept
     else
