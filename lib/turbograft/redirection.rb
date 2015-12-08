@@ -4,6 +4,7 @@ module TurboGraft
   module Redirection
     extend ActiveSupport::Concern
 
+    private
     def redirect_via_turbolinks_to(url = {}, response_status = {})
       redirect_to(url, response_status)
 
