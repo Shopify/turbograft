@@ -121,7 +121,7 @@ class window.Turbolinks
     if doc = processResponse(xhr, options.partialReplace)
       reflectNewUrl url if options.updatePushState
       nodes = changePage(extractTitleAndBody(doc)..., options)
-      reflectRedirectedUrl(xhr) if options.updatePushState
+      reflectRedirectedUrl(xhr)
       triggerEvent 'page:load', nodes
       options.onLoadFunction?()
     else
