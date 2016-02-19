@@ -74,6 +74,7 @@ class window.Turbolinks
 
     options.partialReplace ?= false
     options.onlyKeys ?= []
+    options.updatePushState ?= true
     options.onLoadFunction = ->
       resetScrollPosition() unless options.onlyKeys.length
       options.callback?()
@@ -115,10 +116,7 @@ class window.Turbolinks
     return
 
   @loadPage: (url, xhr, options = {}) ->
-    rememberReferer()
-
     triggerEvent 'page:receive'
-    options.updatePushState ?= true
 
     if doc = processResponse(xhr, options.partialReplace)
       reflectNewUrl url if options.updatePushState

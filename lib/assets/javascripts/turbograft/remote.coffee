@@ -5,6 +5,7 @@ class TurboGraft.Remote
 
     @actualRequestType = if @opts.httpRequestType?.toLowerCase() == 'get' then 'GET' else 'POST'
     @useNativeEncoding = @opts.useNativeEncoding
+    @updatePushState = !!@opts.updatePushState
 
     @formData = @createPayload(form)
 
@@ -133,23 +134,28 @@ class TurboGraft.Remote
         Page.refresh
           url: @opts.httpUrl
           onlyKeys: @refreshOnSuccess
+          updatePushState: @updatePushState
       else if @opts.fullRefresh
         Page.refresh
           url: @opts.httpUrl
+          updatePushState: @updatePushState
       else if @refreshOnSuccess
         Page.refresh
           url: @opts.httpUrl
           response: xhr
           onlyKeys: @refreshOnSuccess
+          updatePushState: @updatePushState
       else if @refreshOnSuccessExcept
         Page.refresh
           url: @opts.httpUrl
           response: xhr
           exceptKeys: @refreshOnSuccessExcept
+          updatePushState: @updatePushState
       else
         Page.refresh
           url: @opts.httpUrl
           response: xhr
+          updatePushState: @updatePushState
 
   onError: (ev) ->
     @opts.fail?()
