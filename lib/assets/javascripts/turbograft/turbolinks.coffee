@@ -272,10 +272,7 @@ class window.Turbolinks
     return
 
   reflectRedirectedUrl = (xhr) ->
-    if location = xhr.getResponseHeader 'X-XHR-Redirected-To'
-      location = new ComponentUrl location
-      preservedHash = if location.hasNoHash() then document.location.hash else ''
-      Turbolinks.replaceState currentState, '', location.href + preservedHash
+    reflectNewUrl(location) if location = xhr.getResponseHeader 'X-XHR-Redirected-To'
     return
 
   rememberReferer = ->
