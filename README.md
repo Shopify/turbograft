@@ -71,6 +71,9 @@ The `data-tg-refresh-never` attribute will cause a node only appear once in the 
 </div>
 ```
 
+### updatePushState
+Defaults to `true`. When set to false it prevents `Page.refresh()` from updating the url in the browser.
+
 ## data-tg-remote
 
 The `data-tg-remote` option allows you to query methods on or submit forms to different endpoints, and gives partial page replacement on specified refresh keys depending on the response status.
