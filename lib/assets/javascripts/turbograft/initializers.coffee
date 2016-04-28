@@ -17,6 +17,7 @@ setupRemoteFromTarget = (target, httpRequestType, form = null) ->
     httpRequestType: httpRequestType
     httpUrl: httpUrl
     fullRefresh: TurboGraft.getTGAttribute(target, 'full-refresh')?
+    updatePushState: TurboGraft.hasTGAttribute(target, 'tg-update-historystate')
     refreshOnSuccess: TurboGraft.getTGAttribute(target, 'refresh-on-success')
     refreshOnSuccessExcept: TurboGraft.getTGAttribute(target, 'full-refresh-on-success-except')
     refreshOnError: TurboGraft.getTGAttribute(target, 'refresh-on-error')

@@ -74,6 +74,7 @@ class window.Turbolinks
 
     options.partialReplace ?= false
     options.onlyKeys ?= []
+    options.updatePushState ?= true
     options.onLoadFunction = ->
       resetScrollPosition() unless options.onlyKeys.length
       options.callback?()
@@ -116,12 +117,11 @@ class window.Turbolinks
 
   @loadPage: (url, xhr, options = {}) ->
     triggerEvent 'page:receive'
-    options.updatePushState ?= true
 
     if doc = processResponse(xhr, options.partialReplace)
       reflectNewUrl url if options.updatePushState
       nodes = changePage(extractTitleAndBody(doc)..., options)
-      reflectRedirectedUrl(xhr) if options.updatePushState
+      reflectRedirectedUrl(xhr)
       triggerEvent 'page:load', nodes
       options.onLoadFunction?()
     else
@@ -272,10 +272,7 @@ class window.Turbolinks
     return
 
   reflectRedirectedUrl = (xhr) ->
-    if location = xhr.getResponseHeader 'X-XHR-Redirected-To'
-      location = new ComponentUrl location
-      preservedHash = if location.hasNoHash() then document.location.hash else ''
-      Turbolinks.replaceState currentState, '', location.href + preservedHash
+    reflectNewUrl(location) if location = xhr.getResponseHeader 'X-XHR-Redirected-To'
     return
 
   rememberReferer = ->
