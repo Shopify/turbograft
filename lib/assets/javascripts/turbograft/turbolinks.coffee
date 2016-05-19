@@ -215,7 +215,8 @@ class window.Turbolinks
         else
           refreshedNodes.push(newNode)
 
-      else if TurboGraft.getTGAttribute(existingNode, "refresh-always") == null
+      else if (TurboGraft.getTGAttribute(existingNode, "refresh-always") == null &&
+               TurboGraft.getTGAttribute(existingNode, "data-tg-refresh-always") == null)
         removeNode(existingNode)
 
     refreshedNodes
