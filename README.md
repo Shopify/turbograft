@@ -87,7 +87,7 @@ It requires your `<form>`, `<a>`, or `<button>` to be marked up with:
 * `data-tg-refresh-on-error`: (optional) The refresh keys to be refreshed, but using body of XHR which has failed. Only works with error 422. If the XHR returns and error and you do not supply a refresh-on-error, nothing is changed
 * `data-tg-full-refresh-on-error-except`: (optional) Replaces body except for specified refresh keys, using the body of the XHR which has failed.  Only works with error 422
 * `data-tg-remote-once`: (optional) The action will only be performed once. Removes `data-tg-remote-method` and `data-tg-remote-once` from element after consumption
-* `data-tg-full-refresh`: Rather than using the content of the XHR response for partial page replacement, a full page refresh is performed. If `data-tg-refresh-on-success` is defined, the page will be reloaded on these keys. If `data-tg-refresh-on-success` is not defined, a full page refresh is performed. Defaults to true if neither refresh-on-success nor refresh-on-error are provided
+* `data-tg-full-refresh`: Rather than using the content of the XHR response for partial page replacement, a full page refresh is performed. If `data-tg-refresh-on-success` or `data-tg-refresh-on-error` is defined, the page will be reloaded on those keys. If both `data-tg-refresh-on-success` and `data-tg-refresh-on-error` are not defined, a full page refresh is performed. Defaults to true if neither refresh-on-success nor refresh-on-error are provided
 * `data-tg-remote-norefresh`: Prevents `Page.refresh()` from being called, allowing methods to be executed without updating client state
 
 Note that as `data-tg-refresh-on-*` pertains to partial refreshes and `data-tg-full-refresh-on-*-except` pertains to full refreshes, they are incompatible with each other and should not be combined.
@@ -125,7 +125,7 @@ Post to a remote form:
 * `turbograft:remote:always`: Always fires when XHR is complete
 * `turbograft:remote:success`: Always fires when XHR was successful
 * `turbograft:remote:fail`: Always fires when XHR failed
-* `turbograft:remote:fail:unhandled`: Fires after `turbograft:remote:fail`, but when no partial replacement with refresh-on-error was performed (because no `data-tg-refresh-on-error` was supplied)
+* `turbograft:remote:fail:unhandled`: Fires after `turbograft:remote:fail`, but when no partial replacement with refresh-on-error was performed (because no `data-tg-refresh-on-error` was supplied or because `data-tg-remote-norefresh` was present)
 
 Each event also is sent with a copy of the XHR, as well as a reference to the element that initated the `data-tg-remote-method`.
 
