@@ -21,7 +21,7 @@ describe 'Page', ->
       Page.refresh
         url: '/foo'
 
-      assert @visitStub.calledOnce
+      assert @visitStub.calledOnce, "message"
       assert @visitStub.calledWith "/foo", { partialReplace: true, onlyKeys: undefined }
 
     it 'with opts.queryParams', ->
