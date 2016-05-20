@@ -3,7 +3,7 @@ Turbograft extends [Turbolinks](https://github.com/rails/turbolinks), allowing y
 
 `Graft` - (noun) a shoot or twig inserted into a slit on the trunk or stem of a living plant, from which it receives sap.
 
-In botony, one can take parts of a tree and splice it onto another tree.  The DOM is a tree.  In this library, we're cutting off sub-trees of the DOM and splicing new ones on.
+In botany, one can take parts of a tree and splice it onto another tree.  The DOM is a tree.  In this library, we're cutting off sub-trees of the DOM and splicing new ones on.
 
  Turbolinks works by intercepting navigation requests and loading them via Ajax when possible, swapping the body tag of the document with the newly loaded copy. Turbograft builds on this to allow you to perform a partial page refresh on specified DOM nodes by adding a refresh key. This allows you reduce page load time, while the feeling of a native, single-page application.
 
