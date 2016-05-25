@@ -22,7 +22,7 @@ describe 'Page', ->
         url: '/foo'
 
       assert @visitStub.calledOnce
-      assert @visitStub.calledWith "/foo", { partialReplace: true, onlyKeys: undefined }
+      assert @visitStub.calledWith "/foo", { url: '/foo', partialReplace: true }
 
     it 'with opts.queryParams', ->
       Page.refresh

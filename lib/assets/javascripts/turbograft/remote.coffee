@@ -153,14 +153,22 @@ class TurboGraft.Remote
       initiator: @initiator
       xhr: xhr
 
-    if @refreshOnError
-      Page.refresh
-        response: xhr
-        onlyKeys: @refreshOnError
-    else if @refreshOnErrorExcept
-      Page.refresh
-        response: xhr
-        exceptKeys: @refreshOnErrorExcept
-    else
+    if TurboGraft.hasTGAttribute(@initiator, 'tg-remote-norefresh')
       triggerEventFor 'turbograft:remote:fail:unhandled', @initiator,
         xhr: xhr
+    else
+      if @opts.fullRefresh && @refreshOnError
+        Page.refresh(onlyKeys: @refreshOnError)
+      else if @opts.fullRefresh
+        Page.refresh()
+      else if @refreshOnError
+        Page.refresh
+          response: xhr
+          onlyKeys: @refreshOnError
+      else if @refreshOnErrorExcept
+        Page.refresh
+          response: xhr
+          exceptKeys: @refreshOnErrorExcept
+      else
+        triggerEventFor 'turbograft:remote:fail:unhandled', @initiator,
+          xhr: xhr
