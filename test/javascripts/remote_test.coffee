@@ -67,6 +67,53 @@ describe 'Remote', ->
       assert.equal "/foo/bar", request.url
       assert.equal "POST", request.method
 
+  describe 'callbacks', ->
+
+    it 'will call options.fail() on HTTP failures', (done) ->
+      server = sinon.fakeServer.create()
+      server.respondWith("POST", "/foo/bar",
+            [422, { "Content-Type": "text/html" },
+             '<div id="foo" refresh="foo">Error occured</div>'])
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+        refreshOnError: "foo"
+        fail: done
+      , @initiating_target
+      remote.submit()
+
+      server.respond()
+
+    it 'will call options.fail() on XHR failures', (done) ->
+      xhr = sinon.useFakeXMLHttpRequest()
+
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+        refreshOnError: "foo"
+        fail: done
+      , @initiating_target
+
+      simulateError = ->
+        listener(target: remote.xhr) for listener in remote.xhr.eventListeners.error
+
+      setTimeout(simulateError, 0)
+
+    it 'will call options.success() on success', (done) ->
+      server = sinon.fakeServer.create()
+      server.respondWith("POST", "/foo/bar",
+            [200, { "Content-Type": "text/html" },
+             '<div>Hey there</div>'])
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+        refreshOnError: "foo"
+        success: done
+      , @initiating_target
+      remote.submit()
+
+      server.respond()
+
   describe 'TurboGraft events', ->
 
     beforeEach ->
@@ -74,7 +121,6 @@ describe 'Remote', ->
 
     afterEach ->
       @refreshStub.restore()
-
 
     it 'allows turbograft:remote:init to set a header', ->
       $(@initiating_target).one "turbograft:remote:init", (event) ->
