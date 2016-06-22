@@ -116,7 +116,7 @@ class TurboGraft.Remote
       enabledInputs.push(input)
     enabledInputs
 
-  onSuccess: (ev) ->
+  onSuccess: (ev) =>
     @opts.success?()
 
     xhr = ev.target
@@ -145,7 +145,7 @@ class TurboGraft.Remote
         Page.refresh
           response: xhr
 
-  onError: (ev) ->
+  onError: (ev) =>
     @opts.fail?()
 
     xhr = ev.target
