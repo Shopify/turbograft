@@ -20,7 +20,7 @@ TurboGraft.removeTGAttribute = (node, attr) ->
 
 TurboGraft.hasTGAttribute = (node, attr) ->
   tgAttr = TurboGraft.tgAttribute(attr)
-  node.getAttribute(tgAttr)? || node.getAttribute(attr)?
+  node.hasAttribute(tgAttr) || node.hasAttribute(attr)
 
 TurboGraft.querySelectorAllTGAttribute = (node, attr, value = null) ->
   tgAttr = TurboGraft.tgAttribute(attr)
