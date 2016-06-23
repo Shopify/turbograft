@@ -8,7 +8,7 @@ describe 'Remote', ->
   describe 'HTTP methods', ->
 
     it 'will send a GET with _method=GET', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       remote = new TurboGraft.Remote
         httpRequestType: "GET"
         httpUrl: "/foo/bar"
@@ -20,7 +20,7 @@ describe 'Remote', ->
       assert.equal "GET", request.method
 
     it 'will send a POST with _method=POST', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -32,7 +32,7 @@ describe 'Remote', ->
       assert.equal "POST", request.method
 
     it 'will send a POST with _method=PUT', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       remote = new TurboGraft.Remote
         httpRequestType: "PUT"
         httpUrl: "/foo/bar"
@@ -44,7 +44,7 @@ describe 'Remote', ->
       assert.equal "POST", request.method
 
     it 'will send a POST with _method=PATCH', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       remote = new TurboGraft.Remote
         httpRequestType: "PATCH"
         httpUrl: "/foo/bar"
@@ -56,7 +56,7 @@ describe 'Remote', ->
       assert.equal "POST", request.method
 
     it 'will send a POST with _method=DELETE', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       remote = new TurboGraft.Remote
         httpRequestType: "DELETE"
         httpUrl: "/foo/bar"
@@ -67,6 +67,53 @@ describe 'Remote', ->
       assert.equal "/foo/bar", request.url
       assert.equal "POST", request.method
 
+  describe 'callbacks', ->
+
+    it 'will call options.fail() on HTTP failures', (done) ->
+      server = sinon.fakeServer.create()
+      server.respondWith("POST", "/foo/bar",
+            [422, { "Content-Type": "text/html" },
+             '<div id="foo" refresh="foo">Error occured</div>'])
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+        refreshOnError: "foo"
+        fail: done
+      , @initiating_target
+      remote.submit()
+
+      server.respond()
+
+    it 'will call options.fail() on XHR failures', (done) ->
+      xhr = sinon.useFakeXMLHttpRequest()
+
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+        refreshOnError: "foo"
+        fail: done
+      , @initiating_target
+
+      simulateError = ->
+        listener(target: remote.xhr) for listener in remote.xhr.eventListeners.error
+
+      setTimeout(simulateError, 0)
+
+    it 'will call options.success() on success', (done) ->
+      server = sinon.fakeServer.create()
+      server.respondWith("POST", "/foo/bar",
+            [200, { "Content-Type": "text/html" },
+             '<div>Hey there</div>'])
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+        refreshOnError: "foo"
+        success: done
+      , @initiating_target
+      remote.submit()
+
+      server.respond()
+
   describe 'TurboGraft events', ->
 
     beforeEach ->
@@ -74,7 +121,6 @@ describe 'Remote', ->
 
     afterEach ->
       @refreshStub.restore()
-
 
     it 'allows turbograft:remote:init to set a header', ->
       $(@initiating_target).one "turbograft:remote:init", (event) ->
@@ -112,7 +158,7 @@ describe 'Remote', ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -124,7 +170,7 @@ describe 'Remote', ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -139,10 +185,10 @@ describe 'Remote', ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [200, { "Content-Type": "text/html" },
-             '<div>Hey there</div>']);
+             '<div>Hey there</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -162,10 +208,10 @@ describe 'Remote', ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [422, { "Content-Type": "text/html" },
-             '<div id="foo" refresh="foo">Error occured</div>']);
+             '<div id="foo" refresh="foo">Error occured</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -183,10 +229,10 @@ describe 'Remote', ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [422, { "Content-Type": "text/html" },
-             '<div id="foo" refresh="foo">Error occured</div>']);
+             '<div id="foo" refresh="foo">Error occured</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -200,10 +246,10 @@ describe 'Remote', ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [200, { "Content-Type": "text/html" },
-             '<div>Hey there</div>']);
+             '<div>Hey there</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -217,10 +263,10 @@ describe 'Remote', ->
         assert.equal "/foo/bar", ev.originalEvent.data.xhr.url
         done()
 
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [500, { "Content-Type": "text/html" },
-             '<div id="foo" refresh="foo">Error occured</div>']);
+             '<div id="foo" refresh="foo">Error occured</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -230,10 +276,10 @@ describe 'Remote', ->
       server.respond()
 
     it 'XHR=200: will trigger Page.refresh using XHR only', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [200, { "Content-Type": "text/html" },
-             '<div>Hey there</div>']);
+             '<div>Hey there</div>'])
 
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
@@ -246,10 +292,10 @@ describe 'Remote', ->
         response: sinon.match.has('responseText', '<div>Hey there</div>')
 
     it 'XHR=200: will trigger Page.refresh using XHR and refresh-on-success', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [200, { "Content-Type": "text/html" },
-             '<div>Hey there</div>']);
+             '<div>Hey there</div>'])
 
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
@@ -264,10 +310,10 @@ describe 'Remote', ->
         onlyKeys: ['a', 'b', 'c']
 
     it 'XHR=200: will trigger Page.refresh using XHR and refresh-on-success-except', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [200, { "Content-Type": "text/html" },
-             '<div>Hey there</div>']);
+             '<div>Hey there</div>'])
 
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
@@ -282,10 +328,10 @@ describe 'Remote', ->
         exceptKeys: ['a', 'b', 'c']
 
     it 'XHR=200: will trigger Page.refresh with refresh-on-success when full-refresh is provided', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [200, { "Content-Type": "text/html" },
-             '<div>Hey there</div>']);
+             '<div>Hey there</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -300,10 +346,10 @@ describe 'Remote', ->
         onlyKeys: ['a', 'b', 'c']
 
     it 'XHR=200: will trigger Page.refresh with no arguments when full-refresh is present and refresh-on-success is not provided', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [200, { "Content-Type": "text/html" },
-             '<div>Hey there</div>']);
+             '<div>Hey there</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -317,10 +363,10 @@ describe 'Remote', ->
       assert.equal 0, @refreshStub.args[0].length
 
     it 'XHR=200: will not trigger Page.refresh when tg-remote-norefresh is present on the initiator', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [200, { "Content-Type": "text/html" },
-             '<div>Hey there</div>']);
+             '<div>Hey there</div>'])
 
       @initiating_target.setAttribute("tg-remote-norefresh", true)
       remote = new TurboGraft.Remote
@@ -335,10 +381,10 @@ describe 'Remote', ->
       assert.equal 0, @refreshStub.callCount
 
     it 'XHR=422: will trigger Page.refresh using XHR and refresh-on-error', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [422, { "Content-Type": "text/html" },
-             '<div id="foo" refresh="foo">Error occured</div>']);
+             '<div id="foo" refresh="foo">Error occured</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -353,10 +399,10 @@ describe 'Remote', ->
         onlyKeys: ['a', 'b', 'c']
 
     it 'XHR=422: will trigger Page.refresh using XHR and refresh-on-error-except', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [422, { "Content-Type": "text/html" },
-             '<div id="foo" refresh="foo">Error occured</div>']);
+             '<div id="foo" refresh="foo">Error occured</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -371,10 +417,10 @@ describe 'Remote', ->
         exceptKeys: ['a', 'b', 'c']
 
     it 'XHR=422: will trigger Page.refresh with refresh-on-error when full-refresh is provided', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [422, { "Content-Type": "text/html" },
-             '<div id="foo" refresh="foo">Error occured</div>']);
+             '<div id="foo" refresh="foo">Error occured</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -389,10 +435,10 @@ describe 'Remote', ->
         onlyKeys: ['a', 'b', 'c']
 
     it 'XHR=422: will not trigger Page.refresh if no refresh-on-error is present', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [422, { "Content-Type": "text/html" },
-             '<div id="foo" refresh="foo">Error occured</div>']);
+             '<div id="foo" refresh="foo">Error occured</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -404,10 +450,10 @@ describe 'Remote', ->
       assert.equal 0, @refreshStub.callCount
 
     it 'XHR=422: will trigger Page.refresh with no arguments when full-refresh is present and refresh-on-error is not provided', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [422, { "Content-Type": "text/html" },
-             '<div id="foo" refresh="foo">Error occured</div>']);
+             '<div id="foo" refresh="foo">Error occured</div>'])
       remote = new TurboGraft.Remote
         httpRequestType: "POST"
         httpUrl: "/foo/bar"
@@ -421,10 +467,10 @@ describe 'Remote', ->
       assert.equal 0, @refreshStub.args[0].length
 
     it 'XHR=422: will not trigger Page.refresh when tg-remote-norefresh is present on the initiator', ->
-      server = sinon.fakeServer.create();
+      server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [422, { "Content-Type": "text/html" },
-             '<div id="foo" refresh="foo">Error occured</div>']);
+             '<div id="foo" refresh="foo">Error occured</div>'])
 
       @initiating_target.setAttribute("tg-remote-norefresh", true)
       remote = new TurboGraft.Remote
