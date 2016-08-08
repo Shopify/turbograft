@@ -1,0 +1,19 @@
+<script type="text/javascript">
+  var ASSET_FIXTURES = {
+    'foo.js': "<%= asset_path('js/foo.js') %>",
+    'bar.js': "<%= asset_path('js/bar.js') %>",
+    'a.js': "<%= asset_path('js/order_testing/a.js') %>",
+    'b.js': "<%= asset_path('js/order_testing/b.js') %>",
+    'c.js': "<%= asset_path('js/order_testing/c.js') %>",
+    'foo.css': "<%= asset_path('css/foo.css') %>",
+    'bar.css': "<%= asset_path('css/bar.css') %>",
+    'a.css': "<%= asset_path('css/order_testing/a.css') %>",
+    'b.css': "<%= asset_path('css/order_testing/b.css') %>",
+    'c.css': "<%= asset_path('css/order_testing/c.css') %>",
+    'd.css': "<%= asset_path('css/order_testing/d.css') %>"
+  };
+</script>
+<%= javascript_include_tag *@suite.spec_assets, debug: @suite.config.expand_assets %>
+<script type="text/javascript">
+  Teaspoon.onWindowLoad(Teaspoon.execute);
+</script>

@@ -12,3 +12,6 @@ lib/turbomodules.js
 *.orig
 .all
 Gemfile.lock
+.ruby-version
+.*.swp
+.DS_Store
