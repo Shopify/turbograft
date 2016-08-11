@@ -5,7 +5,7 @@ unless defined?(Rails)
 end
 
 Teaspoon.configure do |config|
-  config.driver = "selenium"
+  config.driver = ENV['TEASPOON_DRIVER'] || "phantomjs"
   config.mount_at = "/teaspoon"
   config.root = TurboGraft::Engine.root
   config.asset_paths = ["test/javascripts"]
