@@ -21,8 +21,8 @@ module TurboGraft
         Config.controllers.each do |klass|
           klass.constantize.class_eval do
             include XHRHeaders, Cookies, XDomainBlocker, Redirection
-            before_filter :set_xhr_redirected_to, :set_request_method_cookie
-            after_filter :abort_xdomain_redirect
+            before_action :set_xhr_redirected_to, :set_request_method_cookie
+            after_action :abort_xdomain_redirect
           end
         end
 
