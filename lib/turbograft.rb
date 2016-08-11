@@ -35,8 +35,7 @@ module TurboGraft
       end
 
       ActiveSupport.on_load(:action_view) do
-        (ActionView::RoutingUrlFor rescue ActionView::Helpers::UrlHelper).module_eval do
-          prepend XHRUrlFor
+        ActionView::RoutingUrlFor.prepend XHRUrlFor
         end
       end unless RUBY_VERSION =~ /^1\.8/
     end
