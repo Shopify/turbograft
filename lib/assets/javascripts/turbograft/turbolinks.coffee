@@ -151,7 +151,7 @@ class window.Turbolinks
       replaceNode(body, document.body)
       CSRFToken.update csrfToken if csrfToken?
       setAutofocusElement()
-      executeScriptTags() if runScripts
+      executeScriptTags(document.body) if runScripts
       currentState = window.history.state
       triggerEvent 'page:change'
       triggerEvent 'page:update'
@@ -210,10 +210,8 @@ class window.Turbolinks
         newNode = newNode.cloneNode(true)
         replaceNode(newNode, existingNode)
 
-        if newNode.nodeName == 'SCRIPT' && newNode.getAttribute("data-turbolinks-eval") != "false"
-          executeScriptTag(newNode)
-        else
-          refreshedNodes.push(newNode)
+        executeScriptTags(newNode)
+        refreshedNodes.push(newNode)
 
       else if !TurboGraft.hasTGAttribute(existingNode, "refresh-always")
         removeNode(existingNode)
@@ -247,8 +245,8 @@ class window.Turbolinks
     keepNodes(body, allNodesToKeep)
     return
 
-  executeScriptTags = ->
-    scripts = Array::slice.call document.body.querySelectorAll 'script:not([data-turbolinks-eval="false"])'
+  executeScriptTags = (node) ->
+    scripts = Array::slice.call node.querySelectorAll 'script:not([data-turbolinks-eval="false"])'
     for script in scripts when script.type in ['', 'text/javascript']
       executeScriptTag(script)
     return
