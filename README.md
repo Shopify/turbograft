@@ -189,5 +189,5 @@ document.addEventListener 'page:after-node-removed', (event) ->
 ## Testing
 
 - `./server` and visit http://localhost:3000/teaspoon to run the JS test suite in the browser
-- `bundle exec teaspoon` will run the JS test suite from the command line (note: this uses phantomjs by default, but can be configured using the TEASPOON_DRIVER environment variable)
+- `bundle exec teaspoon` will run the JS test suite from the command line (note: this uses selenium by default, but can be configured using the TEASPOON_DRIVER environment variable)
 - `bundle exec rake test` to run the browser test suite
