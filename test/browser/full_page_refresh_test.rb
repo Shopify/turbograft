@@ -40,28 +40,18 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
 
   test "going to a URL that will error 500, and hitting the browser back button, we see the correct page (and not the 500)" do
     click_link "I will throw an error 500"
-    has_text = false
-    while !has_text
-      has_text = page.assert_text('Error 500!')
-      sleep 1
-    end
-    assert_not_equal "Sample Turbograft Application", page.title
+    page.assert_no_title("Sample Turbograft Application")
     page.execute_script 'window.history.back()'
     page.assert_no_text('Error 500!')
-    assert_equal "Sample Turbograft Application", page.title
+    page.assert_title("Sample Turbograft Application")
   end
 
   test "going to a URL that will error 404, and hitting the browser back button, we see the correct page (and not the 404)" do
     click_link "I will throw an error 404"
-    has_text = false
-    while !has_text
-      has_text = page.assert_text('Error 404!')
-      sleep 1
-    end
-    assert_not_equal "Sample Turbograft Application", page.title
+    page.assert_no_title("Sample Turbograft Application")
     page.execute_script 'window.history.back()'
     page.assert_no_text('Error 404!')
-    assert_equal "Sample Turbograft Application", page.title
+    page.assert_title("Sample Turbograft Application")
   end
 
   test "data-tg-static preserves client-side state of innards on full refresh, but will replaces contents if we specifically data-tg-partially-refresh a section inside of it" do
@@ -69,10 +59,7 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
     click_link "Perform a full page refresh"
     assert_equal "data-tg-static innards", find_field("badgeinput").value
     click_link "Perform a partial page refresh and refresh the navigation section"
-    while !page.has_content?
-      sleep 500
-    end
-    assert_equal "", find_field("badgeinput").value
+    find_field("badgeinput").assert_no_text("data-tg-static innards")
   end
 
   test "data-tg-refresh-always will always refresh the annotated nodes, regardless of refresh type" do

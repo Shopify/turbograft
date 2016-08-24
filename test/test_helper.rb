@@ -11,7 +11,7 @@ require 'rails/test_help'
 
 Capybara.app = Example::Application
 Capybara.current_driver = :selenium
-Capybara.default_wait_time = 2
+Capybara.default_max_wait_time = 2
 
 Minitest::Reporters.use!(Minitest::Reporters::DefaultReporter.new(color: true))
 
