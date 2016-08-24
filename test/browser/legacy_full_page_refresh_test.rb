@@ -8,6 +8,22 @@ class LegacyPagesFullPageRefreshTest < ActionDispatch::IntegrationTest
     visit "/legacy_pages/1"
   end
 
+  def wait_until_page_has(content)
+    finished_navigation = false
+    while !finished_navigation
+      finished_navigation = page.has_content?(content)
+      sleep 1
+    end
+  end
+
+  def wait_until_page_does_not_have(content)
+    finished_navigation = false
+    while !finished_navigation
+      finished_navigation = !page.has_content?(content)
+      sleep 1
+    end
+  end
+
   test "will strip noscript tags" do
     click_link "Perform a full navigation to learn more"
     refute page.has_selector?("noscript") # this test should pass, I think
@@ -38,28 +54,34 @@ class LegacyPagesFullPageRefreshTest < ActionDispatch::IntegrationTest
     refute page.has_selector?("[refresh-never]")
   end
 
+  test "going to a URL that should error 500" do
+    click_link "I will throw an error 500"
+    wait_until_page_has("Error 500!")
+
+    assert_not_equal "Sample Turbograft Application", page.title
+  end
+
   test "going to a URL that will error 500, and hitting the browser back button, we see the correct page (and not the 500)" do
     click_link "I will throw an error 500"
-    has_text = false
-    while !has_text
-      has_text = page.assert_text('Error 500!')
-      sleep 1
-    end
-    assert_not_equal "Sample Turbograft Application", page.title
+    wait_until_page_has("Error 500!")
     page.execute_script 'window.history.back()'
+
     page.assert_no_text('Error 500!')
     assert_equal "Sample Turbograft Application", page.title
   end
 
+  test "going to a URL that should error 404" do
+    click_link "I will throw an error 404"
+    wait_until_page_has("Error 404!")
+
+    assert_not_equal "Sample Turbograft Application", page.title
+  end
+
   test "going to a URL that will error 404, and hitting the browser back button, we see the correct page (and not the 404)" do
     click_link "I will throw an error 404"
-    has_text = false
-    while !has_text
-      has_text = page.assert_text('Error 404!')
-      sleep 1
-    end
-    assert_not_equal "Sample Turbograft Application", page.title
+    wait_until_page_has("Error 404!")
     page.execute_script 'window.history.back()'
+
     page.assert_no_text('Error 404!')
     assert_equal "Sample Turbograft Application", page.title
   end
@@ -69,9 +91,7 @@ class LegacyPagesFullPageRefreshTest < ActionDispatch::IntegrationTest
     click_link "Perform a full page refresh"
     assert_equal "tg-static innards", find_field("badgeinput").value
     click_link "Perform a partial page refresh and refresh the navigation section"
-    while !page.has_content?
-      sleep 500
-    end
+    wait_until_page_does_not_have("tg-static innards")
     assert_equal "", find_field("badgeinput").value
   end
 
@@ -82,6 +102,7 @@ class LegacyPagesFullPageRefreshTest < ActionDispatch::IntegrationTest
     assert_equal "", find_field("badgeinput2").value
     page.fill_in 'badgeinput2', :with => 'some innards 555'
     click_link "Perform a partial page refresh and refresh the navigation section"
+    wait_until_page_does_not_have("some innards 555")
     page.assert_no_text "some innards 555"
     assert_equal "", find_field("badgeinput2").value
   end

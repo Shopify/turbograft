@@ -1,6 +1,7 @@
 //= require support/sinon
 //= require support/chai
 //= require support/sinon-chai
+//= require fixtures/js/routes
 //= require application
 
 expect = chai.expect;

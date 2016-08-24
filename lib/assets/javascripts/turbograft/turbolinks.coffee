@@ -63,7 +63,6 @@ removeNode = (node) ->
 class window.Turbolinks
   createDocument = null
   currentState = null
-  loadedAssets = null
   referer = null
 
   fetch = (url, options = {}) ->
@@ -80,6 +79,10 @@ class window.Turbolinks
 
     fetchReplacement url, options
 
+  @fullPageNavigate: (url) ->
+    triggerEvent('page:before-full-refresh', url: url)
+    document.location.href = url
+
   @pushState: (state, title, url) ->
     window.history.pushState(state, title, url)
 
@@ -89,12 +92,18 @@ class window.Turbolinks
   fetchReplacement = (url, options) ->
     triggerEvent 'page:fetch', url: url.absolute
 
-    xhr?.abort()
+    if xhr?
+      # Workaround for sinon xhr.abort()
+      # https://github.com/sinonjs/sinon/issues/432#issuecomment-216917023
+      xhr.readyState = 0
+      xhr.statusText = "abort"
+      xhr.abort()
+
     xhr = new XMLHttpRequest
+
     xhr.open 'GET', url.withoutHashForIE10compatibility(), true
     xhr.setRequestHeader 'Accept', 'text/html, application/xhtml+xml, application/xml'
     xhr.setRequestHeader 'X-XHR-Referer', referer
-
     options.headers ?= {}
 
     for k,v of options.headers
@@ -102,13 +111,17 @@ class window.Turbolinks
 
     xhr.onload = ->
       if xhr.status >= 500
-        document.location.href = url.absolute
+        Turbolinks.fullPageNavigate(url.absolute)
       else
         Turbolinks.loadPage(url, xhr, options)
+      xhr = null
 
-    xhr.onloadend = -> xhr = null
-    xhr.onerror   = ->
-      document.location.href = url.absolute
+    xhr.onerror = ->
+      # Workaround for sinon xhr.abort()
+      if xhr.statusText == "abort"
+        xhr = null
+        return
+      Turbolinks.fullPageNavigate(url.absolute)
 
     xhr.send()
 
@@ -117,17 +130,27 @@ class window.Turbolinks
   @loadPage: (url, xhr, options = {}) ->
     triggerEvent 'page:receive'
     options.updatePushState ?= true
-
-    if doc = processResponse(xhr, options.partialReplace)
+    if upstreamDocument = processResponse(xhr, options.partialReplace)
       reflectNewUrl url if options.updatePushState
-      nodes = changePage(extractTitleAndBody(doc)..., options)
-      reflectRedirectedUrl(xhr) if options.updatePushState
-      triggerEvent 'page:load', nodes
-      options.onLoadFunction?()
-    else
-      document.location.href = url.absolute
 
-    return
+      new TurboHead(document, upstreamDocument).update(
+        onHeadUpdateSuccess = ->
+          nodes = changePage(
+            upstreamDocument.querySelector('title')?.textContent,
+            removeNoscriptTags(upstreamDocument.querySelector('body')),
+            CSRFToken.get(upstreamDocument).token,
+            'runScripts',
+            options
+          )
+          reflectRedirectedUrl(xhr) if options.updatePushState
+          options.onLoadFunction?()
+          triggerEvent 'page:load', nodes
+        ,
+        onHeadUpdateError = ->
+          Turbolinks.fullPageNavigate(url.absolute)
+      )
+    else
+      Turbolinks.fullPageNavigate(url.absolute)
 
   changePage = (title, body, csrfToken, runScripts, options = {}) ->
     document.title = title if title
@@ -210,7 +233,7 @@ class window.Turbolinks
         newNode = newNode.cloneNode(true)
         replaceNode(newNode, existingNode)
 
-        if newNode.nodeName == 'SCRIPT' && newNode.getAttribute("data-turbolinks-eval") != "false"
+        if newNode.nodeName == 'SCRIPT' && newNode.dataset.turbolinksEval != "false"
           executeScriptTag(newNode)
         else
           refreshedNodes.push(newNode)
@@ -307,29 +330,9 @@ class window.Turbolinks
     validContent = ->
       xhr.getResponseHeader('Content-Type').match /^(?:text\/html|application\/xhtml\+xml|application\/xml)(?:;|$)/
 
-    extractTrackAssets = (doc) ->
-      for node in doc.querySelector('head').childNodes when node.getAttribute?('data-turbolinks-track')?
-        node.getAttribute('src') or node.getAttribute('href')
-
-    assetsChanged = (doc) ->
-      loadedAssets ||= extractTrackAssets document
-      fetchedAssets  = extractTrackAssets doc
-      fetchedAssets.length isnt loadedAssets.length or intersection(fetchedAssets, loadedAssets).length isnt loadedAssets.length
-
-    intersection = (a, b) ->
-      [a, b] = [b, a] if a.length > b.length
-      value for value in a when value in b
-
     if !clientOrServerError() && validContent()
-      doc = createDocument xhr.responseText
-      changed = assetsChanged(doc)
-
-      if doc && (!changed || partial)
-        return doc
-
-  extractTitleAndBody = (doc) ->
-    title = doc.querySelector 'title'
-    [ title?.textContent, removeNoscriptTags(doc.querySelector('body')), CSRFToken.get(doc).token, 'runScripts' ]
+      upstreamDocument = createDocument(xhr.responseText)
+      return upstreamDocument
 
   installHistoryChangeHandler = (event) ->
     if event.state?.turbolinks
