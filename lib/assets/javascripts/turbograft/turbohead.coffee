@@ -26,7 +26,7 @@ updateScriptTags = (activeDocument, newScripts, callback) ->
   )
 
 extractTrackedAssets = (doc) ->
-  return [].slice.call(doc.querySelectorAll('[data-turbolinks-track]'))
+  [].slice.call(doc.querySelectorAll('[data-turbolinks-track]'))
 
 filterForNodeType = (nodeType) ->
   (node) -> node.nodeName == nodeType
