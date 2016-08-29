@@ -363,6 +363,18 @@ describe 'Turbolinks', ->
   describe 'with partial page replacement', ->
     beforeEach -> window.globalStub = stub()
 
+    it 'head assets are not inserted during partial replace', (done) ->
+      visit url: 'singleScriptInHead', options: {partialReplace: true, onlyKeys: ['turbo-area']}, ->
+        assertScripts([])
+        done()
+
+    it 'head assets are not removed during partial replace', (done) ->
+      visit url: 'singleLinkInHead', ->
+        assertLinks(['foo.css'])
+        visit url: 'twoLinksInHead', options: {partialReplace: true, onlyKeys: ['turbo-area']}, ->
+          assertLinks(['foo.css'])
+          done()
+
     it 'script tags are evaluated when they are the subject of a partial replace', (done) ->
       visit url: 'inlineScriptInBody', options: {partialReplace: true, onlyKeys: ['turbo-area']}, ->
         assert(globalStub.calledOnce, 'Script tag was not evaluated :(')
