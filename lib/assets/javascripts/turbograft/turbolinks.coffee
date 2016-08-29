@@ -132,15 +132,16 @@ class window.Turbolinks
     options.updatePushState ?= true
     if upstreamDocument = processResponse(xhr)
       reflectNewUrl url if options.updatePushState
-      unless options.partialReplace
-        return new TurboHead(document, upstreamDocument).update(
+      if options.partialReplace
+        updateBody(upstreamDocument, xhr, options)
+      else
+        new TurboHead(document, upstreamDocument).update(
           onHeadUpdateSuccess = ->
             updateBody(upstreamDocument, xhr, options)
           ,
           onHeadUpdateError = ->
             Turbolinks.fullPageNavigate(url.absolute)
         )
-      return updateBody(upstreamDocument, xhr, options)
     else
       triggerEvent 'page:error', xhr
       Turbolinks.fullPageNavigate(url.absolute) if url?
