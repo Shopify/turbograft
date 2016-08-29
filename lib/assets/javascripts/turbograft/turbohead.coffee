@@ -26,8 +26,7 @@ updateScriptTags = (activeDocument, newScripts, callback) ->
   )
 
 extractTrackedAssets = (doc) ->
-  for node in doc.head.children when node.dataset.turbolinksTrack?
-    node
+  [].slice.call(doc.querySelectorAll('[data-turbolinks-track]'))
 
 filterForNodeType = (nodeType) ->
   (node) -> node.nodeName == nodeType

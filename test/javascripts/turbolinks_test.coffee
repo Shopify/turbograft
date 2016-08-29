@@ -64,7 +64,7 @@ describe 'Turbolinks', ->
 
   visit = ({options, url}, callback) ->
     $(document).one('page:load', (event) ->
-      setTimeout((-> callback(event)), 0)
+      setTimeout((-> callback(event) if callback), 0)
     )
     Turbolinks.visit('/' + url, options)
 
