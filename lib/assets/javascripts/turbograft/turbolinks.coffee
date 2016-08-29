@@ -130,28 +130,33 @@ class window.Turbolinks
   @loadPage: (url, xhr, options = {}) ->
     triggerEvent 'page:receive'
     options.updatePushState ?= true
-    if upstreamDocument = processResponse(xhr, options.partialReplace)
+    if upstreamDocument = processResponse(xhr)
       reflectNewUrl url if options.updatePushState
-
-      new TurboHead(document, upstreamDocument).update(
-        onHeadUpdateSuccess = ->
-          nodes = changePage(
-            upstreamDocument.querySelector('title')?.textContent,
-            removeNoscriptTags(upstreamDocument.querySelector('body')),
-            CSRFToken.get(upstreamDocument).token,
-            'runScripts',
-            options
-          )
-          reflectRedirectedUrl(xhr) if options.updatePushState
-          options.onLoadFunction?()
-          triggerEvent 'page:load', nodes
-        ,
-        onHeadUpdateError = ->
-          Turbolinks.fullPageNavigate(url.absolute)
-      )
+      if options.partialReplace
+        updateBody(upstreamDocument, xhr, options)
+      else
+        new TurboHead(document, upstreamDocument).update(
+          onHeadUpdateSuccess = ->
+            updateBody(upstreamDocument, xhr, options)
+          ,
+          onHeadUpdateError = ->
+            Turbolinks.fullPageNavigate(url.absolute)
+        )
     else
       triggerEvent 'page:error', xhr
       Turbolinks.fullPageNavigate(url.absolute) if url?
+
+  updateBody = (upstreamDocument, xhr, options) ->
+    nodes = changePage(
+      upstreamDocument.querySelector('title')?.textContent,
+      removeNoscriptTags(upstreamDocument.querySelector('body')),
+      CSRFToken.get(upstreamDocument).token,
+      'runScripts',
+      options
+    )
+    reflectRedirectedUrl(xhr) if options.updatePushState
+    options.onLoadFunction?()
+    triggerEvent 'page:load', nodes
 
   changePage = (title, body, csrfToken, runScripts, options = {}) ->
     document.title = title if title
@@ -323,7 +328,7 @@ class window.Turbolinks
   pageChangePrevented = (url) ->
     !triggerEvent('page:before-change', url)
 
-  processResponse = (xhr, partial = false) ->
+  processResponse = (xhr) ->
     clientOrServerError = ->
       return false if xhr.status == 422 # we want to render form validations
       400 <= xhr.status < 600
