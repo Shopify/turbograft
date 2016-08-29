@@ -327,7 +327,7 @@ class window.Turbolinks
   pageChangePrevented = (url) ->
     !triggerEvent('page:before-change', url)
 
-  processResponse = (xhr, partial = false) ->
+  processResponse = (xhr) ->
     clientOrServerError = ->
       return false if xhr.status == 422 # we want to render form validations
       400 <= xhr.status < 600
