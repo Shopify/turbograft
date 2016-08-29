@@ -185,33 +185,6 @@ describe 'Turbolinks', ->
           assertLinks(['foo.css'])
           done()
 
-    it 'many subsequent navigations do not break head asset tracking', (done) ->
-      requestsToDo = 10
-
-      recursiveVisit = ->
-        visit url: 'twoLinksInHead', ->
-          visit url: 'singleLinkInHead', ->
-            assertLinks(['foo.css'])
-            requestsToDo -=1
-            return recursiveVisit() if requestsToDo > 0
-            done()
-
-      recursiveVisit()
-
-      it 'many subsequent synchronous navigations do not break head asset tracking', (done) ->
-        requestsToDo = 10
-
-        recursiveVisit = ->
-          visit url: 'twoLinksInHead'
-          visit url: 'singleLinkInHead'
-          visit url: 'twoLinksInHead', ->
-              assertLinks(['foo.css', 'bar.css'])
-              requestsToDo -=1
-              return recursiveVisit() if requestsToDo > 0
-              done()
-
-        recursiveVisit()
-
     describe 'transforms the current head to have the same links in the same order as the upstream document with minimal moves', ->
       it 'maintains order when moving from an empty head to a page with link nodes.', (done) ->
         linkTagInserted = sinon.spy()
