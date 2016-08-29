@@ -150,7 +150,8 @@ class window.Turbolinks
           Turbolinks.fullPageNavigate(url.absolute)
       )
     else
-      Turbolinks.fullPageNavigate(url.absolute)
+      triggerEvent 'page:error', xhr
+      Turbolinks.fullPageNavigate(url.absolute) if url?
 
   changePage = (title, body, csrfToken, runScripts, options = {}) ->
     document.title = title if title
