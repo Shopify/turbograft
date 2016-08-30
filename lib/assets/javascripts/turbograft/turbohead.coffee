@@ -176,7 +176,7 @@ reorderActiveLinks = (activeLinks, upstreamLinks) ->
               document.head.insertBefore(linkClone, currentLink.nextSibling)
               removeLink(linkToMove, startIndex)
               activeLinksCopy.splice(i, 0, linkToMove)
-              triggerEvent('page:after-link-inserted', linkToMove)
+              triggerEvent('page:after-link-inserted', linkClone)
               return
           else
             addNewReorder(linkToMove, currentLink, pendingReorders)
