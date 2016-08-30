@@ -157,11 +157,11 @@ reorderActiveLinks = (activeLinks, upstreamLinks) ->
             markReorderAsFinished(linkToMove, currentLink, linksToPassBy)
 
             if linksToPassBy.length == 0
+              linkClone = linkToMove.cloneNode()
+              document.head.insertBefore(linkClone, currentLink)
               removeLink(linkToMove, startIndex)
-
-              document.head.insertBefore(linkToMove, activeLinksCopy[i])
-              activeLinksCopy.splice(i, 0, linkToMove)
-              triggerEvent('page:after-link-inserted', linkToMove)
+              activeLinksCopy.splice(i, 0, linkClone)
+              triggerEvent('page:after-link-inserted', linkClone)
               return
           else
             addNewReorder(linkToMove, currentLink, pendingReorders)
@@ -172,15 +172,10 @@ reorderActiveLinks = (activeLinks, upstreamLinks) ->
             markReorderAsFinished(linkToMove, currentLink, linksToPassBy)
 
             if linksToPassBy.length == 0
+              linkClone = linkToMove.cloneNode()
+              document.head.insertBefore(linkClone, currentLink.nextSibling)
               removeLink(linkToMove, startIndex)
-
-              targetIndex = i - 1
-              if targetIndex == activeLinksCopy.length - 1
-                document.head.appendChild(linkToMove)
-                activeLinksCopy.push(linkToMove)
-              else
-                document.head.insertBefore(linkToMove, activeLinksCopy[targetIndex + 1])
-                activeLinksCopy.splice(targetIndex + 1, 0, linkToMove)
+              activeLinksCopy.splice(i, 0, linkToMove)
               triggerEvent('page:after-link-inserted', linkToMove)
               return
           else
