@@ -134,15 +134,6 @@ describe 'Turbolinks', ->
           assert.equal(linkTagInserted.callCount, 1)
           done()
 
-    it 'dispatches page:after-link-removed event when removing a link on navigation', (done) ->
-      linkTagRemoved = sinon.spy()
-      $(document).on 'page:after-link-removed', linkTagRemoved
-
-      visit url: 'singleLinkInHead', ->
-        visit url: 'noScriptsOrLinkInHead', ->
-          assert.equal(linkTagRemoved.callCount, 1)
-          done()
-
     it 'inserts link with a new href into empty head on navigation', (done) ->
       visit url: 'noScriptsOrLinkInHead', ->
         assertLinks([])
@@ -157,96 +148,12 @@ describe 'Turbolinks', ->
           assertLinks(['foo.css', 'bar.css'])
           done()
 
-    it 'inserts link with a new href before exiting scripts in head on navigation', (done) ->
-      visit url: 'singleLinkInHead', ->
-        assertLinks(['foo.css'])
-        visit url: 'twoLinksInHeadReverseOrder', ->
-          assertLinks(['bar.css', 'foo.css'])
-          done()
-
     it 'does not reinsert link with existing href into identical head on navigation', (done) ->
       visit url: 'singleLinkInHead', ->
         assertLinks(['foo.css'])
         visit url: 'singleLinkInHead', ->
           assertLinks(['foo.css'])
           done()
-
-    it 'removes link when navigating to a page with an empty head', (done) ->
-      visit url: 'singleLinkInHead', ->
-        assertLinks(['foo.css'])
-        visit url: 'noScriptsOrLinkInHead', ->
-          assertLinks([])
-          done()
-
-    it 'removes link when navigating to a page with the href missing', (done) ->
-      visit url: 'twoLinksInHead', ->
-        assertLinks(['foo.css', 'bar.css'])
-        visit url: 'singleLinkInHead', ->
-          assertLinks(['foo.css'])
-          done()
-
-    describe 'transforms the current head to have the same links in the same order as the upstream document with minimal moves', ->
-      it 'maintains order when moving from an empty head to a page with link nodes.', (done) ->
-        linkTagInserted = sinon.spy()
-        $(document).on 'page:after-link-inserted', linkTagInserted
-        visit url: 'fourLinksInHeadABCD', ->
-          assertLinks(['a.css', 'b.css', 'c.css', 'd.css'])
-          assert.equal(linkTagInserted.callCount, 4)
-          done()
-
-      it 'performs the minimal number of moves for an upwards transform ABCD to BCDA.', (done) ->
-        visit url: 'fourLinksInHeadABCD', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadBCDA', ->
-            assertLinks(['b.css', 'c.css', 'd.css', 'a.css'])
-            assert.equal(linkTagInserted.callCount, 1) # Move A
-            done()
-
-      it 'performs the minimal number of moves for a downwards transform BCDA to ABCD.', (done) ->
-        visit url: 'fourLinksInHeadBCDA', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadABCD', ->
-            assertLinks(['a.css', 'b.css', 'c.css', 'd.css'])
-            assert.equal(linkTagInserted.callCount, 1) # Move A
-            done()
-
-      it 'maintains order when moving from a head with links ABCD to links CDAB.', (done) ->
-        visit url: 'fourLinksInHeadABCD', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadCDAB', ->
-            assertLinks(['c.css', 'd.css', 'a.css', 'b.css'])
-            assert.equal(linkTagInserted.callCount, 2) # Move A,B or C,D
-            done()
-
-      it 'maintains order when moving from a head with links ABCD to links CDBA.', (done) ->
-        visit url: 'fourLinksInHeadABCD', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadCDBA', ->
-            assertLinks(['c.css', 'd.css', 'b.css', 'a.css'])
-            assert.equal(linkTagInserted.callCount, 2) # Move A,B
-            done()
-
-      it 'maintains order when moving from a head with links ABCD to links CBDA.', (done) ->
-        visit url: 'fourLinksInHeadABCD', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadCBDA', ->
-            assertLinks(['c.css', 'b.css', 'd.css', 'a.css'])
-            assert.equal(linkTagInserted.callCount, 2) # Move A,B or A,C
-            done()
-
-      it 'maintains order when moving from a head with links ABCD to links DCBA.', (done) ->
-        visit url: 'fourLinksInHeadABCD', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadDCBA', ->
-            assertLinks(['d.css', 'c.css', 'b.css', 'a.css'])
-            assert.equal(linkTagInserted.callCount, 3) # Move any 3
-            done()
 
   describe 'head script tag tracking', ->
     it 'dispatches page:after-script-inserted event when inserting a script on navigation', (done) ->
@@ -348,7 +255,7 @@ describe 'Turbolinks', ->
           assertScripts(['foo.js', 'bar.js'])
           done()
 
-    it 'refreshes page when a data-turbolinks-track-script-as src changes', (done) ->
+    it 'refreshes page when a data-turbolinks-track value matches but src changes', (done) ->
       visit url: 'singleScriptInHead', ->
         visit url: 'singleScriptInHeadWithDifferentSourceButSameName', ->
           assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')

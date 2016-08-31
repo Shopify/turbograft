@@ -24,8 +24,7 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['foo.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="foo"
+            data-turbolinks-track="foo"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -44,12 +43,10 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['foo.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="foo"
+            data-turbolinks-track="foo"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['bar.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="bar"
+            data-turbolinks-track="bar"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -70,12 +67,10 @@ window.ROUTES = {
           <script
             src=""
             id="broken-script"
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="broken"
+            data-turbolinks-track="broken"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['foo.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="foo"
+            data-turbolinks-track="foo"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -96,8 +91,7 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['bar.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="bar"
+            data-turbolinks-track="bar"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -116,8 +110,7 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['bar.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="foo"
+            data-turbolinks-track="foo"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -136,8 +129,7 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
         </head>
         <body>
@@ -155,16 +147,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -183,16 +172,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -211,16 +197,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -239,16 +222,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -267,16 +247,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -295,16 +272,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
