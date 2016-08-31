@@ -31,7 +31,7 @@ filterForNodeType = (nodeType) ->
 
 noMatchFor = ({attribute, inCollection}) ->
   (node) ->
-    !inCollection.some((nodeFromCollection) -> node[attribute] != nodeFromCollection[attribute])
+    !inCollection.some((nodeFromCollection) -> node[attribute] == nodeFromCollection[attribute])
 
 hasAssetConflicts = (activeAssets) ->
   (newNode) ->
@@ -42,10 +42,10 @@ hasAssetConflicts = (activeAssets) ->
     )
 
 updateLinkTags = (activeDocument, newLinks, callback) ->
-  asyncParallel(
-    newLinks.map((linkNode) -> insertLinkTask(activeDocument, linkNode)),
-    callback
-  )
+  # style tag load events don't work in all browsers
+  # as such we just hope they load ¯\_(ツ)_/¯
+  newLinks.forEach((linkNode) -> insertLinkTask(activeDocument, linkNode)())
+  callback()
 
 updateScriptTags = (activeDocument, newScripts, callback) ->
   asyncSeries(
