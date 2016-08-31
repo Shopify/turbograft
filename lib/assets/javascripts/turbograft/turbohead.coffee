@@ -44,7 +44,7 @@ hasAssetConflicts = (activeAssets) ->
 updateLinkTags = (activeDocument, newLinks, callback) ->
   # style tag load events don't work in all browsers
   # as such we just hope they load ¯\_(ツ)_/¯
-  newLinks.forEach((linkNode) -> insertLinkTask(activeDocument, linkNode)())
+  newLinks.forEach((linkNode) -> insertLinkTask(activeDocument, linkNode)(noOp))
   callback()
 
 updateScriptTags = (activeDocument, newScripts, callback) ->
@@ -52,6 +52,8 @@ updateScriptTags = (activeDocument, newScripts, callback) ->
     newScripts.map((scriptNode) -> insertScriptTask(activeDocument, scriptNode)),
     callback
   )
+
+noOp = -> null
 
 asyncSeries = (tasks, callback) ->
   return callback() if tasks.length == 0
