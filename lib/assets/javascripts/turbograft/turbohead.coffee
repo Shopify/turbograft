@@ -60,18 +60,6 @@ asyncSeries = (tasks, callback) ->
   task = tasks.shift()
   task(-> asyncSeries(tasks, callback))
 
-
-asyncParallel = (tasks, callback) ->
-  tasksRemaining = tasks.length
-  return callback() if tasksRemaining == 0
-
-  done = () ->
-    tasksRemaining--
-    if (tasksRemaining == 0)
-      callback()
-
-  tasks.forEach((task) -> task(done))
-
 insertScriptTask = (activeDocument, scriptNode) ->
   # We need to clone script tags in order to ensure that the browser executes them.
   newNode = activeDocument.createElement('SCRIPT')
