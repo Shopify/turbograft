@@ -135,13 +135,9 @@ class window.Turbolinks
       if options.partialReplace
         updateBody(upstreamDocument, xhr, options)
       else
-        new TurboHead(document, upstreamDocument).update(
-          onHeadUpdateSuccess = ->
-            updateBody(upstreamDocument, xhr, options)
-          ,
-          onHeadUpdateError = ->
-            Turbolinks.fullPageNavigate(url.absolute)
-        )
+        turbohead = new TurboHead(document, upstreamDocument)
+        return Turbolinks.fullPageNavigate(url.absolute) if turbohead.hasAssetConflicts()
+        turbohead.insertNewAssets(-> updateBody(upstreamDocument, xhr, options))
     else
       triggerEvent 'page:error', xhr
       Turbolinks.fullPageNavigate(url.absolute) if url?

@@ -1,23 +1,23 @@
 class window.TurboHead
   constructor: (@activeDocument, @upstreamDocument) ->
-
-  update: (successCallback, failureCallback) ->
-    activeAssets = extractTrackedAssets(@activeDocument)
-    upstreamAssets = extractTrackedAssets(@upstreamDocument)
-
-    newScripts = upstreamAssets
+    @activeAssets = extractTrackedAssets(@activeDocument)
+    @upstreamAssets = extractTrackedAssets(@upstreamDocument)
+    @newScripts = @upstreamAssets
       .filter(filterForNodeType('SCRIPT'))
-      .filter(noMatchFor({attribute: 'src', inCollection: activeAssets}))
+      .filter(noMatchFor({attribute: 'src', inCollection: @activeAssets}))
 
-    newLinks = upstreamAssets
+    @newLinks = @upstreamAssets
       .filter(filterForNodeType('LINK'))
-      .filter(noMatchFor({attribute: 'href', inCollection: activeAssets}))
+      .filter(noMatchFor({attribute: 'href', inCollection: @activeAssets}))
 
-    if newScripts.concat(newLinks).some(hasAssetConflicts(activeAssets))
-      return failureCallback()
+  hasAssetConflicts: () ->
+    @newScripts
+      .concat(@newLinks)
+      .some(hasAssetConflicts(@activeAssets))
 
-    updateLinkTags(@activeDocument, newLinks)
-    updateScriptTags(@activeDocument, newScripts, successCallback)
+  insertNewAssets: (callback) ->
+    updateLinkTags(@activeDocument, @newLinks)
+    updateScriptTags(@activeDocument, @newScripts, callback)
 
 extractTrackedAssets = (doc) ->
   [].slice.call(doc.querySelectorAll('[data-turbolinks-track]'))
