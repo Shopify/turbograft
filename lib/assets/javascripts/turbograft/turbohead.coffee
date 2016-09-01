@@ -16,12 +16,8 @@ class window.TurboHead
     if newScripts.concat(newLinks).some(hasAssetConflicts(activeAssets))
       return failureCallback()
 
-    updateTasks = [
-      (done) => updateLinkTags(@activeDocument, newLinks, done),
-      (done) => updateScriptTags(@activeDocument, newScripts, done)
-    ]
-
-    asyncSeries(updateTasks, successCallback)
+    updateLinkTags(@activeDocument, newLinks)
+    updateScriptTags(@activeDocument, newScripts, successCallback)
 
 extractTrackedAssets = (doc) ->
   [].slice.call(doc.querySelectorAll('[data-turbolinks-track]'))
@@ -41,11 +37,10 @@ hasAssetConflicts = (activeAssets) ->
       trackName != 'true'
     )
 
-updateLinkTags = (activeDocument, newLinks, callback) ->
+updateLinkTags = (activeDocument, newLinks) ->
   # style tag load events don't work in all browsers
   # as such we just hope they load ¯\_(ツ)_/¯
-  newLinks.forEach((linkNode) -> insertLinkTask(activeDocument, linkNode)(noOp))
-  callback()
+  newLinks.forEach((linkNode) -> insertLinkTask(activeDocument, linkNode)())
 
 updateScriptTags = (activeDocument, newScripts, callback) ->
   asyncSeries(
@@ -76,7 +71,7 @@ insertAssetTask = (activeDocument, newNode, name) ->
       triggerEvent("page:#{name}-error", event) if event.type == 'error'
       newNode.removeEventListener('load', onAssetEvent)
       newNode.removeEventListener('error', onAssetEvent)
-      done()
+      done() if typeof done == 'function'
     newNode.addEventListener('load', onAssetEvent)
     newNode.addEventListener('error', onAssetEvent)
     activeDocument.head.appendChild(newNode)
