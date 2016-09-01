@@ -1,41 +1,74 @@
+TRACKED_ASSET_SELECTOR = '[data-turbolinks-track]'
+TRACKED_ATTRIBUTE_NAME = 'turbolinksTrack'
+ANONYMOUS_TRACK_VALUE = 'true'
+
 class window.TurboHead
   constructor: (@activeDocument, @upstreamDocument) ->
     @activeAssets = extractTrackedAssets(@activeDocument)
     @upstreamAssets = extractTrackedAssets(@upstreamDocument)
     @newScripts = @upstreamAssets
-      .filter(filterForNodeType('SCRIPT'))
-      .filter(noMatchFor({attribute: 'src', inCollection: @activeAssets}))
+      .filter(attributeMatches('nodeName', 'SCRIPT'))
+      .filter(noAttributeMatchesIn('src', @activeAssets))
 
     @newLinks = @upstreamAssets
-      .filter(filterForNodeType('LINK'))
-      .filter(noMatchFor({attribute: 'href', inCollection: @activeAssets}))
+      .filter(attributeMatches('nodeName', 'LINK'))
+      .filter(noAttributeMatchesIn('href', @activeAssets))
 
-  hasAssetConflicts: () ->
+  hasChangedAnonymousAssets: () ->
+    anonymousUpstreamAssets = @upstreamAssets
+      .filter(datasetMatches(TRACKED_ATTRIBUTE_NAME, ANONYMOUS_TRACK_VALUE))
+    anonymousActiveAssets = @activeAssets
+      .filter(datasetMatches(TRACKED_ATTRIBUTE_NAME, ANONYMOUS_TRACK_VALUE))
+
+    if anonymousActiveAssets.length != anonymousUpstreamAssets.length
+      return true
+
+    anonymousActiveAssets.some(
+      noAttributeMatchesIn(TRACKED_ATTRIBUTE_NAME, anonymousUpstreamAssets)
+    )
+
+  hasNamedAssetConflicts: () ->
     @newScripts
       .concat(@newLinks)
-      .some(hasAssetConflicts(@activeAssets))
+      .filter(noDatasetMatches(TRACKED_ATTRIBUTE_NAME, ANONYMOUS_TRACK_VALUE))
+      .some(datasetMatchesIn(TRACKED_ATTRIBUTE_NAME, @activeAssets))
+
+  hasAssetConflicts: () ->
+    @hasNamedAssetConflicts() || @hasChangedAnonymousAssets()
 
   insertNewAssets: (callback) ->
     updateLinkTags(@activeDocument, @newLinks)
     updateScriptTags(@activeDocument, @newScripts, callback)
 
 extractTrackedAssets = (doc) ->
-  [].slice.call(doc.querySelectorAll('[data-turbolinks-track]'))
+  [].slice.call(doc.querySelectorAll(TRACKED_ASSET_SELECTOR))
 
-filterForNodeType = (nodeType) ->
-  (node) -> node.nodeName == nodeType
+attributeMatches = (attribute, value) ->
+  (node) -> node[attribute] == value
 
-noMatchFor = ({attribute, inCollection}) ->
+attributeMatchesIn = (attribute, collection) ->
   (node) ->
-    !inCollection.some((nodeFromCollection) -> node[attribute] == nodeFromCollection[attribute])
+    collection.some((nodeFromCollection) -> node[attribute] == nodeFromCollection[attribute])
 
-hasAssetConflicts = (activeAssets) ->
-  (newNode) ->
-    activeAssets.some((activeNode) ->
-      trackName = newNode.dataset.turbolinksTrack
-      trackName == activeNode.dataset.turbolinksTrack &&
-      trackName != 'true'
-    )
+noAttributeMatchesIn = (attribute, collection) ->
+  (node) ->
+    !collection.some((nodeFromCollection) -> node[attribute] == nodeFromCollection[attribute])
+
+datasetMatches = (attribute, value) ->
+  (node) -> node.dataset[attribute] == value
+
+noDatasetMatches = (attribute, value) ->
+  (node) -> node.dataset[attribute] != value
+
+datasetMatchesIn = (attribute, collection) ->
+  (node) ->
+    value = node.dataset[attribute]
+    collection.some(datasetMatches(attribute, value))
+
+noDatasetMatchesIn = (attribute, collection) ->
+  (node) ->
+    value = node.dataset[attribute]
+    !collection.some(datasetMatches(attribute, value))
 
 updateLinkTags = (activeDocument, newLinks) ->
   # style tag load events don't work in all browsers
@@ -47,8 +80,6 @@ updateScriptTags = (activeDocument, newScripts, callback) ->
     newScripts.map((scriptNode) -> insertScriptTask(activeDocument, scriptNode)),
     callback
   )
-
-noOp = -> null
 
 asyncSeries = (tasks, callback) ->
   return callback() if tasks.length == 0
