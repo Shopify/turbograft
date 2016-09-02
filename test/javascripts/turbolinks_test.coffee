@@ -138,9 +138,7 @@ describe 'Turbolinks', ->
     describe 'using data-turbolinks-track="true"', ->
       startFromFixture = (route) ->
         fixtureHTML = ROUTES[route][2]
-        $fixture = $(fixtureHTML)
-        document.body.innerHTML = $fixture.find('body').html()
-        document.head.innerHTML = $fixture.find('head').html()
+        document.documentElement.innerHTML = fixtureHTML
 
       it 'refreshes page when a new tracked node is present', (done) ->
         visit url: 'singleScriptInHeadTrackTrue', ->
@@ -150,13 +148,25 @@ describe 'Turbolinks', ->
       it 'refreshes page when an extant tracked node is missing', (done) ->
         startFromFixture('twoScriptsInHeadTrackTrue')
         visit url: 'singleScriptInHeadTrackTrue', ->
-          assert(Turbolinks.fullPageNavigate.callCount, 2, 'Should perform two full page refreshes.')
+          assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
+          done()
+
+      it 'refreshes page when upstream and active tracked scripts lengths are equal but one\'s source changes', (done) ->
+        startFromFixture('twoScriptsInHeadTrackTrue')
+        visit url: 'twoScriptsInHeadTrackTrueOneChanged', ->
+          assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
+          done()
+
+      it 'refreshes page when upstream and active tracked links lengths are equal but one\'s source changes', (done) ->
+        startFromFixture('twoLinksInHeadTrackTrue')
+        visit url: 'twoLinksInHeadTrackTrueOneChanged', ->
+          assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
           done()
 
       it 'does not refresh page when tracked nodes have matching sources', (done) ->
         startFromFixture('singleScriptInHeadTrackTrue')
         visit url: 'singleScriptInHeadTrackTrue', ->
-          assert.equal(Turbolinks.fullPageNavigate.callCount, 1, 'Should not perform a full page refresh.')
+          assert(Turbolinks.fullPageNavigate.notCalled, 'Should not perform a full page refresh.')
           done()
 
     describe 'link tags', ->

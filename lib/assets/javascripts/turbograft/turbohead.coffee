@@ -23,8 +23,11 @@ class window.TurboHead
     if anonymousActiveAssets.length != anonymousUpstreamAssets.length
       return true
 
-    anonymousActiveAssets.some(
-      noAttributeMatchesIn(TRACKED_ATTRIBUTE_NAME, anonymousUpstreamAssets)
+    noMatchingSrc = noAttributeMatchesIn('src', anonymousUpstreamAssets)
+    noMatchingHref = noAttributeMatchesIn('href', anonymousUpstreamAssets)
+
+    anonymousActiveAssets.some((node) ->
+      noMatchingSrc(node) || noMatchingHref(node)
     )
 
   hasNamedAssetConflicts: () ->

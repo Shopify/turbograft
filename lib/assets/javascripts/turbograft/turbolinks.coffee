@@ -131,15 +131,13 @@ class window.Turbolinks
     triggerEvent 'page:receive'
     options.updatePushState ?= true
     if upstreamDocument = processResponse(xhr)
+      reflectNewUrl url if options.updatePushState
       if options.partialReplace
-        reflectNewUrl url if options.updatePushState
         updateBody(upstreamDocument, xhr, options)
       else
         turbohead = new TurboHead(document, upstreamDocument)
         if turbohead.hasAssetConflicts()
           return Turbolinks.fullPageNavigate(url.absolute)
-
-        reflectNewUrl url if options.updatePushState
         turbohead.insertNewAssets(-> updateBody(upstreamDocument, xhr, options))
     else
       triggerEvent 'page:error', xhr

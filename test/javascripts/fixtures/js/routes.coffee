@@ -98,7 +98,7 @@ window.ROUTES = {
     """
   ],
 
-  twoScriptsInHeadTrackTrueAgain: [
+  twoScriptsInHeadTrackTrueOneChanged: [
     200,
     {'Content-Type':'text/html'},
     """
@@ -108,7 +108,7 @@ window.ROUTES = {
           <script src='#{ASSET_FIXTURES['foo.js']}'
             data-turbolinks-track="true"
             type="text/javascript"></script>
-          <script src='#{ASSET_FIXTURES['bar.js']}'
+          <script src='#{ASSET_FIXTURES['c.js']}'
             data-turbolinks-track="true"
             type="text/javascript"></script>
           <title>Hi there!</title>
@@ -378,6 +378,42 @@ window.ROUTES = {
         <head>
           <link href='#{ASSET_FIXTURES['foo.css']}' data-turbolinks-track="foo"></link>
           <link href='#{ASSET_FIXTURES['bar.css']}' data-turbolinks-track="bar"></link>
+          <title>Hi there!</title>
+        </head>
+        <body>
+          <div id="turbo-area" refresh="turbo-area"></div>
+        </body>
+      </html>
+    """
+  ],
+
+  twoLinksInHeadTrackTrue: [
+    200,
+    {'Content-Type':'text/html'},
+    """
+      <!doctype html>
+      <html>
+        <head>
+          <link href='#{ASSET_FIXTURES['foo.css']}' data-turbolinks-track="true"></link>
+          <link href='#{ASSET_FIXTURES['bar.css']}' data-turbolinks-track="true"></link>
+          <title>Hi there!</title>
+        </head>
+        <body>
+          <div id="turbo-area" refresh="turbo-area"></div>
+        </body>
+      </html>
+    """
+  ],
+
+  twoLinksInHeadTrackTrueOneChanged: [
+    200,
+    {'Content-Type':'text/html'},
+    """
+      <!doctype html>
+      <html>
+        <head>
+          <link href='#{ASSET_FIXTURES['a.css']}' data-turbolinks-track="true"></link>
+          <link href='#{ASSET_FIXTURES['bar.css']}' data-turbolinks-track="true"></link>
           <title>Hi there!</title>
         </head>
         <body>
