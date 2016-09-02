@@ -24,8 +24,26 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['foo.js']}'
+            data-turbolinks-track="foo"
+            type="text/javascript"></script>
+          <title>Hi there!</title>
+        </head>
+        <body>
+          <div id="turbo-area" refresh="turbo-area"></div>
+        </body>
+      </html>
+    """
+  ],
+
+  singleScriptInHeadTrackTrue: [
+    200,
+    {'Content-Type':'text/html'},
+    """
+      <!doctype html>
+      <html>
+        <head>
+          <script src='#{ASSET_FIXTURES['foo.js']}'
             data-turbolinks-track="true"
-            data-turbolinks-track-script-as="foo"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -44,17 +62,59 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['foo.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="foo"
+            data-turbolinks-track="foo"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['bar.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="bar"
+            data-turbolinks-track="bar"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
         <body>
           <div id="turbo-area" refresh="turbo-area"></div>
+        </body>
+      </html>
+    """
+  ],
+
+  twoScriptsInHeadTrackTrue: [
+    200,
+    {'Content-Type':'text/html'},
+    """
+      <!doctype html>
+      <html>
+        <head>
+          <script src='#{ASSET_FIXTURES['foo.js']}'
+            data-turbolinks-track="true"
+            type="text/javascript"></script>
+          <script src='#{ASSET_FIXTURES['bar.js']}'
+            data-turbolinks-track="true"
+            type="text/javascript"></script>
+          <title>Hi there!</title>
+        </head>
+        <body>
+          <div id="turbo-area" refresh="turbo-area"></div>
+        </body>
+      </html>
+    """
+  ],
+
+  twoScriptsInHeadTrackTrueOneChanged: [
+    200,
+    {'Content-Type':'text/html'},
+    """
+      <!doctype html>
+      <html>
+        <head>
+          <script src='#{ASSET_FIXTURES['foo.js']}'
+            data-turbolinks-track="true"
+            type="text/javascript"></script>
+          <script src='#{ASSET_FIXTURES['c.js']}'
+            data-turbolinks-track="true"
+            type="text/javascript"></script>
+          <title>Hi there!</title>
+        </head>
+        <body>
+          <div id="turbo-area" refresh="turbo-area">Merp</div>
         </body>
       </html>
     """
@@ -70,12 +130,10 @@ window.ROUTES = {
           <script
             src=""
             id="broken-script"
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="broken"
+            data-turbolinks-track="broken"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['foo.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="foo"
+            data-turbolinks-track="foo"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -96,8 +154,7 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['bar.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="bar"
+            data-turbolinks-track="bar"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -116,8 +173,7 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['bar.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="foo"
+            data-turbolinks-track="foo"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -136,8 +192,7 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
         </head>
         <body>
@@ -155,16 +210,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -183,16 +235,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -211,16 +260,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -239,16 +285,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -267,16 +310,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -295,16 +335,13 @@ window.ROUTES = {
       <html>
         <head>
           <script src='#{ASSET_FIXTURES['c.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="c"
+            data-turbolinks-track="c"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['b.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="b"
+            data-turbolinks-track="b"
             type="text/javascript"></script>
           <script src='#{ASSET_FIXTURES['a.js']}'
-            data-turbolinks-track="true"
-            data-turbolinks-track-script-as="a"
+            data-turbolinks-track="a"
             type="text/javascript"></script>
           <title>Hi there!</title>
         </head>
@@ -322,7 +359,7 @@ window.ROUTES = {
       <!doctype html>
       <html>
         <head>
-          <link href='#{ASSET_FIXTURES['foo.css']}' data-turbolinks-track="true"></link>
+          <link href='#{ASSET_FIXTURES['foo.css']}' data-turbolinks-track="foo"></link>
           <title>Hi there!</title>
         </head>
         <body>
@@ -339,7 +376,43 @@ window.ROUTES = {
       <!doctype html>
       <html>
         <head>
+          <link href='#{ASSET_FIXTURES['foo.css']}' data-turbolinks-track="foo"></link>
+          <link href='#{ASSET_FIXTURES['bar.css']}' data-turbolinks-track="bar"></link>
+          <title>Hi there!</title>
+        </head>
+        <body>
+          <div id="turbo-area" refresh="turbo-area"></div>
+        </body>
+      </html>
+    """
+  ],
+
+  twoLinksInHeadTrackTrue: [
+    200,
+    {'Content-Type':'text/html'},
+    """
+      <!doctype html>
+      <html>
+        <head>
           <link href='#{ASSET_FIXTURES['foo.css']}' data-turbolinks-track="true"></link>
+          <link href='#{ASSET_FIXTURES['bar.css']}' data-turbolinks-track="true"></link>
+          <title>Hi there!</title>
+        </head>
+        <body>
+          <div id="turbo-area" refresh="turbo-area"></div>
+        </body>
+      </html>
+    """
+  ],
+
+  twoLinksInHeadTrackTrueOneChanged: [
+    200,
+    {'Content-Type':'text/html'},
+    """
+      <!doctype html>
+      <html>
+        <head>
+          <link href='#{ASSET_FIXTURES['a.css']}' data-turbolinks-track="true"></link>
           <link href='#{ASSET_FIXTURES['bar.css']}' data-turbolinks-track="true"></link>
           <title>Hi there!</title>
         </head>
@@ -357,128 +430,8 @@ window.ROUTES = {
       <!doctype html>
       <html>
         <head>
-          <link href='#{ASSET_FIXTURES['bar.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['foo.css']}' data-turbolinks-track="true"></link>
-          <title>Hi there!</title>
-        </head>
-        <body>
-          <div id="turbo-area" refresh="turbo-area"></div>
-        </body>
-      </html>
-    """
-  ],
-
-  fourLinksInHeadABCD: [
-    200,
-    {'Content-Type':'text/html'},
-    """
-      <!doctype html>
-      <html>
-        <head>
-          <link href='#{ASSET_FIXTURES['a.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['b.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['c.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['d.css']}' data-turbolinks-track="true"></link>
-          <title>Hi there!</title>
-        </head>
-        <body>
-          <div id="turbo-area" refresh="turbo-area"></div>
-        </body>
-      </html>
-    """
-  ],
-
-  fourLinksInHeadBCDA: [
-    200,
-    {'Content-Type':'text/html'},
-    """
-      <!doctype html>
-      <html>
-        <head>
-          <link href='#{ASSET_FIXTURES['b.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['c.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['d.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['a.css']}' data-turbolinks-track="true"></link>
-          <title>Hi there!</title>
-        </head>
-        <body>
-          <div id="turbo-area" refresh="turbo-area"></div>
-        </body>
-      </html>
-    """
-  ],
-
-  fourLinksInHeadCDAB: [
-    200,
-    {'Content-Type':'text/html'},
-    """
-      <!doctype html>
-      <html>
-        <head>
-          <link href='#{ASSET_FIXTURES['c.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['d.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['a.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['b.css']}' data-turbolinks-track="true"></link>
-          <title>Hi there!</title>
-        </head>
-        <body>
-          <div id="turbo-area" refresh="turbo-area"></div>
-        </body>
-      </html>
-    """
-  ],
-
-  fourLinksInHeadCDBA: [
-    200,
-    {'Content-Type':'text/html'},
-    """
-      <!doctype html>
-      <html>
-        <head>
-          <link href='#{ASSET_FIXTURES['c.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['d.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['b.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['a.css']}' data-turbolinks-track="true"></link>
-          <title>Hi there!</title>
-        </head>
-        <body>
-          <div id="turbo-area" refresh="turbo-area"></div>
-        </body>
-      </html>
-    """
-  ],
-
-  fourLinksInHeadCBDA: [
-    200,
-    {'Content-Type':'text/html'},
-    """
-      <!doctype html>
-      <html>
-        <head>
-          <link href='#{ASSET_FIXTURES['c.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['b.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['d.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['a.css']}' data-turbolinks-track="true"></link>
-          <title>Hi there!</title>
-        </head>
-        <body>
-          <div id="turbo-area" refresh="turbo-area"></div>
-        </body>
-      </html>
-    """
-  ],
-
-  fourLinksInHeadDCBA: [
-    200,
-    {'Content-Type':'text/html'},
-    """
-      <!doctype html>
-      <html>
-        <head>
-          <link href='#{ASSET_FIXTURES['d.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['c.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['b.css']}' data-turbolinks-track="true"></link>
-          <link href='#{ASSET_FIXTURES['a.css']}' data-turbolinks-track="true"></link>
+          <link href='#{ASSET_FIXTURES['bar.css']}' data-turbolinks-track="bar"></link>
+          <link href='#{ASSET_FIXTURES['foo.css']}' data-turbolinks-track="foo"></link>
           <title>Hi there!</title>
         </head>
         <body>

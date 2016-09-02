@@ -122,243 +122,185 @@ describe 'Turbolinks', ->
         assert(yourCallback.calledOnce, 'Callback was not called.')
         done()
 
-  describe 'head link tag tracking', ->
-    it 'dispatches page:after-link-inserted event when inserting a link on navigation', (done) ->
-      linkTagInserted = sinon.spy()
-      $(document).on 'page:after-link-inserted', linkTagInserted
-
-      visit url: 'noScriptsOrLinkInHead', ->
-        assertLinks([])
-        visit url: 'singleLinkInHead', ->
-          assertLinks(['foo.css'])
-          assert.equal(linkTagInserted.callCount, 1)
-          done()
-
-    it 'dispatches page:after-link-removed event when removing a link on navigation', (done) ->
-      linkTagRemoved = sinon.spy()
-      $(document).on 'page:after-link-removed', linkTagRemoved
-
-      visit url: 'singleLinkInHead', ->
-        visit url: 'noScriptsOrLinkInHead', ->
-          assert.equal(linkTagRemoved.callCount, 1)
-          done()
-
-    it 'inserts link with a new href into empty head on navigation', (done) ->
-      visit url: 'noScriptsOrLinkInHead', ->
-        assertLinks([])
-        visit url: 'singleLinkInHead', ->
-          assertLinks(['foo.css'])
-          done()
-
-    it 'inserts link with a new href into existing head on navigation', (done) ->
-      visit url: 'singleLinkInHead', ->
-        assertLinks(['foo.css'])
-        visit url: 'twoLinksInHead', ->
-          assertLinks(['foo.css', 'bar.css'])
-          done()
-
-    it 'inserts link with a new href before exiting scripts in head on navigation', (done) ->
-      visit url: 'singleLinkInHead', ->
-        assertLinks(['foo.css'])
-        visit url: 'twoLinksInHeadReverseOrder', ->
-          assertLinks(['bar.css', 'foo.css'])
-          done()
-
-    it 'does not reinsert link with existing href into identical head on navigation', (done) ->
-      visit url: 'singleLinkInHead', ->
-        assertLinks(['foo.css'])
-        visit url: 'singleLinkInHead', ->
-          assertLinks(['foo.css'])
-          done()
-
-    it 'removes link when navigating to a page with an empty head', (done) ->
-      visit url: 'singleLinkInHead', ->
-        assertLinks(['foo.css'])
-        visit url: 'noScriptsOrLinkInHead', ->
-          assertLinks([])
-          done()
-
-    it 'removes link when navigating to a page with the href missing', (done) ->
-      visit url: 'twoLinksInHead', ->
-        assertLinks(['foo.css', 'bar.css'])
-        visit url: 'singleLinkInHead', ->
-          assertLinks(['foo.css'])
-          done()
-
-    describe 'transforms the current head to have the same links in the same order as the upstream document with minimal moves', ->
-      it 'maintains order when moving from an empty head to a page with link nodes.', (done) ->
-        linkTagInserted = sinon.spy()
-        $(document).on 'page:after-link-inserted', linkTagInserted
-        visit url: 'fourLinksInHeadABCD', ->
-          assertLinks(['a.css', 'b.css', 'c.css', 'd.css'])
-          assert.equal(linkTagInserted.callCount, 4)
-          done()
-
-      it 'performs the minimal number of moves for an upwards transform ABCD to BCDA.', (done) ->
-        visit url: 'fourLinksInHeadABCD', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadBCDA', ->
-            assertLinks(['b.css', 'c.css', 'd.css', 'a.css'])
-            assert.equal(linkTagInserted.callCount, 1) # Move A
-            done()
-
-      it 'performs the minimal number of moves for a downwards transform BCDA to ABCD.', (done) ->
-        visit url: 'fourLinksInHeadBCDA', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadABCD', ->
-            assertLinks(['a.css', 'b.css', 'c.css', 'd.css'])
-            assert.equal(linkTagInserted.callCount, 1) # Move A
-            done()
-
-      it 'maintains order when moving from a head with links ABCD to links CDAB.', (done) ->
-        visit url: 'fourLinksInHeadABCD', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadCDAB', ->
-            assertLinks(['c.css', 'd.css', 'a.css', 'b.css'])
-            assert.equal(linkTagInserted.callCount, 2) # Move A,B or C,D
-            done()
-
-      it 'maintains order when moving from a head with links ABCD to links CDBA.', (done) ->
-        visit url: 'fourLinksInHeadABCD', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadCDBA', ->
-            assertLinks(['c.css', 'd.css', 'b.css', 'a.css'])
-            assert.equal(linkTagInserted.callCount, 2) # Move A,B
-            done()
-
-      it 'maintains order when moving from a head with links ABCD to links CBDA.', (done) ->
-        visit url: 'fourLinksInHeadABCD', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadCBDA', ->
-            assertLinks(['c.css', 'b.css', 'd.css', 'a.css'])
-            assert.equal(linkTagInserted.callCount, 2) # Move A,B or A,C
-            done()
-
-      it 'maintains order when moving from a head with links ABCD to links DCBA.', (done) ->
-        visit url: 'fourLinksInHeadABCD', ->
-          linkTagInserted = sinon.spy()
-          $(document).on 'page:after-link-inserted', linkTagInserted
-          visit url: 'fourLinksInHeadDCBA', ->
-            assertLinks(['d.css', 'c.css', 'b.css', 'a.css'])
-            assert.equal(linkTagInserted.callCount, 3) # Move any 3
-            done()
-
-  describe 'head script tag tracking', ->
-    it 'dispatches page:after-script-inserted event when inserting a script on navigation', (done) ->
-      scriptTagInserted = sinon.spy()
-      $(document).on 'page:after-script-inserted', scriptTagInserted
-
-      visit url: 'noScriptsOrLinkInHead', ->
-        visit url: 'singleScriptInHead', ->
-          assert.equal(scriptTagInserted.callCount, 1)
-          done()
-
-    it 'inserts script with a new src into empty head on navigation', (done) ->
-      visit url: 'noScriptsOrLinkInHead', ->
-        assertScripts([])
-        visit url: 'singleScriptInHead', ->
-          assertScripts(['foo.js'])
-          done()
-
-    it 'inserts script with a new src into existing head on navigation', (done) ->
-      visit url: 'singleScriptInHead', ->
-        assertScripts(['foo.js'])
-        visit url: 'twoScriptsInHead', ->
-          assertScripts(['foo.js', 'bar.js'])
-          done()
-
-    it 'does not insert duplicate script tag on navigation into identical upstream head', (done) ->
-      visit url: 'singleScriptInHead', ->
-        assertScripts(['foo.js'])
-        visit url: 'singleScriptInHead', ->
-          assertScripts(['foo.js'])
-          done()
-
-    it 'does not insert duplicate script tag on navigation into superset upstream head', (done) ->
-      visit url: 'singleScriptInHead', ->
-        assertScripts(['foo.js'])
-        visit url: 'twoScriptsInHead', ->
-          assertScripts(['foo.js', 'bar.js'])
-          done()
-
-    it 'does not remove script when navigating to a page with an empty head', (done) ->
-      visit url: 'singleScriptInHead', ->
-        assertScripts(['foo.js'])
-        visit url: 'noScriptsOrLinkInHead', ->
-          assertScripts(['foo.js'])
-          done()
-
-    describe 'executes scripts in the order they are present in the dom of the upstream document', ->
-      beforeEach -> window.actualExecutionOrder = []
-      afterEach -> delete window.actualExecutionOrder
-
-      it 'works in order ABC', (done) ->
-        expectedScriptOrder = ['a', 'b', 'c']
-        visit url: 'threeScriptsInHeadABC', ->
-          assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
-          done()
-
-      it 'works in order ACB', (done) ->
-        visit url: 'threeScriptsInHeadACB', ->
-          expectedScriptOrder = ['a', 'c', 'b']
-          assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
-          done()
-
-      it 'works in order BAC', (done) ->
-        visit url: 'threeScriptsInHeadBAC', ->
-          expectedScriptOrder = ['b', 'a', 'c']
-          assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
-          done()
-
-      it 'works in order BCA', (done) ->
-        visit url: 'threeScriptsInHeadBCA', ->
-          expectedScriptOrder = ['b', 'c', 'a']
-          assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
-          done()
-
-      it 'works in order CAB', (done) ->
-        visit url: 'threeScriptsInHeadCAB', ->
-          expectedScriptOrder = ['c', 'a', 'b']
-          assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
-          done()
-
-      it 'works in order CBA', (done) ->
-        visit url: 'threeScriptsInHeadCBA', ->
-          expectedScriptOrder = ['c', 'b', 'a']
-          assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
-          done()
-
-      it 'executes new scripts in the relative order they are present in the dom of the upstream document', (done) ->
-        visit url: 'secondLibraryOnly', ->
-          assert.equal(actualExecutionOrder[0], 'b')
-          visit url: 'threeScriptsInHeadABC', ->
-            assert.equal(actualExecutionOrder[1], 'a')
-            assert.equal(actualExecutionOrder[2], 'c')
-            done()
-
-    it 'does not remove script nodes when navigating to a page with less script tags', (done) ->
-      visit url: 'twoScriptsInHead', ->
-        assertScripts(['foo.js', 'bar.js'])
-        visit url: 'singleScriptInHead', ->
-          assertScripts(['foo.js', 'bar.js'])
-          done()
-
-    it 'refreshes page when a data-turbolinks-track-script-as src changes', (done) ->
-      visit url: 'singleScriptInHead', ->
+  describe 'head asset tracking', ->
+    it 'refreshes page when a data-turbolinks-track value matches but src changes', (done) ->
+      visit url: 'singleScriptInHeadTwo', ->
         visit url: 'singleScriptInHeadWithDifferentSourceButSameName', ->
           assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
           done()
 
-    it 'it refreshes inline when a new data-turbolinks-track-script-as is added', (done) ->
+    it 'does not refresh page when new data-turbolinks-track values encountered', (done) ->
       visit url: 'singleScriptInHead', ->
-        visit url: 'differentSingleScriptInHead', ->
+        visit url: 'twoScriptsInHead', ->
           assert(Turbolinks.fullPageNavigate.notCalled, 'Should not perform a full page refresh.')
           done()
+
+    describe 'using data-turbolinks-track="true"', ->
+      startFromFixture = (route) ->
+        fixtureHTML = ROUTES[route][2]
+        document.documentElement.innerHTML = fixtureHTML
+
+      it 'refreshes page when a new tracked node is present', (done) ->
+        visit url: 'singleScriptInHeadTrackTrue', ->
+          assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
+          done()
+
+      it 'refreshes page when an extant tracked node is missing', (done) ->
+        startFromFixture('twoScriptsInHeadTrackTrue')
+        visit url: 'singleScriptInHeadTrackTrue', ->
+          assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
+          done()
+
+      it 'refreshes page when upstream and active tracked scripts lengths are equal but one\'s source changes', (done) ->
+        startFromFixture('twoScriptsInHeadTrackTrue')
+        visit url: 'twoScriptsInHeadTrackTrueOneChanged', ->
+          assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
+          done()
+
+      it 'refreshes page when upstream and active tracked links lengths are equal but one\'s source changes', (done) ->
+        startFromFixture('twoLinksInHeadTrackTrue')
+        visit url: 'twoLinksInHeadTrackTrueOneChanged', ->
+          assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
+          done()
+
+      it 'does not refresh page when tracked nodes have matching sources', (done) ->
+        startFromFixture('singleScriptInHeadTrackTrue')
+        visit url: 'singleScriptInHeadTrackTrue', ->
+          assert(Turbolinks.fullPageNavigate.notCalled, 'Should not perform a full page refresh.')
+          done()
+
+    describe 'link tags', ->
+      it 'dispatches page:after-link-inserted event when inserting a link on navigation', (done) ->
+        linkTagInserted = sinon.spy()
+        $(document).on 'page:after-link-inserted', linkTagInserted
+
+        visit url: 'noScriptsOrLinkInHead', ->
+          assertLinks([])
+          visit url: 'singleLinkInHead', ->
+            assertLinks(['foo.css'])
+            assert.equal(linkTagInserted.callCount, 1)
+            done()
+
+      it 'inserts link with a new href into empty head on navigation', (done) ->
+        visit url: 'noScriptsOrLinkInHead', ->
+          assertLinks([])
+          visit url: 'singleLinkInHead', ->
+            assertLinks(['foo.css'])
+            done()
+
+      it 'inserts link with a new href into existing head on navigation', (done) ->
+        visit url: 'singleLinkInHead', ->
+          assertLinks(['foo.css'])
+          visit url: 'twoLinksInHead', ->
+            assertLinks(['foo.css', 'bar.css'])
+            done()
+
+      it 'does not reinsert link with existing href into identical head on navigation', (done) ->
+        visit url: 'singleLinkInHead', ->
+          assertLinks(['foo.css'])
+          visit url: 'singleLinkInHead', ->
+            assertLinks(['foo.css'])
+            done()
+
+    describe 'script tags', ->
+      it 'dispatches page:after-script-inserted event when inserting a script on navigation', (done) ->
+        scriptTagInserted = sinon.spy()
+        $(document).on 'page:after-script-inserted', scriptTagInserted
+
+        visit url: 'noScriptsOrLinkInHead', ->
+          visit url: 'singleScriptInHead', ->
+            assert.equal(scriptTagInserted.callCount, 1)
+            done()
+
+      it 'inserts script with a new src into empty head on navigation', (done) ->
+        visit url: 'noScriptsOrLinkInHead', ->
+          assertScripts([])
+          visit url: 'singleScriptInHead', ->
+            assertScripts(['foo.js'])
+            done()
+
+      it 'inserts script with a new src into existing head on navigation', (done) ->
+        visit url: 'singleScriptInHead', ->
+          assertScripts(['foo.js'])
+          visit url: 'twoScriptsInHead', ->
+            assertScripts(['foo.js', 'bar.js'])
+            done()
+
+      it 'does not insert duplicate script tag on navigation into identical upstream head', (done) ->
+        visit url: 'singleScriptInHead', ->
+          assertScripts(['foo.js'])
+          visit url: 'singleScriptInHead', ->
+            assertScripts(['foo.js'])
+            done()
+
+      it 'does not insert duplicate script tag on navigation into superset upstream head', (done) ->
+        visit url: 'singleScriptInHead', ->
+          assertScripts(['foo.js'])
+          visit url: 'twoScriptsInHead', ->
+            assertScripts(['foo.js', 'bar.js'])
+            done()
+
+      it 'does not remove script when navigating to a page with an empty head', (done) ->
+        visit url: 'singleScriptInHead', ->
+          assertScripts(['foo.js'])
+          visit url: 'noScriptsOrLinkInHead', ->
+            assertScripts(['foo.js'])
+            done()
+
+      it 'does not remove script nodes when navigating to a page with less script tags', (done) ->
+        visit url: 'twoScriptsInHead', ->
+          assertScripts(['foo.js', 'bar.js'])
+          visit url: 'singleScriptInHead', ->
+            assertScripts(['foo.js', 'bar.js'])
+            done()
+
+      describe 'executes scripts in the order they are present in the dom of the upstream document', ->
+        beforeEach -> window.actualExecutionOrder = []
+        afterEach -> delete window.actualExecutionOrder
+
+        it 'works in order ABC', (done) ->
+          expectedScriptOrder = ['a', 'b', 'c']
+          visit url: 'threeScriptsInHeadABC', ->
+            assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
+            done()
+
+        it 'works in order ACB', (done) ->
+          visit url: 'threeScriptsInHeadACB', ->
+            expectedScriptOrder = ['a', 'c', 'b']
+            assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
+            done()
+
+        it 'works in order BAC', (done) ->
+          visit url: 'threeScriptsInHeadBAC', ->
+            expectedScriptOrder = ['b', 'a', 'c']
+            assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
+            done()
+
+        it 'works in order BCA', (done) ->
+          visit url: 'threeScriptsInHeadBCA', ->
+            expectedScriptOrder = ['b', 'c', 'a']
+            assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
+            done()
+
+        it 'works in order CAB', (done) ->
+          visit url: 'threeScriptsInHeadCAB', ->
+            expectedScriptOrder = ['c', 'a', 'b']
+            assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
+            done()
+
+        it 'works in order CBA', (done) ->
+          visit url: 'threeScriptsInHeadCBA', ->
+            expectedScriptOrder = ['c', 'b', 'a']
+            assert.deepEqual(actualExecutionOrder, expectedScriptOrder)
+            done()
+
+        it 'executes new scripts in the relative order they are present in the dom of the upstream document', (done) ->
+          visit url: 'secondLibraryOnly', ->
+            assert.equal(actualExecutionOrder[0], 'b')
+            visit url: 'threeScriptsInHeadABC', ->
+              assert.equal(actualExecutionOrder[1], 'a')
+              assert.equal(actualExecutionOrder[2], 'c')
+              done()
 
   describe 'with partial page replacement', ->
     beforeEach -> window.globalStub = stub()
