@@ -9,8 +9,12 @@ In botany, one can take parts of a tree and splice it onto another tree.  The DO
 
 ## One render path
 Turbograft gives you the ability to maintain a single, canonical render path for views. Your ERB views are the single definition of what will be rendered, without the worry of conditionally fetching snippets of HTML from elsewhere. This approach leads to clear, simplified code.
+
 ## Client-side performance
 Partial page refreshes mean that CSS and JavaScript are only reloaded when you need them to be. Turbograft improves on the native, single-page application feel for the user while keeping these benefits inherited from Turbolinks.
+
+Head asset tracking means that you can split your large CSS and Javascript bundles into smaller area bundles, decreasing your page weight and further increasing the responsiveness of your app.
+
 ## Simplicity
 Turbograft was built with simplicity in mind. It intends to offer the smallest amount of overhead required on top of a traditional Rails stack to solve the problem of making a Rails app feel native to the browser.
 
@@ -159,6 +163,16 @@ and
 - no ancestor of the input has the `data-tg-remote-noserialize` attribute
 
 The `data-tg-remote-noserialize` is useful in scenarios where a whole section of the page should be editable, i.e. not `disabled`, but should only conditionally be submitted to the server.
+
+## Head Asset Tracking
+### NOTE: This functionality is experimental, has changed significantly since 0.3.0, and may change again in the future before 1.0
+The Turbohead module allows you to track css and javascript assets in the head of the document and change them intelligently. This can be useful in large applications which want to lighten their asset weight by splitting their script and style bundles by area.
+
+When a `<script>` or `<link>` tag with a unique name in it's `data-turbolinks-track` is encountered in a response document Turbograft will insert it into the active DOM and, if it's a script, force it to execute.
+
+If an asset with a different `src`/`href` but the same `data-turbolinks-track` value is found upstream, turbograft will force a full page refresh. This prevents potential multiple executions of a script bundle when a new version of your app is shipped.
+
+As of version `0.4.0`, this functionality has been made backwards compatible. If `data-turbolinks-track="true"` head assets are present, turbograft will cause a full page refresh when the set is changed in any way.
 
 ## Example App
 
