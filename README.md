@@ -78,19 +78,6 @@ The `data-tg-refresh-never` attribute will cause a node only appear once in the 
 ### updatePushState
 Defaults to `true`. When set to false it prevents `Page.refresh()` from updating the url in the browser.
 
-## Head Asset Tracking
-The Turbohead module allows you to track css and javascript assets in the head of the document and change them intelligently. This can be useful in large applications which want to lighten their
-asset weight by splitting their script and style bundles by area.
-
-### Link Tracking
-When navigating, Turbograft will perform a full diff of `<link>` tags with `data-turbolinks-track` between the upstream and currently active `<head>`. It will attempt to perform the minimum number of DOM manipulations
-to move from the current set to the upstream one. `<link>` tags will always be removed if they are not present in the upstream document, and order will be maintained.
-
-### Script Tracking
-When a `<script>` tag with `data-turbolinks-track` and a unique `src` is encountered in a response document Turbograft will insert it into the active DOM and force it to execute. Unlike links, scripts from previous pages are *not* removed once added.
-
-If marked with a `data-turbolinks-track-as` attribute, scripts will additionally have their `track-as` values compared. If a script with a different `src` but the same `data-turbolinks-track-as` value is found upstream, turbograft will force a full page refresh. This prevents potential multiple executions of a script bundle when a new version of your app is shipped.
-
 ## data-tg-remote
 
 The `data-tg-remote` option allows you to query methods on or submit forms to different endpoints, and gives partial page replacement on specified refresh keys depending on the response status.
