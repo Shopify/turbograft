@@ -144,7 +144,7 @@ describe 'Turbolinks', ->
           assert(Turbolinks.fullPageNavigate.notCalled, 'Should not perform a full page refresh.')
           done()
 
-    it 'conflicts do not update the browser history stack', (done) ->
+    it 'does not update the browser history stack when a conflict is detected', (done) ->
       startFromFixture('singleScriptInHead')
       visit url: 'singleScriptInHeadWithDifferentSourceButSameName', ->
         assert(pushStateStub.notCalled, 'pushState was called')
@@ -174,7 +174,7 @@ describe 'Turbolinks', ->
           assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
           done()
 
-      it 'changed assets do not update the browser history stack', (done) ->
+      it 'does not update the browser history stack in cases where it will force a refresh', (done) ->
         startFromFixture('singleScriptInHead')
         visit url: 'singleScriptInHeadWithDifferentSourceButSameName', ->
           assert(pushStateStub.notCalled, 'pushState was called')
