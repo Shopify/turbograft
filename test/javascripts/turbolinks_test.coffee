@@ -59,6 +59,10 @@ describe 'Turbolinks', ->
       <div id="turbo-area" refresh="turbo-area"></div>
     """
 
+  startFromFixture = (route) ->
+    fixtureHTML = ROUTES[route][2]
+    document.documentElement.innerHTML = fixtureHTML
+
   urlFor = (slug) ->
     window.location.origin + slug
 
@@ -116,6 +120,11 @@ describe 'Turbolinks', ->
         assert.equal('buzz', sandbox.server.requests[0].requestHeaders['fizz'])
         done()
 
+    it 'updates the browser history stack', (done) ->
+      visit url: 'noScriptsOrLinkInHead', ->
+        assert(pushStateStub.called, 'pushState was not called!')
+        done()
+
     it 'calls a user-supplied callback', (done) ->
       yourCallback = stub()
       visit url: 'noScriptsOrLinkInHead', options: {callback: yourCallback}, ->
@@ -135,11 +144,13 @@ describe 'Turbolinks', ->
           assert(Turbolinks.fullPageNavigate.notCalled, 'Should not perform a full page refresh.')
           done()
 
-    describe 'using data-turbolinks-track="true"', ->
-      startFromFixture = (route) ->
-        fixtureHTML = ROUTES[route][2]
-        document.documentElement.innerHTML = fixtureHTML
+    it 'does not update the browser history stack when a conflict is detected', (done) ->
+      startFromFixture('singleScriptInHead')
+      visit url: 'singleScriptInHeadWithDifferentSourceButSameName', ->
+        assert(pushStateStub.notCalled, 'pushState was called')
+        done()
 
+    describe 'using data-turbolinks-track="true"', ->
       it 'refreshes page when a new tracked node is present', (done) ->
         visit url: 'singleScriptInHeadTrackTrue', ->
           assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
@@ -161,6 +172,12 @@ describe 'Turbolinks', ->
         startFromFixture('twoLinksInHeadTrackTrue')
         visit url: 'twoLinksInHeadTrackTrueOneChanged', ->
           assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
+          done()
+
+      it 'does not update the browser history stack in cases where it will force a refresh', (done) ->
+        startFromFixture('singleScriptInHead')
+        visit url: 'singleScriptInHeadWithDifferentSourceButSameName', ->
+          assert(pushStateStub.notCalled, 'pushState was called')
           done()
 
       it 'does not refresh page when tracked nodes have matching sources', (done) ->
