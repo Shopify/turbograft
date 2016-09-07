@@ -133,16 +133,16 @@ describe 'Turbolinks', ->
 
   describe 'head asset tracking', ->
     it 'refreshes page when a data-turbolinks-track value matches but src changes', (done) ->
-      visit url: 'singleScriptInHeadTwo', ->
-        visit url: 'singleScriptInHeadWithDifferentSourceButSameName', ->
-          assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
-          done()
+      startFromFixture('singleScriptInHead')
+      visit url: 'singleScriptInHeadWithDifferentSourceButSameName', ->
+        assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
+        done()
 
     it 'does not refresh page when new data-turbolinks-track values encountered', (done) ->
-      visit url: 'singleScriptInHead', ->
-        visit url: 'twoScriptsInHead', ->
-          assert(Turbolinks.fullPageNavigate.notCalled, 'Should not perform a full page refresh.')
-          done()
+      startFromFixture('singleScriptInHead')
+      visit url: 'twoScriptsInHead', ->
+        assert(Turbolinks.fullPageNavigate.notCalled, 'Should not perform a full page refresh.')
+        done()
 
     it 'does not update the browser history stack when a conflict is detected', (done) ->
       startFromFixture('singleScriptInHead')
@@ -191,85 +191,70 @@ describe 'Turbolinks', ->
         linkTagInserted = sinon.spy()
         $(document).on 'page:after-link-inserted', linkTagInserted
 
-        visit url: 'noScriptsOrLinkInHead', ->
-          assertLinks([])
-          visit url: 'singleLinkInHead', ->
-            assertLinks(['foo.css'])
-            assert.equal(linkTagInserted.callCount, 1)
-            done()
+        visit url: 'singleLinkInHead', ->
+          assertLinks(['foo.css'])
+          assert.equal(linkTagInserted.callCount, 1)
+          done()
 
       it 'inserts link with a new href into empty head on navigation', (done) ->
-        visit url: 'noScriptsOrLinkInHead', ->
-          assertLinks([])
-          visit url: 'singleLinkInHead', ->
-            assertLinks(['foo.css'])
-            done()
+        visit url: 'singleLinkInHead', ->
+          assertLinks(['foo.css'])
+          done()
 
       it 'inserts link with a new href into existing head on navigation', (done) ->
-        visit url: 'singleLinkInHead', ->
-          assertLinks(['foo.css'])
-          visit url: 'twoLinksInHead', ->
-            assertLinks(['foo.css', 'bar.css'])
-            done()
+        startFromFixture('singleLinkInHead')
+        visit url: 'twoLinksInHead', ->
+          assertLinks(['foo.css', 'bar.css'])
+          done()
 
       it 'does not reinsert link with existing href into identical head on navigation', (done) ->
+        startFromFixture('singleLinkInHead')
         visit url: 'singleLinkInHead', ->
           assertLinks(['foo.css'])
-          visit url: 'singleLinkInHead', ->
-            assertLinks(['foo.css'])
-            done()
+          done()
 
     describe 'script tags', ->
       it 'dispatches page:after-script-inserted event when inserting a script on navigation', (done) ->
         scriptTagInserted = sinon.spy()
         $(document).on 'page:after-script-inserted', scriptTagInserted
-
-        visit url: 'noScriptsOrLinkInHead', ->
-          visit url: 'singleScriptInHead', ->
-            assert.equal(scriptTagInserted.callCount, 1)
-            done()
+        visit url: 'singleScriptInHead', ->
+          assert.equal(scriptTagInserted.callCount, 1)
+          done()
 
       it 'inserts script with a new src into empty head on navigation', (done) ->
-        visit url: 'noScriptsOrLinkInHead', ->
-          assertScripts([])
-          visit url: 'singleScriptInHead', ->
-            assertScripts(['foo.js'])
-            done()
+        visit url: 'singleScriptInHead', ->
+          assertScripts(['foo.js'])
+          done()
 
       it 'inserts script with a new src into existing head on navigation', (done) ->
-        visit url: 'singleScriptInHead', ->
-          assertScripts(['foo.js'])
-          visit url: 'twoScriptsInHead', ->
-            assertScripts(['foo.js', 'bar.js'])
-            done()
-
-      it 'does not insert duplicate script tag on navigation into identical upstream head', (done) ->
-        visit url: 'singleScriptInHead', ->
-          assertScripts(['foo.js'])
-          visit url: 'singleScriptInHead', ->
-            assertScripts(['foo.js'])
-            done()
-
-      it 'does not insert duplicate script tag on navigation into superset upstream head', (done) ->
-        visit url: 'singleScriptInHead', ->
-          assertScripts(['foo.js'])
-          visit url: 'twoScriptsInHead', ->
-            assertScripts(['foo.js', 'bar.js'])
-            done()
-
-      it 'does not remove script when navigating to a page with an empty head', (done) ->
-        visit url: 'singleScriptInHead', ->
-          assertScripts(['foo.js'])
-          visit url: 'noScriptsOrLinkInHead', ->
-            assertScripts(['foo.js'])
-            done()
-
-      it 'does not remove script nodes when navigating to a page with less script tags', (done) ->
+        startFromFixture('singleScriptInHead')
         visit url: 'twoScriptsInHead', ->
           assertScripts(['foo.js', 'bar.js'])
-          visit url: 'singleScriptInHead', ->
-            assertScripts(['foo.js', 'bar.js'])
-            done()
+          done()
+
+      it 'does not insert duplicate script tag on navigation into identical upstream head', (done) ->
+        startFromFixture('singleScriptInHead')
+        visit url: 'singleScriptInHead', ->
+          assertScripts(['foo.js'])
+          done()
+
+      it 'does not insert duplicate script tag on navigation into superset upstream head', (done) ->
+        startFromFixture('singleScriptInHead')
+        visit url: 'twoScriptsInHead', ->
+          assertScripts(['foo.js', 'bar.js'])
+          done()
+
+      it 'does not remove script when navigating to a page with an empty head', (done) ->
+        startFromFixture('singleScriptInHead')
+        visit url: 'noScriptsOrLinkInHead', ->
+          assertScripts(['foo.js'])
+          done()
+
+      it 'does not remove script nodes when navigating to a page with less script tags', (done) ->
+        startFromFixture('twoScriptsInHead')
+        visit url: 'singleScriptInHead', ->
+          assertScripts(['foo.js', 'bar.js'])
+          done()
 
       describe 'executes scripts in the order they are present in the dom of the upstream document', ->
         beforeEach -> window.actualExecutionOrder = []
@@ -328,11 +313,10 @@ describe 'Turbolinks', ->
         done()
 
     it 'head assets are not removed during partial replace', (done) ->
-      visit url: 'singleLinkInHead', ->
+      startFromFixture('singleLinkInHead')
+      visit url: 'twoLinksInHead', options: {partialReplace: true, onlyKeys: ['turbo-area']}, ->
         assertLinks(['foo.css'])
-        visit url: 'twoLinksInHead', options: {partialReplace: true, onlyKeys: ['turbo-area']}, ->
-          assertLinks(['foo.css'])
-          done()
+        done()
 
     it 'script tags are evaluated when they are the subject of a partial replace', (done) ->
       visit url: 'inlineScriptInBody', options: {partialReplace: true, onlyKeys: ['turbo-area']}, ->
