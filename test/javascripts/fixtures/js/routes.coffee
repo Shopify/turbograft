@@ -1,4 +1,22 @@
 window.ROUTES = {
+  serverError: [
+    500,
+    {'Content-Type':'text/html'},
+    'error!'
+  ],
+
+  validationError: [
+    422,
+    {'Content-Type':'text/html'},
+    'error!'
+  ],
+
+  noContentType: [
+    500,
+    {},
+    'error!'
+  ],
+
   noScriptsOrLinkInHead: [
     200,
     {'Content-Type':'text/html'},

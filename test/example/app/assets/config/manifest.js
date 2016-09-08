@@ -1,0 +1,15 @@
+//link application.js
+//link component_url_test.js
+//link csrf_token_test.js
+//link initializers_test.js
+//link jquery.js
+//link jquery_ujs.js
+//link link_test.js
+//link page_test.js
+//link remote_test.js
+//link test_helper.js
+//link turbolinks_test.js
+//link_tree support
+//link_tree turbograft
+//link_tree fixtures
+//link_tree fixtures/js

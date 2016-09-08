@@ -10,7 +10,7 @@ waitForCompleteDownloads = ->
     scriptPromises[url]
   Promise.all(loadingPromises)
 
-class window.TurboHead
+class TurboGraft.TurboHead
   constructor: (@activeDocument, @upstreamDocument) ->
     @activeAssets = extractTrackedAssets(@activeDocument)
     @upstreamAssets = extractTrackedAssets(@upstreamDocument)

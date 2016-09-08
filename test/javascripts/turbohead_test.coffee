@@ -21,7 +21,7 @@ describe 'TurboHead', ->
   newRequest = (requestScripts) ->
     promiseQueue = promiseQueue.then ->
       new Promise (resolve) ->
-        head = new TurboHead(
+        head = new TurboGraft.TurboHead(
           activeDocument,
           fakeDocument(requestScripts)
         )
@@ -46,7 +46,7 @@ describe 'TurboHead', ->
     requests = []
 
   afterEach ->
-    TurboHead._testAPI.reset()
+    TurboGraft.TurboHead._testAPI.reset()
 
   describe 'script download queue', ->
     it 'downloads scripts in sequence', ->
