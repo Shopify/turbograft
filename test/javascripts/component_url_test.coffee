@@ -1,6 +1,6 @@
 describe 'ComponentUrl', ->
   describe 'constructor', ->
-    it 'uses current location when given not given a url', ->
+    it 'uses current location when not given a url', ->
       url = new ComponentUrl()
       assert.equal(url.absolute, location.href)
 
