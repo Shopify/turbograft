@@ -1,5 +1,9 @@
 describe 'ComponentUrl', ->
   describe 'constructor', ->
+    it 'uses current location when not given a url', ->
+      url = new ComponentUrl()
+      assert.equal(url.absolute, location.href)
+
     it 'does a noop and returns argument, if already a ComponentUrl', ->
       url = new ComponentUrl("http://example.com")
       url2 = new ComponentUrl(url)
