@@ -94,10 +94,7 @@ describe 'Remote', ->
         fail: done
       , @initiating_target
 
-      simulateError = ->
-        listener(target: remote.xhr) for listener in remote.xhr.eventListeners.error
-
-      setTimeout(simulateError, 0)
+      remote.xhr.respond(404)
 
     it 'will call options.success() on success', (done) ->
       server = sinon.fakeServer.create()

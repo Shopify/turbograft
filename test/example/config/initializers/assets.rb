@@ -1,4 +1,5 @@
 Example::Application.config.assets.precompile += %w(
+  vendor/promise-polyfill/promise.self.js
   application.self.js
   component_url_test.self.js
   csrf_token_test.self.js
@@ -11,6 +12,8 @@ Example::Application.config.assets.precompile += %w(
   support/sinon.self.js
   support/chai.self.js
   support/sinon-chai.self.js
+  fake_document.self.js
+  fake_script.self.js
   test_helper.self.js
   turbograft.self.js
   turbograft/click.self.js
@@ -23,6 +26,7 @@ Example::Application.config.assets.precompile += %w(
   turbograft/turbolinks.self.js
   turbograft/turbohead.self.js
   turbolinks_test.self.js
+  turbohead_test.self.js
   fixtures/css/foo.css
   fixtures/css/bar.css
   fixtures/css/order_testing/a.css

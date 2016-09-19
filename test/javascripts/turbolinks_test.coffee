@@ -86,6 +86,7 @@ describe 'Turbolinks', ->
     $("script").attr("data-turbolinks-eval", false)
     $("#mocha").attr("refresh-never", true)
 
+    TurboHead.reset()
     resetPage()
 
   afterEach ->

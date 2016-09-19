@@ -2,6 +2,14 @@ TRACKED_ASSET_SELECTOR = '[data-turbolinks-track]'
 TRACKED_ATTRIBUTE_NAME = 'turbolinksTrack'
 ANONYMOUS_TRACK_VALUE = 'true'
 
+scriptPromises = {}
+rejectPreviousRequest = null
+
+waitForCompleteDownloads = ->
+  loadingPromises = Object.keys(scriptPromises).map (url) ->
+    scriptPromises[url]
+  Promise.all(loadingPromises)
+
 class window.TurboHead
   constructor: (@activeDocument, @upstreamDocument) ->
     @activeAssets = extractTrackedAssets(@activeDocument)
@@ -13,6 +21,10 @@ class window.TurboHead
     @newLinks = @upstreamAssets
       .filter(attributeMatches('nodeName', 'LINK'))
       .filter(noAttributeMatchesIn('href', @activeAssets))
+
+  @reset: ->
+    scriptPromises = {}
+    rejectPreviousRequest = null
 
   hasChangedAnonymousAssets: () ->
     anonymousUpstreamAssets = @upstreamAssets
@@ -39,9 +51,20 @@ class window.TurboHead
   hasAssetConflicts: () ->
     @hasNamedAssetConflicts() || @hasChangedAnonymousAssets()
 
-  insertNewAssets: (callback) ->
+  waitForAssets: () ->
+    rejectPreviousRequest?()
+
+    new Promise((resolve, reject) =>
+      rejectPreviousRequest = reject
+      waitForCompleteDownloads()
+        .then(@_insertNewAssets)
+        .then(waitForCompleteDownloads)
+        .then(resolve)
+    )
+
+  _insertNewAssets: () =>
     updateLinkTags(@activeDocument, @newLinks)
-    updateScriptTags(@activeDocument, @newScripts, callback)
+    updateScriptTags(@activeDocument, @newScripts)
 
 extractTrackedAssets = (doc) ->
   [].slice.call(doc.querySelectorAll(TRACKED_ASSET_SELECTOR))
@@ -76,37 +99,37 @@ noDatasetMatchesIn = (attribute, collection) ->
 updateLinkTags = (activeDocument, newLinks) ->
   # style tag load events don't work in all browsers
   # as such we just hope they load ¯\_(ツ)_/¯
-  newLinks.forEach((linkNode) -> insertLinkTask(activeDocument, linkNode)())
-
-updateScriptTags = (activeDocument, newScripts, callback) ->
-  asyncSeries(
-    newScripts.map((scriptNode) -> insertScriptTask(activeDocument, scriptNode)),
-    callback
+  newLinks.forEach((linkNode) ->
+    newNode = linkNode.cloneNode()
+    activeDocument.head.appendChild(newNode)
+    triggerEvent("page:after-link-inserted", newNode)
   )
 
-asyncSeries = (tasks, callback) ->
-  return callback() if tasks.length == 0
-  task = tasks.shift()
-  task(-> asyncSeries(tasks, callback))
+updateScriptTags = (activeDocument, newScripts) ->
+  promise = Promise.resolve()
+  newScripts.forEach (scriptNode) ->
+    promise = promise.then(-> insertScript(activeDocument, scriptNode))
+  promise
 
-insertScriptTask = (activeDocument, scriptNode) ->
-  # We need to clone script tags in order to ensure that the browser executes them.
+insertScript = (activeDocument, scriptNode) ->
+  url = scriptNode.src
+  if scriptPromises[url]
+    return scriptPromises[url]
+
+  # Clone script tags to guarantee browser execution.
   newNode = activeDocument.createElement('SCRIPT')
   newNode.setAttribute(attr.name, attr.value) for attr in scriptNode.attributes
   newNode.appendChild(activeDocument.createTextNode(scriptNode.innerHTML))
-  insertAssetTask(activeDocument, newNode, 'script')
 
-insertLinkTask = (activeDocument, node) ->
-  insertAssetTask(activeDocument, node.cloneNode(), 'link')
-
-insertAssetTask = (activeDocument, newNode, name) ->
-  (done) ->
+  scriptPromises[url] = new Promise((resolve) ->
     onAssetEvent = (event) ->
-      triggerEvent("page:#{name}-error", event) if event.type == 'error'
+      triggerEvent("page:#script-error", event) if event.type == 'error'
       newNode.removeEventListener('load', onAssetEvent)
       newNode.removeEventListener('error', onAssetEvent)
-      done() if typeof done == 'function'
+      resolve()
+
     newNode.addEventListener('load', onAssetEvent)
     newNode.addEventListener('error', onAssetEvent)
     activeDocument.head.appendChild(newNode)
-    triggerEvent("page:after-#{name}-inserted", newNode)
+    triggerEvent("page:after-script-inserted", newNode)
+  )
