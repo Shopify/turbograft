@@ -404,3 +404,27 @@ describe 'Turbolinks', ->
           assert.equal(1, nodes.length)
           assert.equal('div1', nodes[0].id)
           done()
+
+  describe 'asset loading finished', ->
+    SUCCESS_HTML_CONTENT = 'Hi there'
+    xhr = null
+    resolver = null
+
+    beforeEach ->
+      promise = new Promise((resolve) -> resolver = resolve)
+      sandbox.stub(TurboHead.prototype, 'hasAssetConflicts').returns(false)
+      sandbox.stub(TurboHead.prototype, 'waitForAssets').returns(promise)
+
+      xhr = new sinon.FakeXMLHttpRequest()
+      xhr.open('POST', '/my/endpoint', true)
+      xhr.respond(200, {'Content-Type':'text/html'}, SUCCESS_HTML_CONTENT)
+
+    it 'does not update document if the request was canceled', ->
+      resolver({isCanceled: true})
+      loadPromise = Turbolinks.loadPage('/foo', xhr)
+        .then -> assert.notInclude(document.body.innerHTML, SUCCESS_HTML_CONTENT)
+
+    it 'updates the document if the request was not canceled', ->
+      resolver()
+      loadPromise = Turbolinks.loadPage('/foo', xhr)
+        .then -> assert.include(document.body.innerHTML, SUCCESS_HTML_CONTENT)

@@ -27,10 +27,14 @@ describe 'TurboHead', ->
         )
 
         request = head.waitForAssets()
+        request.isInProgress = true
         request.isFulfilled = false
         request.isRejected = false
         request
-          .then  -> request.isFulfilled = true
+          .then (result) ->
+            request.isInProgress = false
+            request.isCanceled = Boolean(result.isCanceled)
+            request.isFulfilled = !request.isCanceled
           .catch -> request.isRejected = true
         requests.push(request)
 
@@ -68,7 +72,7 @@ describe 'TurboHead', ->
       it 'cancels stale requests', ->
         newRequest(['d.js'])
         newRequest([]).then ->
-          assert.isTrue(requests[0].isRejected)
+          assert.isTrue(requests[0].isCanceled)
 
       it 'waits for previously queued scripts before starting new request', ->
         newRequest(['a.js', 'b.js'])
@@ -77,14 +81,14 @@ describe 'TurboHead', ->
         finishScriptDownload()
         assertScriptCount(2, 'duplicate script elements should not be created')
           .then ->
-            assert.isTrue(requests[0].isRejected)
+            assert.isTrue(requests[0].isCanceled)
             assert.isTrue(requests[1].isFulfilled)
 
       it 'does not add duplicate script tags for new requests', ->
         newRequest(['a.js', 'b.js'])
         newRequest(['a.js', 'b.js'])
         assertScriptCount(1, 'first script should be downloading').then ->
-          assert.isFalse(requests[1].isFulfilled)
+          assert.isTrue(requests[1].isInProgress)
         finishScriptDownload()
         finishScriptDownload()
           .then ->
@@ -96,9 +100,9 @@ describe 'TurboHead', ->
         newRequest(['b.js', 'c.js', 'd.js'])
         finishScriptDownload()
         finishScriptDownload().then ->
-          assert.isFalse(requests[1].isFulfilled)
+          assert.isTrue(requests[1].isInProgress)
         finishScriptDownload().then ->
-          assert.isFalse(requests[1].isFulfilled)
+          assert.isTrue(requests[1].isInProgress)
         finishScriptDownload().then (script) ->
           assertScriptCount(4, 'second request\'s assets should be downloaded')
           assert.equal(

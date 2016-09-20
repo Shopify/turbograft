@@ -3,7 +3,7 @@ TRACKED_ATTRIBUTE_NAME = 'turbolinksTrack'
 ANONYMOUS_TRACK_VALUE = 'true'
 
 scriptPromises = {}
-rejectPreviousRequest = null
+resolvePreviousRequest = null
 
 waitForCompleteDownloads = ->
   loadingPromises = Object.keys(scriptPromises).map (url) ->
@@ -24,7 +24,7 @@ class window.TurboHead
 
   @reset: ->
     scriptPromises = {}
-    rejectPreviousRequest = null
+    resolvePreviousRequest = null
 
   hasChangedAnonymousAssets: () ->
     anonymousUpstreamAssets = @upstreamAssets
@@ -52,10 +52,10 @@ class window.TurboHead
     @hasNamedAssetConflicts() || @hasChangedAnonymousAssets()
 
   waitForAssets: () ->
-    rejectPreviousRequest?()
+    resolvePreviousRequest?(isCanceled: true)
 
-    new Promise((resolve, reject) =>
-      rejectPreviousRequest = reject
+    new Promise((resolve) =>
+      resolvePreviousRequest = resolve
       waitForCompleteDownloads()
         .then(@_insertNewAssets)
         .then(waitForCompleteDownloads)

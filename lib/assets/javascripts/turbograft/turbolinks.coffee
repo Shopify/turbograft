@@ -139,10 +139,8 @@ class window.Turbolinks
         if turbohead.hasAssetConflicts()
           return Turbolinks.fullPageNavigate(url.absolute)
         reflectNewUrl url if options.updatePushState
-        turbohead.waitForAssets().then(->
-          updateBody(upstreamDocument, xhr, options)
-        ).catch(->
-          # A new request appeared during asset download.
+        turbohead.waitForAssets().then((result) ->
+          updateBody(upstreamDocument, xhr, options) unless result?.isCanceled
         )
     else
       triggerEvent 'page:error', xhr
