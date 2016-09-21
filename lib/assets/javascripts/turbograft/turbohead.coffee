@@ -22,9 +22,11 @@ class window.TurboHead
       .filter(attributeMatches('nodeName', 'LINK'))
       .filter(noAttributeMatchesIn('href', @activeAssets))
 
-  @reset: ->
-    scriptPromises = {}
-    resolvePreviousRequest = null
+  @_testAPI: {
+    reset: ->
+      scriptPromises = {}
+      resolvePreviousRequest = null
+  }
 
   hasChangedAnonymousAssets: () ->
     anonymousUpstreamAssets = @upstreamAssets

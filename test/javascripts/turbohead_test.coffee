@@ -46,7 +46,7 @@ describe 'TurboHead', ->
     requests = []
 
   afterEach ->
-    TurboHead.reset()
+    TurboHead._testAPI.reset()
 
   describe 'script download queue', ->
     it 'downloads scripts in sequence', ->
