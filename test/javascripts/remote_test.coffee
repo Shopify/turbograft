@@ -6,7 +6,6 @@ describe 'Remote', ->
     @initiating_target = $("<form />")[0]
 
   describe 'HTTP methods', ->
-
     it 'will send a GET with _method=GET', ->
       server = sinon.fakeServer.create()
       remote = new TurboGraft.Remote
@@ -68,7 +67,6 @@ describe 'Remote', ->
       assert.equal "POST", request.method
 
   describe 'callbacks', ->
-
     it 'will call options.fail() on HTTP failures', (done) ->
       server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
@@ -112,7 +110,6 @@ describe 'Remote', ->
       server.respond()
 
   describe 'TurboGraft events', ->
-
     beforeEach ->
       @refreshStub = stub(Page, "refresh")
 
@@ -482,7 +479,6 @@ describe 'Remote', ->
       assert.equal 0, @refreshStub.callCount
 
   describe 'serialization', ->
-
     it 'will create FormData by calling formDataAppend for each valid input', ->
       form = $("<form><input type='file' name='foo'><input type='text' name='bar' value='fizzbuzz'></form>")[0]
 

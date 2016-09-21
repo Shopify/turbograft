@@ -1,5 +1,6 @@
 class TurboGraft.Response
   constructor: (@xhr) ->
+    @redirectedTo = @xhr.getResponseHeader('X-XHR-Redirected-To')
 
   valid: -> @hasRenderableHttpStatus() && @hasValidContent()
 
@@ -17,7 +18,15 @@ class TurboGraft.Response
     else
       throw new Error("Error encountered for XHR Response: #{this}")
 
+  redirectedToNewUrl: () ->
+    Boolean(
+      @redirectedTo &&
+      @redirectedTo != TurboGraft.location()
+    )
+
   toString: () ->
     "URL: #{@xhr.responseURL}, " +
     "ReadyState: #{@xhr.readyState}, " +
     "Headers: #{@xhr.getAllResponseHeaders()}"
+
+TurboGraft.location = () -> location.href

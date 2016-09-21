@@ -22,8 +22,8 @@ describe 'Initializers', ->
       $("body").append($form)
       $form.find("input").trigger("click")
 
-      assert @Remote.called
-      assert @Remote.calledWith
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
         httpRequestType: "put"
         httpUrl: "somewhere"
         fullRefresh: false
@@ -31,7 +31,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: "zap"
         refreshOnError: "bar"
         refreshOnErrorExcept: "zar"
-
+      )
       $form.remove()
 
   describe 'tg-remote on links', ->
@@ -42,25 +42,26 @@ describe 'Initializers', ->
       @Remote.restore()
 
     it 'creates a remote based on the options passed in', ->
-      $link = $("<a>")
-        .attr("tg-remote", "GET")
-        .attr("refresh-on-success", "foo")
-        .attr("refresh-on-error", "bar")
-        .attr("full-refresh-on-error-except", "zar")
-        .attr("full-refresh-on-success-except", "zap")
-        .attr("href", "somewhere")
+      $link = $('<a>')
+        .attr('tg-remote', 'GET')
+        .attr('refresh-on-success', 'foo')
+        .attr('refresh-on-error', 'bar')
+        .attr('full-refresh-on-error-except', 'zar')
+        .attr('full-refresh-on-success-except', 'zap')
+        .attr('href', 'somewhere')
 
-      $("body").append($link)
+      $('body').append($link)
       $link[0].click()
-      assert @Remote.called
-      assert @Remote.calledWith
-        httpRequestType: "GET"
-        httpUrl: "somewhere"
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
+        httpRequestType: 'GET'
+        httpUrl: 'somewhere'
         fullRefresh: false
-        refreshOnSuccess: "foo"
-        refreshOnSuccessExcept: "zap"
-        refreshOnError: "bar"
-        refreshOnErrorExcept: "zar"
+        refreshOnSuccess: 'foo'
+        refreshOnSuccessExcept: 'zap'
+        refreshOnError: 'bar'
+        refreshOnErrorExcept: 'zar'
+      )
 
     it 'passes through null for missing refresh-on-success', ->
       $link = $("<a>")
@@ -70,8 +71,8 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
-      assert @Remote.called
-      assert @Remote.calledWith
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
         httpRequestType: "GET"
         httpUrl: "somewhere"
         fullRefresh: false
@@ -79,6 +80,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
+      )
 
     it 'respects tg-remote supplied', ->
       $link = $("<a>")
@@ -88,8 +90,8 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
-      assert @Remote.called
-      assert @Remote.calledWith
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
         httpRequestType: "PATCH"
         httpUrl: "somewhere"
         fullRefresh: false
@@ -97,6 +99,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
+      )
 
     it 'passes through null for missing refresh-on-error', ->
       $link = $("<a>")
@@ -106,8 +109,8 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
-      assert @Remote.called
-      assert @Remote.calledWith
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
         httpRequestType: "GET"
         httpUrl: "somewhere"
         fullRefresh: false
@@ -115,6 +118,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: null
         refreshOnErrorExcept: null
+      )
 
     it 'passes through null for missing full-refresh-on-error-except', ->
       $link = $("<a>")
@@ -124,8 +128,8 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
-      assert @Remote.called
-      assert @Remote.calledWith
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
         httpRequestType: "GET"
         httpUrl: "somewhere"
         fullRefresh: false
@@ -133,6 +137,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: null
         refreshOnErrorExcept: 'zew'
+      )
 
     it 'respects full-refresh-on-success-except', ->
       $link = $("<a>")
@@ -142,8 +147,8 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
-      assert @Remote.called
-      assert @Remote.calledWith
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
         httpRequestType: "GET"
         httpUrl: "somewhere"
         fullRefresh: false
@@ -151,6 +156,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: 'zew'
         refreshOnError: null
         refreshOnErrorExcept: null
+      )
 
     it 'respects full-refresh', ->
       $link = $("<a>")
@@ -162,8 +168,8 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
-      assert @Remote.called
-      assert @Remote.calledWith
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
         httpRequestType: "GET"
         httpUrl: "somewhere"
         fullRefresh: true
@@ -171,6 +177,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
+      )
 
     it 'does nothing if disabled', ->
       $link = $("<a>")
@@ -182,7 +189,7 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $link[0].click()
-      assert.equal 0, @Remote.callCount
+      assert.notCalled(@Remote)
 
     it 'clicking on nodes inside of an <a> will bubble correctly', ->
       $link = $("<a><i>foo</i></a>")
@@ -194,8 +201,8 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $i[0].click()
-      assert @Remote.called
-      assert @Remote.calledWith
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
         httpRequestType: "PATCH"
         httpUrl: "somewhere"
         fullRefresh: false
@@ -203,6 +210,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
+      )
 
       $link.remove()
 
@@ -216,8 +224,8 @@ describe 'Initializers', ->
 
       $("body").append($link)
       $strong[0].click()
-      assert @Remote.called
-      assert @Remote.calledWith
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
         httpRequestType: "PATCH"
         httpUrl: "somewhere"
         fullRefresh: false
@@ -225,5 +233,6 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
+      )
 
       $link.remove()

@@ -5,6 +5,7 @@ describe 'Turbolinks', ->
   sandbox = null
   pushStateStub = null
   replaceStateStub = null
+  resetScrollStub = null
 
   ROUTE_TEMPLATE_INDEX = 2
 
@@ -87,6 +88,7 @@ describe 'Turbolinks', ->
     sandbox = sinon.sandbox.create()
     pushStateStub = sandbox.stub(Turbolinks, 'pushState')
     replaceStateStub = sandbox.stub(Turbolinks, 'replaceState')
+    resetScrollStub = sandbox.stub(Turbolinks, 'resetScrollPosition')
     sandbox.stub(Turbolinks, 'fullPageNavigate', -> $(testDocument).trigger('page:load'))
     sandbox.useFakeServer()
 
@@ -141,6 +143,11 @@ describe 'Turbolinks', ->
       yourCallback = stub()
       visit url: 'noScriptsOrLinkInHead', options: {callback: yourCallback}, ->
         assert(yourCallback.calledOnce, 'Callback was not called.')
+        done()
+
+    it 'resets the scroll position', (done) ->
+      visit url: 'noScriptsOrLinkInHead', ->
+        assert.calledOnce(resetScrollStub)
         done()
 
   describe 'head asset tracking', ->
@@ -317,9 +324,19 @@ describe 'Turbolinks', ->
 
   describe 'with partial page replacement', ->
     beforeEach -> window.globalStub = stub()
+    it 'does not reset scroll position during partial replace', (done) ->
+      visit url: 'singleScriptInHead', options: {
+          partialReplace: true,
+          onlyKeys: ['turbo-area']
+        }, ->
+        assert.notCalled(resetScrollStub)
+        done()
 
     it 'head assets are not inserted during partial replace', (done) ->
-      visit url: 'singleScriptInHead', options: {partialReplace: true, onlyKeys: ['turbo-area']}, ->
+      visit url: 'singleScriptInHead', options: {
+            partialReplace: true,
+            onlyKeys: ['turbo-area']
+          }, ->
         assertScripts([])
         done()
 

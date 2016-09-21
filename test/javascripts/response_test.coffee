@@ -1,5 +1,7 @@
 describe 'TurboGraft.Response', ->
   sandbox = null
+  iframe = null
+  baseHTML = '<html><head></head><body></body></html>'
 
   responseForFixture = (fixture, callback) ->
     xhr = new XMLHttpRequest
@@ -10,7 +12,15 @@ describe 'TurboGraft.Response', ->
     xhr.onerror = ->
       callback(new TurboGraft.Response(xhr))
 
+  setupIframe = ->
+    iframe = document.createElement('iframe')
+    document.body.appendChild(iframe)
+    iframe.contentDocument.write(baseHTML)
+    iframe.contentDocument
+
   beforeEach ->
+    testDocument = setupIframe() unless iframe
+    Turbolinks.document(testDocument)
     sandbox = sinon.sandbox.create()
     sandbox.useFakeServer()
     Object.keys(ROUTES).forEach (url) ->
@@ -54,4 +64,29 @@ describe 'TurboGraft.Response', ->
     it 'returns undefined when invalid', (done) ->
       responseForFixture 'serverError', (response) ->
         assert.equal(response.document(), undefined)
+        done()
+
+  describe 'redirectedTo', ->
+    it 'returns the value of the X-XHR-Redirected-To header', (done) ->
+      responseForFixture 'xhrRedirectedToHeader', (response) ->
+        assert.equal(response.redirectedTo, ROUTES['xhrRedirectedToHeader'][1]['X-XHR-Redirected-To'])
+        done()
+
+  describe 'redirectedToNewUrl', ->
+    beforeEach ->
+      sandbox.stub(TurboGraft, 'location', -> 'test-location')
+
+    it 'returns false when no redirect header is present', (done) ->
+      responseForFixture 'noScriptsOrLnkInHead', (response) ->
+        assert(!response.redirectedToNewUrl(), 'response should report that it was redirected to a new url when it has no redirect header')
+        done()
+
+    it 'returns false when a redirect header is present but matches location.href', (done) ->
+      responseForFixture 'xhrRedirectedToHeader', (response) ->
+        assert.equal(response.redirectedToNewUrl(), false)
+        done()
+
+    it 'returns true when a redirect header is present and does not match location.href', (done) ->
+      responseForFixture 'otherXhrRedirectedToHeader', (response) ->
+        assert.equal(response.redirectedToNewUrl(), true)
         done()

@@ -16,18 +16,18 @@ Page.refresh = (options = {}, callback) ->
   else
     location.href
 
-  if options.response
-    options.partialReplace = true
-    options.onLoadFunction = callback
+  turboOptions = {
+    partialReplace: true,
+    exceptKeys: options.exceptKeys,
+    onlyKeys: options.onlyKeys,
+    updatePushState: options.updatePushState,
+    callback: callback
+  }
 
-    xhr = options.response
-    delete options.response
-    Turbolinks.loadPage null, xhr, options
+  if xhr = options.response
+    Turbolinks.loadPage null, xhr, turboOptions
   else
-    options.partialReplace = true
-    options.callback = callback if callback
-
-    Turbolinks.visit newUrl, options
+    Turbolinks.visit newUrl, turboOptions
 
 Page.open = ->
   window.open(arguments...)

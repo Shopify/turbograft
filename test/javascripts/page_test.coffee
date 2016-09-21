@@ -1,12 +1,15 @@
 describe 'Page', ->
+  sandbox = null
+  visitStub = null
+  replaceStateStub = null
 
   beforeEach ->
-    @visitStub = stub(Turbolinks, "visit")
-    @replaceStateStub = stub(Turbolinks, "replaceState")
+    sandbox = sinon.sandbox.create()
+    visitStub = sandbox.stub(Turbolinks, "visit")
+    replaceStateStub = sandbox.stub(Turbolinks, "replaceState")
 
   afterEach ->
-    @visitStub.restore()
-    @replaceStateStub.restore()
+    sandbox.restore()
 
   it 'is defined', ->
     assert Page
@@ -14,15 +17,14 @@ describe 'Page', ->
   describe '#visit', ->
     it 'will call Turbolinks#visit without any options', ->
       Page.visit("http://example.com")
-      assert @visitStub.calledOnce
+      assert visitStub.calledOnce
 
   describe '#refresh', ->
     it 'with opts.url', ->
-      Page.refresh
-        url: '/foo'
+      Page.refresh(url: '/foo')
 
-      assert @visitStub.calledOnce
-      assert @visitStub.calledWith "/foo", { url: '/foo', partialReplace: true }
+      assert.calledOnce(visitStub)
+      assert.calledWithMatch(visitStub, "/foo", { partialReplace: true })
 
     it 'with opts.queryParams', ->
       Page.refresh
@@ -30,8 +32,8 @@ describe 'Page', ->
           foo: "bar"
           baz: "bot"
 
-      assert @visitStub.calledOnce
-      assert @visitStub.calledWith location.pathname + "?foo=bar&baz=bot"
+      assert.calledOnce(visitStub)
+      assert.calledWith(visitStub, location.pathname + "?foo=bar&baz=bot")
 
     it 'ignores opts.queryParams if opts.url is present', ->
       Page.refresh
@@ -39,28 +41,36 @@ describe 'Page', ->
         queryParams:
           foo: "bar"
 
-      assert @visitStub.calledOnce
-      assert @visitStub.calledWith "/foo"
+      assert.calledOnce(visitStub)
+      assert.calledWith(visitStub, "/foo")
 
     it 'uses location.href if opts.url and opts.queryParams are missing', ->
       Page.refresh()
 
-      assert @visitStub.calledOnce
-      assert @visitStub.calledWith location.href
+      assert.calledOnce(visitStub)
+      assert.calledWith(visitStub, location.href)
 
     it 'with opts.onlyKeys', ->
       Page.refresh
         onlyKeys: ['a', 'b', 'c']
 
-      assert @visitStub.calledOnce
-      assert @visitStub.calledWith location.href, { partialReplace: true, onlyKeys: ['a', 'b', 'c'] }
+      assert.calledOnce(visitStub)
+      assert.calledWithMatch(
+        visitStub,
+        location.href,
+        { partialReplace: true, onlyKeys: ['a', 'b', 'c'] }
+      )
 
     it 'with callback', ->
       afterRefreshCallback = stub()
       Page.refresh {}, afterRefreshCallback
 
-      assert @visitStub.calledOnce
-      assert @visitStub.calledWith location.href, { partialReplace: true, callback: afterRefreshCallback }
+      assert.calledOnce(visitStub)
+      assert.calledWithMatch(
+        visitStub,
+        location.href,
+        { partialReplace: true, callback: afterRefreshCallback }
+      )
 
     it 'calls Turbolinks#loadPage if an XHR is provided in opts.response', ->
       loadPageStub = stub(Turbolinks, "loadPage")
@@ -72,12 +82,15 @@ describe 'Page', ->
         onlyKeys: ['a', 'b']
       , afterRefreshCallback
 
-      assert loadPageStub.calledOnce
-      assert loadPageStub.calledWith null, xhrPlaceholder, { onlyKeys: ['a', 'b'], partialReplace: true, onLoadFunction: afterRefreshCallback }
+      assert.calledOnce(loadPageStub)
+      assert.calledWithMatch(loadPageStub,
+        null,
+        xhrPlaceholder,
+        { onlyKeys: ['a', 'b'], partialReplace: true, callback: afterRefreshCallback }
+      )
       loadPageStub.restore()
 
-    it 'updates window push state when response is a redirect', ->
-
+    it 'updates window push state when response is a redirect', (done) ->
       mockXHR = {
         getResponseHeader: (header) ->
           if header == 'Content-Type'
@@ -88,14 +101,20 @@ describe 'Page', ->
         status: 302
         responseText: "<div>redirected</div>"
       }
-      Page.refresh
+      Page.refresh({
         response: mockXHR,
-        onlyKeys: ['a']
+        onlyKeys: ['a'],
+        }, ->
+          assert.calledWith(
+            replaceStateStub,
+            sinon.match.any,
+            '',
+            mockXHR.getResponseHeader('X-XHR-Redirected-To')
+          )
+          done()
+      )
 
-      assert @replaceStateStub.calledWith sinon.match.any, '', mockXHR.getResponseHeader('X-XHR-Redirected-To')
-
-    it 'doens\'t update window push state if updatePushState is false', ->
-
+    it 'doesn\'t update window push state if updatePushState is false', (done) ->
       mockXHR = {
         getResponseHeader: (header) ->
           if header == 'Content-Type'
@@ -106,12 +125,14 @@ describe 'Page', ->
         status: 302
         responseText: "<div>redirected</div>"
       }
-      Page.refresh
+      Page.refresh({
         response: mockXHR,
         onlyKeys: ['a']
-        updatePushState: false
-
-      assert @replaceStateStub.notCalled
+        updatePushState: false,
+        }, ->
+          assert.notCalled(replaceStateStub)
+          done()
+      )
 
   describe 'onReplace', ->
 
