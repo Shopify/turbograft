@@ -44,6 +44,9 @@ class window.TurboHead
       noMatchingSrc(node) || noMatchingHref(node)
     )
 
+  movingFromTrackedToUntracked: () ->
+    @upstreamAssets.length == 0 && @activeAssets.length > 0
+
   hasNamedAssetConflicts: () ->
     @newScripts
       .concat(@newLinks)
@@ -51,7 +54,9 @@ class window.TurboHead
       .some(datasetMatchesIn(TRACKED_ATTRIBUTE_NAME, @activeAssets))
 
   hasAssetConflicts: () ->
-    @hasNamedAssetConflicts() || @hasChangedAnonymousAssets()
+    @movingFromTrackedToUntracked() ||
+      @hasNamedAssetConflicts() ||
+      @hasChangedAnonymousAssets()
 
   waitForAssets: () ->
     resolvePreviousRequest?(isCanceled: true)

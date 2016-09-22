@@ -133,6 +133,12 @@ describe 'Turbolinks', ->
         done()
 
   describe 'head asset tracking', ->
+    it 'refreshes page when moving from a page with tracked assets to a page with none', (done) ->
+      startFromFixture('singleScriptInHead')
+      visit url: 'noScriptsOrLinkInHead', ->
+        assert(Turbolinks.fullPageNavigate.called, 'Should perform a full page refresh.')
+        done()
+
     it 'refreshes page when a data-turbolinks-track value matches but src changes', (done) ->
       startFromFixture('singleScriptInHead')
       visit url: 'singleScriptInHeadWithDifferentSourceButSameName', ->
