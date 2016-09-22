@@ -139,7 +139,9 @@ class window.Turbolinks
         if turbohead.hasAssetConflicts()
           return Turbolinks.fullPageNavigate(url.absolute)
         reflectNewUrl url if options.updatePushState
-        turbohead.insertNewAssets(-> updateBody(upstreamDocument, xhr, options))
+        turbohead.waitForAssets().then((result) ->
+          updateBody(upstreamDocument, xhr, options) unless result?.isCanceled
+        )
     else
       triggerEvent 'page:error', xhr
       Turbolinks.fullPageNavigate(url.absolute) if url?
@@ -303,6 +305,7 @@ class window.Turbolinks
       location = new ComponentUrl location
       preservedHash = if location.hasNoHash() then document.location.hash else ''
       Turbolinks.replaceState currentState, '', location.href + preservedHash
+
     return
 
   rememberReferer = ->

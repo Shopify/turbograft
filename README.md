@@ -28,6 +28,9 @@ Turbograft was built with simplicity in mind. It intends to offer the smallest a
 * Replace `//= require turbolinks` with `//= require turbograft` in _app/assets/javascripts/application.js_
 * Run `bundle install`
 
+## Dependencies
+
+Turbograft requires a browser that supports [`Promise`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise), or a polyfill (e.g., [core-js](https://github.com/zloirock/core-js).)
 
 ## Usage
 
