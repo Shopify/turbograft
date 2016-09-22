@@ -80,8 +80,11 @@ class window.Turbolinks
     fetchReplacement url, options
 
   @fullPageNavigate: (url) ->
-    triggerEvent('page:before-full-refresh', url: url)
-    document.location.href = url
+    if url?
+      url = (new ComponentUrl(url)).absolute
+      triggerEvent('page:before-full-refresh', url: url)
+      document.location.href = url
+    return
 
   @pushState: (state, title, url) ->
     window.history.pushState(state, title, url)
@@ -111,7 +114,7 @@ class window.Turbolinks
 
     xhr.onload = ->
       if xhr.status >= 500
-        Turbolinks.fullPageNavigate(url.absolute)
+        Turbolinks.fullPageNavigate(url)
       else
         Turbolinks.loadPage(url, xhr, options)
       xhr = null
@@ -121,7 +124,7 @@ class window.Turbolinks
       if xhr.statusText == "abort"
         xhr = null
         return
-      Turbolinks.fullPageNavigate(url.absolute)
+      Turbolinks.fullPageNavigate(url)
 
     xhr.send()
 
@@ -137,14 +140,14 @@ class window.Turbolinks
       else
         turbohead = new TurboHead(document, upstreamDocument)
         if turbohead.hasAssetConflicts()
-          return Turbolinks.fullPageNavigate(url.absolute)
+          return Turbolinks.fullPageNavigate(url)
         reflectNewUrl url if options.updatePushState
         turbohead.waitForAssets().then((result) ->
           updateBody(upstreamDocument, xhr, options) unless result?.isCanceled
         )
     else
       triggerEvent 'page:error', xhr
-      Turbolinks.fullPageNavigate(url.absolute) if url?
+      Turbolinks.fullPageNavigate(url)
 
   updateBody = (upstreamDocument, xhr, options) ->
     nodes = changePage(
