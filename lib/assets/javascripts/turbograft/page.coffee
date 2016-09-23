@@ -17,7 +17,9 @@ Page.refresh = (options = {}, callback) ->
     location.href
 
   if options.response
-    options.partialReplace = true
+    followingARedirect = options.response.responseURL != newUrl
+    options.partialReplace = true unless followingARedirect
+
     options.onLoadFunction = callback
 
     xhr = options.response
