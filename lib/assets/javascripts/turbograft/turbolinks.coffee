@@ -133,12 +133,12 @@ class window.Turbolinks
   @loadPage: (url, xhr, options = {}) ->
     triggerEvent 'page:receive'
     options.updatePushState ?= true
-    if upstreamDocument = processResponse(xhr)
+    if upstreamDocument = new TurboGraft.Response(xhr).document()
       if options.partialReplace
         reflectNewUrl url if options.updatePushState
         updateBody(upstreamDocument, xhr, options)
       else
-        turbohead = new TurboHead(document, upstreamDocument)
+        turbohead = new TurboGraft.TurboHead(document, upstreamDocument)
         if turbohead.hasAssetConflicts()
           return Turbolinks.fullPageNavigate(url)
         reflectNewUrl url if options.updatePushState
@@ -332,18 +332,6 @@ class window.Turbolinks
   pageChangePrevented = (url) ->
     !triggerEvent('page:before-change', url)
 
-  processResponse = (xhr) ->
-    clientOrServerError = ->
-      return false if xhr.status == 422 # we want to render form validations
-      400 <= xhr.status < 600
-
-    validContent = ->
-      xhr.getResponseHeader('Content-Type').match /^(?:text\/html|application\/xhtml\+xml|application\/xml)(?:;|$)/
-
-    if !clientOrServerError() && validContent()
-      upstreamDocument = createDocument(xhr.responseText)
-      return upstreamDocument
-
   installHistoryChangeHandler = (event) ->
     if event.state?.turbolinks
       Turbolinks.visit event.target.location.href
@@ -352,17 +340,6 @@ class window.Turbolinks
   # some browsers fire on the initial page load.
   bypassOnLoadPopstate = (fn) ->
     setTimeout fn, 500
-
-  createDocument = (html) ->
-    if /<(html|body)/i.test(html)
-      doc = document.documentElement.cloneNode()
-      doc.innerHTML = html
-    else
-      doc = document.documentElement.cloneNode(true)
-      doc.querySelector('body').innerHTML = html
-    doc.head = doc.querySelector('head')
-    doc.body = doc.querySelector('body')
-    doc
 
   if browserSupportsTurbolinks
     @visit = fetch

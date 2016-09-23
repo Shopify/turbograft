@@ -86,7 +86,7 @@ describe 'Turbolinks', ->
     $("script").attr("data-turbolinks-eval", false)
     $("#mocha").attr("refresh-never", true)
 
-    TurboHead._testAPI.reset()
+    TurboGraft.TurboHead._testAPI.reset()
     resetPage()
 
   afterEach ->
@@ -396,8 +396,8 @@ describe 'Turbolinks', ->
 
     beforeEach ->
       promise = new Promise((resolve) -> resolver = resolve)
-      sandbox.stub(TurboHead.prototype, 'hasAssetConflicts').returns(false)
-      sandbox.stub(TurboHead.prototype, 'waitForAssets').returns(promise)
+      sandbox.stub(TurboGraft.TurboHead.prototype, 'hasAssetConflicts').returns(false)
+      sandbox.stub(TurboGraft.TurboHead.prototype, 'waitForAssets').returns(promise)
 
       xhr = new sinon.FakeXMLHttpRequest()
       xhr.open('POST', '/my/endpoint', true)
