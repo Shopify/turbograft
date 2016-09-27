@@ -125,7 +125,10 @@ insertScript = (activeDocument, scriptNode) ->
 
   scriptPromises[url] = new Promise((resolve) ->
     onAssetEvent = (event) ->
-      triggerEvent("page:#script-error", event) if event.type == 'error'
+      if event.type == 'error'
+        event.url = url
+        triggerEvent("page:script-error", event) if event.type == 'error'
+
       newNode.removeEventListener('load', onAssetEvent)
       newNode.removeEventListener('error', onAssetEvent)
       resolve()

@@ -1,5 +1,5 @@
 window.fakeScript = (src) ->
-  listeners = []
+  listeners = {load: [], error: []}
   node = {
     'data-turbolinks-track': src
     attributes: [{name: 'src', value: src}]
@@ -15,11 +15,16 @@ window.fakeScript = (src) ->
       @attributes.push({name: name, value: value})
 
     addEventListener: (eventName, listener) ->
-      return if eventName != 'load'
-      listeners.push(listener)
+      listeners[eventName].push(listener)
+
+    fireError: () ->
+      listener({type: 'error'}) for listener in listeners['error']
+      new Promise (resolve) ->
+        node.isError = true
+        setTimeout -> resolve(node)
 
     fireLoaded: () ->
-      listener({type: 'load'}) for listener in listeners
+      listener({type: 'load'}) for listener in listeners['load']
       new Promise (resolve) ->
         node.isLoaded = true
         setTimeout -> resolve(node)

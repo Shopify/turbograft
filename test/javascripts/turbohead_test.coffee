@@ -9,14 +9,26 @@ describe 'TurboHead', ->
     promiseQueue = promiseQueue.then ->
       assert.lengthOf(activeDocument.createdScripts, size, message)
 
+  nextUnloadedScript = ->
+    unloaded = activeDocument.createdScripts.filter (script) ->
+      !script.isLoaded && !script.isError
+    throw new Error('No unloaded scripts') if !unloaded[0]
+
+    unloaded[0]
+
+  failScriptDownload = ->
+    promiseQueue = promiseQueue.then ->
+      new Promise (resolve) ->
+        unloaded = nextUnloadedScript()
+        unloaded.fireError().then ->
+          setTimeout -> resolve(unloaded)
+
   finishScriptDownload = ->
     promiseQueue = promiseQueue.then ->
       new Promise (resolve) ->
-        unloaded = activeDocument.createdScripts.filter (script) ->
-          !script.isLoaded
-
-        unloaded[0].fireLoaded().then ->
-          setTimeout -> resolve(unloaded[0])
+        unloaded = nextUnloadedScript()
+        unloaded.fireLoaded().then ->
+          setTimeout -> resolve(unloaded)
 
   newRequest = (requestScripts) ->
     promiseQueue = promiseQueue.then ->
@@ -30,6 +42,7 @@ describe 'TurboHead', ->
         request.isInProgress = true
         request.isFulfilled = false
         request.isRejected = false
+        request.isError = false
         request
           .then (result) ->
             request.isInProgress = false
@@ -120,3 +133,22 @@ describe 'TurboHead', ->
         newRequest(['a.js', 'b.js']).then ->
           assertScriptCount(2)
           assert.isTrue(requests[1].isFulfilled)
+
+  describe 'script errors', ->
+    it 'sends events for script errors', ->
+      promise = new Promise (resolve) ->
+        $(document).one('page:script-error', (evt) ->
+          assert.equal(evt.originalEvent.data.url, 'a.js')
+          resolve()
+        )
+
+      newRequest(['a.js'])
+      failScriptDownload()
+      promise
+
+    it 'fulfills requests with script errors', ->
+      newRequest(['a.js', 'b.js', 'c.js'])
+      finishScriptDownload()
+      failScriptDownload()
+      finishScriptDownload().then ->
+        assert.isTrue(requests[0].isFulfilled)
