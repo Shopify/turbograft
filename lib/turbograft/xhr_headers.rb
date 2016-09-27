@@ -25,23 +25,32 @@ module TurboGraft
     end
 
     private
-      def store_for_turbolinks(url)
-        session[:_turbolinks_redirect_to] = url if session && request.headers["X-XHR-Referer"]
-        url
-      end
 
-      def set_xhr_redirected_to
-        if session && session[:_turbolinks_redirect_to]
-          response.headers['X-XHR-Redirected-To'] = session.delete :_turbolinks_redirect_to
-        end
-      end
+    # Ensure backwards compatibility
+    # Rails < 4.2:  _compute_redirect_to_location(options)
+    # Rails >= 4.2: _compute_redirect_to_location(request, options)
+    def _normalize_redirect_params(args)
+      options, req = args.reverse
+      [options, req || request]
+    end
 
-      # Ensure backwards compatibility
-      # Rails < 4.2:  _compute_redirect_to_location(options)
-      # Rails >= 4.2: _compute_redirect_to_location(request, options)
-      def _normalize_redirect_params(args)
-        options, req = args.reverse
-        [options, req || request]
+    def store_for_turbolinks(url)
+      session[:_turbolinks_redirect_to] = url if session && request.headers["X-XHR-Referer"]
+      url
+    end
+
+    def set_xhr_redirected_to
+      if turbolinks_redirected? && request_matches_redirect?
+        response.headers['X-XHR-Redirected-To'] = session.delete(:_turbolinks_redirect_to)
       end
+    end
+
+    def turbolinks_redirected?
+      session && session[:_turbolinks_redirect_to]
+    end
+
+    def request_matches_redirect?
+      session[:_turbolinks_redirect_to] == request.original_url
+    end
   end
 end
