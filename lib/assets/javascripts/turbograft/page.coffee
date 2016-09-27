@@ -15,18 +15,15 @@ Page.refresh = (options = {}, callback) ->
     location.pathname + paramString
   else
     location.href
+  delete options.url
 
+  options.partialReplace = true
+  options.callback = callback if callback
   if options.response
-    options.partialReplace = true
-    options.onLoadFunction = callback
-
     xhr = options.response
     delete options.response
     Turbolinks.loadPage null, xhr, options
   else
-    options.partialReplace = true
-    options.callback = callback if callback
-
     Turbolinks.visit newUrl, options
 
 Page.open = ->

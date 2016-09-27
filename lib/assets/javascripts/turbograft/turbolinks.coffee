@@ -71,13 +71,15 @@ class window.Turbolinks
 
     rememberReferer()
 
-    options.partialReplace ?= false
-    options.onlyKeys ?= []
-    options.onLoadFunction = ->
-      resetScrollPosition() unless options.onlyKeys.length
-      options.callback?()
-
     fetchReplacement url, options
+
+  redirectedTo = (xhr) ->
+    xhr.getResponseHeader('X-XHR-Redirected-To')
+
+  isPartialReplace = (options) ->
+    Boolean(options.partialReplace ||
+    options.onlyKeys.length ||
+    options.exceptKeys.length)
 
   @fullPageNavigate: (url) ->
     if url?
@@ -132,6 +134,10 @@ class window.Turbolinks
 
   @loadPage: (url, xhr, options = {}) ->
     triggerEvent 'page:receive'
+    options.onlyKeys ?= []
+    options.exceptKeys ?= []
+    options.partialReplace = isPartialReplace(options)
+    options.redirectedTo = redirectedTo(xhr)
     options.updatePushState ?= true
     if upstreamDocument = new TurboGraft.Response(xhr).document()
       if options.partialReplace
@@ -157,14 +163,17 @@ class window.Turbolinks
       'runScripts',
       options
     )
-    reflectRedirectedUrl(xhr) if options.updatePushState
-    options.onLoadFunction?()
+    if options.redirectedTo
+      reflectRedirectedUrl(options.redirectedTo) if options.updatePushState
+      resetScrollPosition()
+    else
+      resetScrollPosition() unless options.partialReplace
+
+    options.callback?()
     triggerEvent 'page:load', nodes
 
   changePage = (title, body, csrfToken, runScripts, options = {}) ->
     document.title = title if title
-    options.onlyKeys ?= []
-    options.exceptKeys ?= []
 
     if options.onlyKeys.length
       nodesToRefresh = [].concat(getNodesWithRefreshAlways(), getNodesMatchingRefreshKeys(options.onlyKeys))
@@ -303,13 +312,10 @@ class window.Turbolinks
       Turbolinks.pushState { turbolinks: true, url: url.absolute }, '', url.absolute
     return
 
-  reflectRedirectedUrl = (xhr) ->
-    if location = xhr.getResponseHeader 'X-XHR-Redirected-To'
-      location = new ComponentUrl location
-      preservedHash = if location.hasNoHash() then document.location.hash else ''
-      Turbolinks.replaceState currentState, '', location.href + preservedHash
-
-    return
+  reflectRedirectedUrl = (url) ->
+    newUrl = new ComponentUrl(url)
+    preservedHash = if newUrl.hasNoHash() then document.location.hash else ''
+    Turbolinks.replaceState(currentState, '', newUrl.href + preservedHash)
 
   rememberReferer = ->
     referer = document.location.href

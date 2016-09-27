@@ -18,11 +18,10 @@ describe 'Page', ->
 
   describe '#refresh', ->
     it 'with opts.url', ->
-      Page.refresh
-        url: '/foo'
+      Page.refresh(url: '/foo')
 
-      assert @visitStub.calledOnce
-      assert @visitStub.calledWith "/foo", { url: '/foo', partialReplace: true }
+      assert(@visitStub.calledOnce, 'visit not called')
+      assert(@visitStub.calledWith("/foo", { partialReplace: true }), 'wrong parameters')
 
     it 'with opts.queryParams', ->
       Page.refresh
@@ -73,7 +72,7 @@ describe 'Page', ->
       , afterRefreshCallback
 
       assert loadPageStub.calledOnce
-      assert loadPageStub.calledWith null, xhrPlaceholder, { onlyKeys: ['a', 'b'], partialReplace: true, onLoadFunction: afterRefreshCallback }
+      assert loadPageStub.calledWith null, xhrPlaceholder, { onlyKeys: ['a', 'b'], partialReplace: true, callback: afterRefreshCallback }
       loadPageStub.restore()
 
     it 'updates window push state when response is a redirect', ->
@@ -92,7 +91,12 @@ describe 'Page', ->
         response: mockXHR,
         onlyKeys: ['a']
 
-      assert @replaceStateStub.calledWith sinon.match.any, '', mockXHR.getResponseHeader('X-XHR-Redirected-To')
+      assert.calledWith(
+        @replaceStateStub,
+        sinon.match.any,
+        '',
+        mockXHR.getResponseHeader('X-XHR-Redirected-To')
+      )
 
     it 'doens\'t update window push state if updatePushState is false', ->
 
