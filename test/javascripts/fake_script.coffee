@@ -20,7 +20,7 @@ window.fakeScript = (src) ->
     fireError: () ->
       listener({type: 'error'}) for listener in listeners['error']
       new Promise (resolve) ->
-        node.isError = true
+        node.hasError = true
         setTimeout -> resolve(node)
 
     fireLoaded: () ->

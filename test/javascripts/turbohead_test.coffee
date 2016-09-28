@@ -11,7 +11,7 @@ describe 'TurboHead', ->
 
   nextUnloadedScript = ->
     unloaded = activeDocument.createdScripts.filter (script) ->
-      !script.isLoaded && !script.isError
+      !script.isLoaded && !script.hasError
     throw new Error('No unloaded scripts') if !unloaded[0]
 
     unloaded[0]
@@ -42,7 +42,7 @@ describe 'TurboHead', ->
         request.isInProgress = true
         request.isFulfilled = false
         request.isRejected = false
-        request.isError = false
+        request.hasError = false
         request
           .then (result) ->
             request.isInProgress = false
