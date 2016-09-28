@@ -127,7 +127,7 @@ insertScript = (activeDocument, scriptNode) ->
     onAssetEvent = (event) ->
       if event.type == 'error'
         event.url = url
-        triggerEvent("page:script-error", event) if event.type == 'error'
+        triggerEvent("page:script-error", event)
 
       newNode.removeEventListener('load', onAssetEvent)
       newNode.removeEventListener('error', onAssetEvent)
