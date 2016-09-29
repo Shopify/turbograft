@@ -469,7 +469,7 @@ window.ROUTES = {
           <title>Hi</title>
         </head>
         <body>
-          <script id="turbo-area" refresh="turbo-area">globalStub()</script>
+          <script id="turbo-area" refresh="turbo-area">window.parent.globalStub()</script>
         </body>
       </html>
       """
@@ -485,7 +485,7 @@ window.ROUTES = {
           <title>Hi</title>
         </head>
         <body>
-          <script data-turbolinks-eval="false" id="turbo-area" refresh="turbo-area">globalStub()</script>
+          <script data-turbolinks-eval="false" id="turbo-area" refresh="turbo-area">window.parent.globalStub()</script>
         </body>
       </html>
     """

@@ -43,4 +43,5 @@ Example::Application.config.assets.precompile += %w(
   fixtures/js/order_testing/b.js
   fixtures/js/order_testing/c.js
   fixtures/js/routes.self.js
+  fixtures/js/asset-fixtures.self.js
 )

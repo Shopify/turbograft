@@ -1,1 +1,1 @@
-window.actualExecutionOrder.push('a')
+window.parent.actualExecutionOrder.push('a')
