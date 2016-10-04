@@ -12,6 +12,7 @@ class TurboGraft.Remote
     @refreshOnSuccessExcept = @opts.refreshOnSuccessExcept.split(" ") if @opts.refreshOnSuccessExcept
     @refreshOnError         = @opts.refreshOnError.split(" ")         if @opts.refreshOnError
     @refreshOnErrorExcept   = @opts.refreshOnErrorExcept.split(" ")   if @opts.refreshOnErrorExcept
+    @updatePushState        = @opts.updatePushState
 
     xhr = new XMLHttpRequest
     if @actualRequestType == 'GET'
@@ -130,20 +131,26 @@ class TurboGraft.Remote
 
     unless TurboGraft.hasTGAttribute(@initiator, 'tg-remote-norefresh')
       if @opts.fullRefresh && @refreshOnSuccess
-        Page.refresh(onlyKeys: @refreshOnSuccess)
+        Page.refresh
+          onlyKeys: @refreshOnSuccess
+          updatePushState: @updatePushState
       else if @opts.fullRefresh
-        Page.refresh()
+        Page.refresh
+          updatePushState: @updatePushState
       else if @refreshOnSuccess
         Page.refresh
           response: xhr
           onlyKeys: @refreshOnSuccess
+          updatePushState: @updatePushState
       else if @refreshOnSuccessExcept
         Page.refresh
           response: xhr
           exceptKeys: @refreshOnSuccessExcept
+          updatePushState: @updatePushState
       else
         Page.refresh
           response: xhr
+          updatePushState: @updatePushState
 
   onError: (ev) =>
     @opts.fail?()
@@ -158,17 +165,22 @@ class TurboGraft.Remote
         xhr: xhr
     else
       if @opts.fullRefresh && @refreshOnError
-        Page.refresh(onlyKeys: @refreshOnError)
+        Page.refresh
+          onlyKeys: @refreshOnError
+          updatePushState: @updatePushState
       else if @opts.fullRefresh
-        Page.refresh()
+        Page.refresh
+          updatePushState: @updatePushState
       else if @refreshOnError
         Page.refresh
           response: xhr
           onlyKeys: @refreshOnError
+          updatePushState: @updatePushState
       else if @refreshOnErrorExcept
         Page.refresh
           response: xhr
           exceptKeys: @refreshOnErrorExcept
+          updatePushState: @updatePushState
       else
         triggerEventFor 'turbograft:remote:fail:unhandled', @initiator,
           xhr: xhr
