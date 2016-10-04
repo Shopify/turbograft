@@ -13,7 +13,6 @@ Teaspoon.configure do |config|
 
   config.suite do |suite|
     suite.use_framework :mocha
-    suite.boot_partial = '/test_head'
     suite.matcher = "{test/javascripts,app/assets}/**/*_test.{js,js.coffee,coffee,coffee.erb}"
     suite.helper = "test_helper"
     suite.stylesheets = ["teaspoon"]

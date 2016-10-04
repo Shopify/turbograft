@@ -1,0 +1,31 @@
+//= require support/sinon
+//= require support/chai
+//= require support/sinon-chai
+//= require_self
+//= require fixtures/js/routes
+//= require vendor/promise-polyfill/promise
+//= require application
+
+ASSET_FIXTURES = {
+  'foo.js': "<%= asset_path('fixtures/js/foo.js') %>",
+  'bar.js': "<%= asset_path('fixtures/js/bar.js') %>",
+  'a.js': "<%= asset_path('fixtures/js/order_testing/a.js') %>",
+  'b.js': "<%= asset_path('fixtures/js/order_testing/b.js') %>",
+  'c.js': "<%= asset_path('fixtures/js/order_testing/c.js') %>",
+  'foo.css': "<%= asset_path('fixtures/css/foo.css') %>",
+  'bar.css': "<%= asset_path('fixtures/css/bar.css') %>",
+  'a.css': "<%= asset_path('fixtures/css/order_testing/a.css') %>",
+  'b.css': "<%= asset_path('fixtures/css/order_testing/b.css') %>",
+  'c.css': "<%= asset_path('fixtures/css/order_testing/c.css') %>",
+  'd.css': "<%= asset_path('fixtures/css/order_testing/d.css') %>"
+};
+
+expect = chai.expect;
+assert = chai.assert;
+spy = sinon.spy;
+mock = sinon.mock;
+stub = sinon.stub;
+
+mocha.setup('tdd')
+sinon.assert.expose(chai.assert, {prefix: ''});
+chai.config.truncateThreshold = 9999;

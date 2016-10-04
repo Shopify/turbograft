@@ -1,14 +1,15 @@
 xhr = null
+activeDocument = document
 
 installDocumentReadyPageEventTriggers = ->
-  document.addEventListener 'DOMContentLoaded', ( ->
+  activeDocument.addEventListener 'DOMContentLoaded', ( ->
     triggerEvent 'page:change'
     triggerEvent 'page:update'
   ), true
 
 installJqueryAjaxSuccessPageUpdateTrigger = ->
   if typeof jQuery isnt 'undefined'
-    jQuery(document).on 'ajaxSuccess', (event, xhr, settings) ->
+    jQuery(activeDocument).on 'ajaxSuccess', (event, xhr, settings) ->
       return unless jQuery.trim xhr.responseText
       triggerEvent 'page:update'
 
@@ -20,20 +21,20 @@ browserSupportsPushState =
   window.history and window.history.pushState and window.history.replaceState and historyStateIsDefined
 
 window.triggerEvent = (name, data) ->
-  event = document.createEvent 'Events'
+  event = activeDocument.createEvent 'Events'
   event.data = data if data
   event.initEvent name, true, true
-  document.dispatchEvent event
+  activeDocument.dispatchEvent event
 
 window.triggerEventFor = (name, node, data) ->
-  event = document.createEvent 'Events'
+  event = activeDocument.createEvent 'Events'
   event.data = data if data
   event.initEvent name, true, true
   node.dispatchEvent event
 
 popCookie = (name) ->
-  value = document.cookie.match(new RegExp(name+"=(\\w+)"))?[1].toUpperCase() or ''
-  document.cookie = name + '=; expires=Thu, 01-Jan-70 00:00:01 GMT; path=/'
+  value = activeDocument.cookie.match(new RegExp(name+"=(\\w+)"))?[1].toUpperCase() or ''
+  activeDocument.cookie = name + '=; expires=Thu, 01-Jan-70 00:00:01 GMT; path=/'
   value
 
 requestMethodIsSafe =
@@ -42,7 +43,7 @@ requestMethodIsSafe =
 browserSupportsTurbolinks = browserSupportsPushState and requestMethodIsSafe
 
 browserSupportsCustomEvents =
-  document.addEventListener and document.createEvent
+  activeDocument.addEventListener and activeDocument.createEvent
 
 if browserSupportsCustomEvents
   installDocumentReadyPageEventTriggers()
@@ -61,7 +62,6 @@ removeNode = (node) ->
 # TODO: clean up everything above me ^
 # TODO: decide on the public API
 class window.Turbolinks
-  createDocument = null
   currentState = null
   referer = null
 
@@ -83,7 +83,7 @@ class window.Turbolinks
     if url?
       url = (new ComponentUrl(url)).absolute
       triggerEvent('page:before-full-refresh', url: url)
-      document.location.href = url
+      activeDocument.location.href = url
     return
 
   @pushState: (state, title, url) ->
@@ -91,6 +91,10 @@ class window.Turbolinks
 
   @replaceState: (state, title, url) ->
     window.history.replaceState(state, title, url)
+
+  @document: (documentToUse) ->
+    activeDocument = documentToUse if documentToUse
+    activeDocument
 
   fetchReplacement = (url, options) ->
     triggerEvent 'page:fetch', url: url.absolute
@@ -138,7 +142,7 @@ class window.Turbolinks
         reflectNewUrl url if options.updatePushState
         updateBody(upstreamDocument, xhr, options)
       else
-        turbohead = new TurboGraft.TurboHead(document, upstreamDocument)
+        turbohead = new TurboGraft.TurboHead(activeDocument, upstreamDocument)
         if turbohead.hasAssetConflicts()
           return Turbolinks.fullPageNavigate(url)
         reflectNewUrl url if options.updatePushState
@@ -162,7 +166,7 @@ class window.Turbolinks
     triggerEvent 'page:load', nodes
 
   changePage = (title, body, csrfToken, runScripts, options = {}) ->
-    document.title = title if title
+    activeDocument.title = title if title
     options.onlyKeys ?= []
     options.exceptKeys ?= []
 
@@ -180,7 +184,7 @@ class window.Turbolinks
         deleteRefreshNeverNodes(body)
 
       triggerEvent 'page:before-replace'
-      replaceNode(body, document.body)
+      replaceNode(body, activeDocument.body)
       CSRFToken.update csrfToken if csrfToken?
       setAutofocusElement()
       executeScriptTags() if runScripts
@@ -193,14 +197,14 @@ class window.Turbolinks
   getNodesMatchingRefreshKeys = (keys) ->
     matchingNodes = []
     for key in keys
-      for node in TurboGraft.querySelectorAllTGAttribute(document, 'refresh', key)
+      for node in TurboGraft.querySelectorAllTGAttribute(activeDocument, 'refresh', key)
         matchingNodes.push(node)
 
     return matchingNodes
 
   getNodesWithRefreshAlways = ->
     matchingNodes = []
-    for node in TurboGraft.querySelectorAllTGAttribute(document, 'refresh-always')
+    for node in TurboGraft.querySelectorAllTGAttribute(activeDocument, 'refresh-always')
       matchingNodes.push(node)
 
     return matchingNodes
@@ -213,8 +217,8 @@ class window.Turbolinks
     false
 
   setAutofocusElement = ->
-    autofocusElement = (list = document.querySelectorAll 'input[autofocus], textarea[autofocus]')[list.length - 1]
-    if autofocusElement and document.activeElement isnt autofocusElement
+    autofocusElement = (list = activeDocument.querySelectorAll 'input[autofocus], textarea[autofocus]')[list.length - 1]
+    if autofocusElement and activeDocument.activeElement isnt autofocusElement
       autofocusElement.focus()
 
   deleteRefreshNeverNodes = (body) ->
@@ -263,7 +267,7 @@ class window.Turbolinks
   persistStaticElements = (body) ->
     allNodesToKeep = []
 
-    nodes = TurboGraft.querySelectorAllTGAttribute(document, 'tg-static')
+    nodes = TurboGraft.querySelectorAllTGAttribute(activeDocument, 'tg-static')
     allNodesToKeep.push(node) for node in nodes
 
     keepNodes(body, allNodesToKeep)
@@ -273,22 +277,22 @@ class window.Turbolinks
     allNodesToKeep = []
 
     for key in keys
-      for node in TurboGraft.querySelectorAllTGAttribute(document, 'refresh', key)
+      for node in TurboGraft.querySelectorAllTGAttribute(activeDocument, 'refresh', key)
         allNodesToKeep.push(node)
 
     keepNodes(body, allNodesToKeep)
     return
 
   executeScriptTags = ->
-    scripts = Array::slice.call document.body.querySelectorAll 'script:not([data-turbolinks-eval="false"])'
+    scripts = Array::slice.call activeDocument.body.querySelectorAll 'script:not([data-turbolinks-eval="false"])'
     for script in scripts when script.type in ['', 'text/javascript']
       executeScriptTag(script)
     return
 
   executeScriptTag = (script) ->
-    copy = document.createElement 'script'
+    copy = activeDocument.createElement 'script'
     copy.setAttribute attr.name, attr.value for attr in script.attributes
-    copy.appendChild document.createTextNode script.innerHTML
+    copy.appendChild activeDocument.createTextNode script.innerHTML
     { parentNode, nextSibling } = script
     parentNode.removeChild script
     parentNode.insertBefore copy, nextSibling
@@ -306,16 +310,16 @@ class window.Turbolinks
   reflectRedirectedUrl = (xhr) ->
     if location = xhr.getResponseHeader 'X-XHR-Redirected-To'
       location = new ComponentUrl location
-      preservedHash = if location.hasNoHash() then document.location.hash else ''
+      preservedHash = if location.hasNoHash() then activeDocument.location.hash else ''
       Turbolinks.replaceState currentState, '', location.href + preservedHash
 
     return
 
   rememberReferer = ->
-    referer = document.location.href
+    referer = activeDocument.location.href
 
   @rememberCurrentUrl: ->
-    Turbolinks.replaceState { turbolinks: true, url: document.location.href }, '', document.location.href
+    Turbolinks.replaceState { turbolinks: true, url: activeDocument.location.href }, '', activeDocument.location.href
 
   @rememberCurrentState: ->
     currentState = window.history.state
@@ -324,8 +328,8 @@ class window.Turbolinks
     window.scrollTo page.positionX, page.positionY
 
   resetScrollPosition = ->
-    if document.location.hash
-      document.location.href = document.location.href
+    if activeDocument.location.hash
+      activeDocument.location.href = activeDocument.location.href
     else
       window.scrollTo 0, 0
 
@@ -346,10 +350,10 @@ class window.Turbolinks
     @rememberCurrentUrl()
     @rememberCurrentState()
 
-    document.addEventListener 'click', Click.installHandlerLast, true
+    activeDocument.addEventListener 'click', Click.installHandlerLast, true
 
     bypassOnLoadPopstate ->
       window.addEventListener 'popstate', installHistoryChangeHandler, false
 
   else
-    @visit = (url) -> document.location.href = url
+    @visit = (url) -> activeDocument.location.href = url

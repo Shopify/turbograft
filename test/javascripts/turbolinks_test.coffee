@@ -1,4 +1,7 @@
 describe 'Turbolinks', ->
+  baseHTML = '<html><head></head><body></body></html>'
+  iframe = null
+  testDocument = null
   sandbox = null
   pushStateStub = null
   replaceStateStub = null
@@ -22,7 +25,7 @@ describe 'Turbolinks', ->
   ]
 
   hasScript = (filename) ->
-    document.querySelectorAll("script[src=\"#{ASSET_FIXTURES[filename]}\"]").length > 0
+    testDocument.querySelectorAll("script[src=\"#{ASSET_FIXTURES[filename]}\"]").length > 0
 
   assetFixturePath = (filename) ->
     path = ASSET_FIXTURES[filename]
@@ -44,39 +47,47 @@ describe 'Turbolinks', ->
     )
 
   scriptsInHead = ->
-    [].slice.call(document.head.children)
+    [].slice.call(testDocument.head.children)
       .filter((node) -> node.nodeName == 'SCRIPT')
       .map((node) -> node.getAttribute('src'))
 
   linksInHead = ->
-    [].slice.call(document.head.children)
+    [].slice.call(testDocument.head.children)
       .filter((node) -> node.nodeName == 'LINK')
       .map((node) -> node.getAttribute('href'))
 
   resetPage = ->
-    document.head.innerHTML = ""
-    document.body.innerHTML = """
+    testDocument.head.innerHTML = ""
+    testDocument.body.innerHTML = """
       <div id="turbo-area" refresh="turbo-area"></div>
     """
 
+  setupIframe = ->
+    iframe = document.createElement('iframe')
+    document.body.appendChild(iframe)
+    iframe.contentDocument.write(baseHTML)
+    iframe.contentDocument
+
   startFromFixture = (route) ->
     fixtureHTML = ROUTES[route][2]
-    document.documentElement.innerHTML = fixtureHTML
+    testDocument.documentElement.innerHTML = fixtureHTML
 
   urlFor = (slug) ->
     window.location.origin + slug
 
   visit = ({options, url}, callback) ->
-    $(document).one('page:load', (event) ->
+    $(testDocument).one('page:load', (event) ->
       setTimeout((-> callback(event) if callback), 0)
     )
     Turbolinks.visit('/' + url, options)
 
   beforeEach ->
+    testDocument = setupIframe() unless iframe
+    Turbolinks.document(testDocument)
     sandbox = sinon.sandbox.create()
     pushStateStub = sandbox.stub(Turbolinks, 'pushState')
     replaceStateStub = sandbox.stub(Turbolinks, 'replaceState')
-    sandbox.stub(Turbolinks, 'fullPageNavigate', -> $(document).trigger('page:load'))
+    sandbox.stub(Turbolinks, 'fullPageNavigate', -> $(testDocument).trigger('page:load'))
     sandbox.useFakeServer()
 
     Object.keys(ROUTES).forEach (url) ->
@@ -91,7 +102,7 @@ describe 'Turbolinks', ->
 
   afterEach ->
     sandbox.restore()
-    $(document).off(TURBO_EVENTS.join(' '))
+    $(testDocument).off(TURBO_EVENTS.join(' '))
     $("#turbo-area").remove()
 
   it 'is defined', ->
@@ -100,14 +111,14 @@ describe 'Turbolinks', ->
   describe '#visit', ->
     it 'subsequent visits abort previous XHRs', (done) ->
       pageReceive = stub()
-      $(document).on('page:receive', pageReceive)
+      $(testDocument).on('page:receive', pageReceive)
       visit url: 'noScriptsOrLinkInHead', -> true
       visit url: 'noScriptsOrLinkInHead', ->
         assert(pageReceive.calledOnce, 'page:receive should only be emitted once!')
         done()
 
     it 'returns if pageChangePrevented', (done) ->
-      $(document).one 'page:before-change', (event) ->
+      $(testDocument).one 'page:before-change', (event) ->
         event.preventDefault()
         assert.equal('/noScriptsOrLinkInHead', event.originalEvent.data)
         assert.equal(0, sandbox.server.requests.length)
@@ -190,7 +201,7 @@ describe 'Turbolinks', ->
     describe 'link tags', ->
       it 'dispatches page:after-link-inserted event when inserting a link on navigation', (done) ->
         linkTagInserted = sinon.spy()
-        $(document).on 'page:after-link-inserted', linkTagInserted
+        $(testDocument).on 'page:after-link-inserted', linkTagInserted
 
         visit url: 'singleLinkInHead', ->
           assertLinks(['foo.css'])
@@ -217,7 +228,7 @@ describe 'Turbolinks', ->
     describe 'script tags', ->
       it 'dispatches page:after-script-inserted event when inserting a script on navigation', (done) ->
         scriptTagInserted = sinon.spy()
-        $(document).on 'page:after-script-inserted', scriptTagInserted
+        $(testDocument).on 'page:after-script-inserted', scriptTagInserted
         visit url: 'singleScriptInHead', ->
           assert.equal(scriptTagInserted.callCount, 1)
           done()
@@ -259,7 +270,6 @@ describe 'Turbolinks', ->
 
       describe 'executes scripts in the order they are present in the dom of the upstream document', ->
         beforeEach -> window.actualExecutionOrder = []
-        afterEach -> delete window.actualExecutionOrder
 
         it 'works in order ABC', (done) ->
           expectedScriptOrder = ['a', 'b', 'c']
@@ -351,9 +361,9 @@ describe 'Turbolinks', ->
 
     it 'uses just the part of the response body we supply', (done) ->
       visit url: 'noScriptsOrLinkInHead',  options: {partialReplace: true, onlyKeys: ['turbo-area']}, ->
-        assert.equal("Hi there!", document.title)
-        assert.notInclude(document.body.textContent, 'YOLO')
-        assert.include(document.body.textContent, 'Hi bob')
+        assert.equal("Hi there!", testDocument.title)
+        assert.notInclude(testDocument.body.textContent, 'YOLO')
+        assert.include(testDocument.body.textContent, 'Hi bob')
         done()
 
     it 'triggers the page:load event with a list of nodes that are new (freshly replaced)', (done) ->
@@ -369,7 +379,7 @@ describe 'Turbolinks', ->
 
     it 'does not trigger the page:before-partial-replace event more than once', (done) ->
       handler = stub()
-      $(document).on 'page:before-partial-replace', handler
+      $(testDocument).on 'page:before-partial-replace', handler
 
       visit url: 'noScriptsOrLinkInHead', options: {partialReplace: true, onlyKeys: ['turbo-area']}, ->
         assert(handler.calledOnce)
@@ -377,7 +387,7 @@ describe 'Turbolinks', ->
 
     it 'refreshes only outermost nodes of dom subtrees with refresh keys', (done) ->
       visit url: 'responseWithRefreshAlways', ->
-        $(document).on 'page:before-partial-replace', (ev) ->
+        $(testDocument).on 'page:before-partial-replace', (ev) ->
           nodes = ev.originalEvent.data
           assert.equal(2, nodes.length)
           assert.equal('div2', nodes[0].id)
@@ -406,9 +416,9 @@ describe 'Turbolinks', ->
     it 'does not update document if the request was canceled', ->
       resolver({isCanceled: true})
       loadPromise = Turbolinks.loadPage('/foo', xhr)
-        .then -> assert.notInclude(document.body.innerHTML, SUCCESS_HTML_CONTENT)
+        .then -> assert.notInclude(testDocument.body.innerHTML, SUCCESS_HTML_CONTENT)
 
     it 'updates the document if the request was not canceled', ->
       resolver()
       loadPromise = Turbolinks.loadPage('/foo', xhr)
-        .then -> assert.include(document.body.innerHTML, SUCCESS_HTML_CONTENT)
+        .then -> assert.include(testDocument.body.innerHTML, SUCCESS_HTML_CONTENT)
