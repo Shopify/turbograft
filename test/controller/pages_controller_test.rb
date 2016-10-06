@@ -37,18 +37,15 @@ class PagesControllerTest < ActionController::TestCase
     assert_nil session[:_turbolinks_redirect_to]
   end
 
-  test "set_xhr_redirected_to sets X-XHR-Redirected-To" do
-    get :index, {}, {_turbolinks_redirect_to: 'http://test.host/expected'}
-    assert_response :ok
-    assert_equal 'http://test.host/expected', response.headers['X-XHR-Redirected-To']
+  test "XHR GET for the page matching the redirect will set X-XHR-Redirected-To" do
+    session[:_turbolinks_redirect_to] = 'http://test.host/pages/321'
+    get :show, params: {id: 321}, xhr: true
+    assert_equal 'http://test.host/pages/321', response.headers['X-XHR-Redirected-To']
   end
 
-  test "XHR POST to a redirecting route, followed by XHR GET will set X-XHR-Redirected-To" do
-    @request.headers["X-XHR-Referer"] = 'http://test.host'
-    xhr :post, :redirect_to_somewhere_else_after_POST
-    assert_response 302
-    assert_redirected_to page_path(321)
-    xhr :get, :show, id: 321
-    assert_equal 'http://test.host/pages/321', response.headers['X-XHR-Redirected-To']
+  test "XHR GET for a page not matching the redirect will not set X-XHR-Redirected-To" do
+    session[:_turbolinks_redirect_to] = 'http://test.host/pages/321'
+    get :show, params: {id: 11}, xhr: true
+    assert_nil response.headers['X-XHR-Redirected-To']
   end
 end
