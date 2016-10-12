@@ -17,6 +17,22 @@ window.ROUTES = {
     'error!'
   ],
 
+  xhrRedirectedToHeader: [
+    200,
+    {
+      'X-XHR-Redirected-To': 'test-location'
+    },
+    ''
+  ],
+
+  otherXhrRedirectedToHeader: [
+    200,
+    {
+      'X-XHR-Redirected-To': 'other-location'
+    },
+    ''
+  ],
+
   noScriptsOrLinkInHead: [
     200,
     {'Content-Type':'text/html'},

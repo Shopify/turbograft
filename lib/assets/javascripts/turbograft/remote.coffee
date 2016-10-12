@@ -134,16 +134,19 @@ class TurboGraft.Remote
       else if @opts.fullRefresh
         Page.refresh()
       else if @refreshOnSuccess
-        Page.refresh
+        Page.refresh(
           response: xhr
           onlyKeys: @refreshOnSuccess
+        )
       else if @refreshOnSuccessExcept
-        Page.refresh
+        Page.refresh(
           response: xhr
           exceptKeys: @refreshOnSuccessExcept
+        )
       else
-        Page.refresh
+        Page.refresh(
           response: xhr
+        )
 
   onError: (ev) =>
     @opts.fail?()
@@ -162,13 +165,15 @@ class TurboGraft.Remote
       else if @opts.fullRefresh
         Page.refresh()
       else if @refreshOnError
-        Page.refresh
+        Page.refresh(
           response: xhr
           onlyKeys: @refreshOnError
+        )
       else if @refreshOnErrorExcept
-        Page.refresh
+        Page.refresh(
           response: xhr
           exceptKeys: @refreshOnErrorExcept
+        )
       else
         triggerEventFor 'turbograft:remote:fail:unhandled', @initiator,
           xhr: xhr

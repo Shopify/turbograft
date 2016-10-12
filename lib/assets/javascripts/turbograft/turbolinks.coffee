@@ -71,13 +71,14 @@ class window.Turbolinks
 
     rememberReferer()
 
-    options.partialReplace ?= false
-    options.onlyKeys ?= []
-    options.onLoadFunction = ->
-      resetScrollPosition() unless options.onlyKeys.length
-      options.callback?()
+    fetchReplacement(url, options)
 
-    fetchReplacement url, options
+  isPartialReplace = (response, options) ->
+    Boolean(
+      options.partialReplace ||
+      options.onlyKeys?.length ||
+      options.exceptKeys?.length
+    ) && !response.redirectedToNewUrl()
 
   @fullPageNavigate: (url) ->
     if url?
@@ -136,24 +137,30 @@ class window.Turbolinks
 
   @loadPage: (url, xhr, options = {}) ->
     triggerEvent 'page:receive'
+    response = new TurboGraft.Response(xhr)
     options.updatePushState ?= true
-    if upstreamDocument = new TurboGraft.Response(xhr).document()
-      if options.partialReplace
-        reflectNewUrl url if options.updatePushState
-        updateBody(upstreamDocument, xhr, options)
-      else
-        turbohead = new TurboGraft.TurboHead(activeDocument, upstreamDocument)
-        if turbohead.hasAssetConflicts()
-          return Turbolinks.fullPageNavigate(url)
-        reflectNewUrl url if options.updatePushState
-        turbohead.waitForAssets().then((result) ->
-          updateBody(upstreamDocument, xhr, options) unless result?.isCanceled
-        )
-    else
+    options.partialReplace = isPartialReplace(response, options)
+
+    unless upstreamDocument = response.document()
       triggerEvent 'page:error', xhr
       Turbolinks.fullPageNavigate(url)
+      return
 
-  updateBody = (upstreamDocument, xhr, options) ->
+    if options.partialReplace
+      reflectNewUrl url if options.updatePushState
+      updateBody(upstreamDocument, response, options)
+      return
+
+    turbohead = new TurboGraft.TurboHead(activeDocument, upstreamDocument)
+    if turbohead.hasAssetConflicts()
+      return Turbolinks.fullPageNavigate(url)
+
+    reflectNewUrl url if options.updatePushState
+    turbohead.waitForAssets().then((result) ->
+      updateBody(upstreamDocument, response, options) unless result?.isCanceled
+    )
+
+  updateBody = (upstreamDocument, response, options) ->
     nodes = changePage(
       upstreamDocument.querySelector('title')?.textContent,
       removeNoscriptTags(upstreamDocument.querySelector('body')),
@@ -161,16 +168,17 @@ class window.Turbolinks
       'runScripts',
       options
     )
-    reflectRedirectedUrl(xhr) if options.updatePushState
-    options.onLoadFunction?()
+
+    reflectRedirectedUrl(response) if options.updatePushState
+    Turbolinks.resetScrollPosition() unless options.partialReplace
+
+    options.callback?()
     triggerEvent 'page:load', nodes
 
   changePage = (title, body, csrfToken, runScripts, options = {}) ->
     activeDocument.title = title if title
-    options.onlyKeys ?= []
-    options.exceptKeys ?= []
 
-    if options.onlyKeys.length
+    if options.onlyKeys?.length
       nodesToRefresh = [].concat(getNodesWithRefreshAlways(), getNodesMatchingRefreshKeys(options.onlyKeys))
       nodes = refreshNodes(nodesToRefresh, body)
       setAutofocusElement() if anyAutofocusElement(nodes)
@@ -178,7 +186,7 @@ class window.Turbolinks
     else
       refreshNodes(getNodesWithRefreshAlways(), body)
       persistStaticElements(body)
-      if options.exceptKeys.length
+      if options.exceptKeys?.length
         refreshAllExceptWithKeys(options.exceptKeys, body)
       else
         deleteRefreshNeverNodes(body)
@@ -307,12 +315,11 @@ class window.Turbolinks
       Turbolinks.pushState { turbolinks: true, url: url.absolute }, '', url.absolute
     return
 
-  reflectRedirectedUrl = (xhr) ->
-    if location = xhr.getResponseHeader 'X-XHR-Redirected-To'
-      location = new ComponentUrl location
-      preservedHash = if location.hasNoHash() then activeDocument.location.hash else ''
-      Turbolinks.replaceState currentState, '', location.href + preservedHash
-
+  reflectRedirectedUrl = (response) ->
+    if url = response.redirectedTo
+      url = new ComponentUrl(url)
+      preservedHash = if url.hasNoHash() then activeDocument.location.hash else ''
+      Turbolinks.replaceState(currentState, '', url.href + preservedHash)
     return
 
   rememberReferer = ->
@@ -327,7 +334,7 @@ class window.Turbolinks
   recallScrollPosition = (page) ->
     window.scrollTo page.positionX, page.positionY
 
-  resetScrollPosition = ->
+  @resetScrollPosition: ->
     if activeDocument.location.hash
       activeDocument.location.href = activeDocument.location.href
     else
