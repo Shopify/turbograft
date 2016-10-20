@@ -317,13 +317,6 @@ class window.Turbolinks
       Turbolinks.pushState { turbolinks: true, url: url.absolute }, '', url.absolute
     return
 
-  reflectRedirectedUrl = (response) ->
-    if url = response.redirectedTo
-      url = new ComponentUrl(url)
-      preservedHash = if url.hasNoHash() then activeDocument.location.hash else ''
-      Turbolinks.replaceState(currentState, '', url.href + preservedHash)
-    return
-
   rememberReferer = ->
     referer = activeDocument.location.href
 
