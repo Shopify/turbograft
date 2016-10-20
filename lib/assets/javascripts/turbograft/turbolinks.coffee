@@ -1,3 +1,7 @@
+Response = TurboGraft.Response
+TurboHead = TurboGraft.TurboHead
+jQuery = window.jQuery
+
 xhr = null
 activeDocument = document
 
@@ -137,13 +141,13 @@ class window.Turbolinks
 
   @loadPage: (url, xhr, options = {}) ->
     triggerEvent 'page:receive'
-    response = new TurboGraft.Response(xhr)
+    response = new Response(xhr, url)
     options.updatePushState ?= true
     options.partialReplace = isPartialReplace(response, options)
 
     unless upstreamDocument = response.document()
       triggerEvent 'page:error', xhr
-      Turbolinks.fullPageNavigate(url)
+      Turbolinks.fullPageNavigate(response.url)
       return
 
     if options.partialReplace
@@ -151,9 +155,9 @@ class window.Turbolinks
       updateBody(upstreamDocument, response, options)
       return
 
-    turbohead = new TurboGraft.TurboHead(activeDocument, upstreamDocument)
+    turbohead = new TurboHead(activeDocument, upstreamDocument)
     if turbohead.hasAssetConflicts()
-      return Turbolinks.fullPageNavigate(url)
+      return Turbolinks.fullPageNavigate(response.url)
 
     reflectNewUrl url if options.updatePushState
     turbohead.waitForAssets().then((result) ->

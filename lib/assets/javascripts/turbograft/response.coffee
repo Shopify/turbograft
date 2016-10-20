@@ -1,6 +1,11 @@
 class TurboGraft.Response
-  constructor: (@xhr) ->
-    @redirectedTo = @xhr.getResponseHeader('X-XHR-Redirected-To')
+  constructor: (@xhr, intendedURL) ->
+    if intendedURL && intendedURL != @xhr.responseURL
+      @redirectedTo = @xhr.responseURL
+    else
+      @redirectedTo = @xhr.getResponseHeader('X-XHR-Redirected-To')
+
+    @url = @redirectedTo || intendedURL
 
   valid: -> @hasRenderableHttpStatus() && @hasValidContent()
 
