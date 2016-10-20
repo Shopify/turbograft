@@ -151,7 +151,6 @@ class window.Turbolinks
       return
 
     if options.partialReplace
-      reflectNewUrl url if options.updatePushState
       updateBody(upstreamDocument, response, options)
       return
 
@@ -159,7 +158,6 @@ class window.Turbolinks
     if turbohead.hasAssetConflicts()
       return Turbolinks.fullPageNavigate(response.url)
 
-    reflectNewUrl url if options.updatePushState
     turbohead.waitForAssets().then((result) ->
       updateBody(upstreamDocument, response, options) unless result?.isCanceled
     )
@@ -172,8 +170,8 @@ class window.Turbolinks
       'runScripts',
       options
     )
+    reflectNewUrl(response.url) if options.updatePushState
 
-    reflectRedirectedUrl(response) if options.updatePushState
     Turbolinks.resetScrollPosition() unless options.partialReplace
 
     options.callback?()
