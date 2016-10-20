@@ -1,7 +1,18 @@
+baseHTML = '<html><head></head><body></body></html>'
+iframe = null
+
+setupIframe = ->
+  iframe = document.createElement('iframe')
+  document.body.appendChild(iframe)
+  iframe.contentDocument.write(baseHTML)
+  iframe.contentDocument
+
 describe 'Remote', ->
   @initiating_target = null
 
   beforeEach ->
+    testDocument = setupIframe() unless iframe
+    Turbolinks.document(testDocument)
     $(document).off "turbograft:remote:start turbograft:remote:always turbograft:remote:success turbograft:remote:fail turbograft:remote:fail:unhandled"
     @initiating_target = $("<form />")[0]
 
