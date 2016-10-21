@@ -5,8 +5,11 @@ class PageRequestTest < ActionDispatch::IntegrationTest
   include Capybara::DSL
   include Capybara::Node::Matchers
 
-  test "turbolinks works" do
+  setup do
+    reset_session!
+  end
 
+  test "turbolinks works" do
     visit "/pages/1"
     tracking_token = find(:css, "meta[name='tracking-token']", visible: false)[:content]
 
