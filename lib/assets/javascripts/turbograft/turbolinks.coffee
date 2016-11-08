@@ -71,7 +71,7 @@ class window.Turbolinks
 
   fetch = (url, options = {}) ->
     return if pageChangePrevented(url)
-    url = new ComponentUrl url
+    url = new ComponentUrl(url)
 
     rememberReferer()
 
