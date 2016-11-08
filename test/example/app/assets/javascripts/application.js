@@ -12,5 +12,6 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require_tree ./vendor
 //= require turbograft
 //= require_tree .

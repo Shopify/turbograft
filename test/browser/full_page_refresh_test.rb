@@ -5,6 +5,7 @@ class FullPageRefreshTest < ActionDispatch::IntegrationTest
   include Capybara::DSL
 
   setup do
+    reset_session!
     visit "/pages/1"
   end
 

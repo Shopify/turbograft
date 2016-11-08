@@ -5,6 +5,7 @@ class LegacyPagesPartialPageRefreshTest < ActionDispatch::IntegrationTest
   include Capybara::DSL
 
   setup do
+    reset_session!
     visit "/legacy_pages/1"
   end
 
