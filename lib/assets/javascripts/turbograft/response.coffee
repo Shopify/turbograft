@@ -5,7 +5,7 @@ class TurboGraft.Response
     else
       @redirectedTo = @xhr.getResponseHeader('X-XHR-Redirected-To')
 
-    @url = @redirectedTo || intendedURL
+    @finalURL = @redirectedTo || intendedURL
 
   valid: -> @hasRenderableHttpStatus() && @hasValidContent()
 

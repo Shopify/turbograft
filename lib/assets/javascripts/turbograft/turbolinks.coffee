@@ -147,7 +147,7 @@ class window.Turbolinks
 
     unless upstreamDocument = response.document()
       triggerEvent 'page:error', xhr
-      Turbolinks.fullPageNavigate(response.url)
+      Turbolinks.fullPageNavigate(response.finalURL)
       return
 
     if options.partialReplace
@@ -156,7 +156,7 @@ class window.Turbolinks
 
     turbohead = new TurboHead(activeDocument, upstreamDocument)
     if turbohead.hasAssetConflicts()
-      return Turbolinks.fullPageNavigate(response.url)
+      return Turbolinks.fullPageNavigate(response.finalURL)
 
     turbohead.waitForAssets().then((result) ->
       updateBody(upstreamDocument, response, options) unless result?.isCanceled
@@ -170,7 +170,7 @@ class window.Turbolinks
       'runScripts',
       options
     )
-    reflectNewUrl(response.url) if options.updatePushState
+    reflectNewUrl(response.finalURL) if options.updatePushState
 
     Turbolinks.resetScrollPosition() unless options.partialReplace
 
