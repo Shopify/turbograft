@@ -83,7 +83,7 @@ describe 'Turbolinks', ->
     Turbolinks.visit('/' + url, options)
 
   beforeEach ->
-    testDocument = setupIframe() unless iframe
+    testDocument = setupIframe()
     Turbolinks.document(testDocument)
     sandbox = sinon.sandbox.create()
     pushStateStub = sandbox.stub(Turbolinks, 'pushState')
