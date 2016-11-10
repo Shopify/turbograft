@@ -1,5 +1,4 @@
 class LegacyPagesController < ApplicationController
-  before_action :setup_counters
   skip_before_action :verify_authenticity_token
 
   def index
@@ -79,17 +78,5 @@ class LegacyPagesController < ApplicationController
 
   def method_agnostic
     render json: {method: request.env["REQUEST_METHOD"]}, status: 200
-  end
-
-  private
-  def setup_counters
-    [:counter_a, :counter_b].each do |counter|
-      setup_or_iterate_counter!(counter)
-    end
-  end
-
-  def setup_or_iterate_counter!(counter)
-    session[counter] ||= 0
-    session[counter] += 1
   end
 end
