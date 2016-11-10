@@ -1,12 +1,12 @@
 describe 'Page', ->
   sandbox = null
   visitStub = null
-  replaceStateStub = null
+  pushStateStub = null
 
   beforeEach ->
     sandbox = sinon.sandbox.create()
-    visitStub = sandbox.stub(Turbolinks, "visit")
-    replaceStateStub = sandbox.stub(Turbolinks, "replaceState")
+    visitStub = sandbox.stub(Turbolinks, 'visit')
+    pushStateStub = sandbox.stub(Turbolinks, 'pushState')
 
   afterEach ->
     sandbox.restore()
@@ -106,7 +106,7 @@ describe 'Page', ->
         onlyKeys: ['a'],
         }, ->
           assert.calledWith(
-            replaceStateStub,
+            pushStateStub,
             sinon.match.any,
             '',
             mockXHR.getResponseHeader('X-XHR-Redirected-To')
@@ -130,7 +130,7 @@ describe 'Page', ->
         onlyKeys: ['a']
         updatePushState: false,
         }, ->
-          assert.notCalled(replaceStateStub)
+          assert.notCalled(pushStateStub)
           done()
       )
 

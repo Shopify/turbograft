@@ -438,10 +438,10 @@ describe 'Turbolinks', ->
 
     it 'does not update document if the request was canceled', ->
       resolver({isCanceled: true})
-      loadPromise = Turbolinks.loadPage('/foo', xhr)
+      loadPromise = Turbolinks.loadPage(new ComponentUrl('/foo'), xhr)
         .then -> assert.notInclude(testDocument.body.innerHTML, SUCCESS_HTML_CONTENT)
 
     it 'updates the document if the request was not canceled', ->
       resolver()
-      loadPromise = Turbolinks.loadPage('/foo', xhr)
+      loadPromise = Turbolinks.loadPage(new ComponentUrl('/foo'), xhr)
         .then -> assert.include(testDocument.body.innerHTML, SUCCESS_HTML_CONTENT)
