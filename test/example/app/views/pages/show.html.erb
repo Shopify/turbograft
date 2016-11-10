@@ -6,13 +6,15 @@
     <p>Click the links below to perform a full page refresh:</p>
     <p><%= link_to "back", :back %> | <%= link_to "next", page_path(@next_id) %></p>
   </div>
-  <div id='section-a' data-tg-refresh='section-a' style="padding: 1em; margin: 1em; background: <%= random_light_rgb() %>; color: black;">
+  <div id='section-a' data-tg-refresh='section-a' style="padding: 1em; background: <%= random_light_rgb() %>; color: black;">
     <span>Section A:</span>
-    <span id="random-number-a"><%= rand(1000) %></span>
+    <p>Random Number: <span id="random-number-a"><%= rand(1000) %></span></p>
+    <p>Iterative Number: <span id="iterative-number-a"><%= session[:counter_a] %></span></p>
   </div>
-  <div id='section-b' data-tg-refresh='section-b' style="padding: 1em; margin: 1em; background: <%= random_light_rgb() %>; color: black;">
+  <div id='section-b' data-tg-refresh='section-b' style="padding: 1em; background: <%= random_light_rgb() %>; color: black;">
     <span>Section B:</span>
-    <span id="random-number-b"><%= rand(1000) %></span>
+    <p>Random Number: <span id="random-number-b"><%= rand(1000) %></span></p>
+    <p>Iterative Number: <span id="iterative-number-b"><%= session[:counter_b] %></span></p>
   </div>
 <% end %>
 
