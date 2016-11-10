@@ -10,41 +10,41 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
   end
 
   test "will refresh just parts of the page" do
-    random_a = find('#random-number-a').text
-    random_b = find('#random-number-b').text
+    iterative_number_a = find('#iterative-number-a').text
+    iterative_number_b = find('#iterative-number-b').text
 
-    assert random_a
-    assert random_b
+    assert iterative_number_a
+    assert iterative_number_b
 
     click_link "Go to next page via partial refresh"
     page.assert_text("page 2")
-    assert_equal random_a, find('#random-number-a').text
-    assert_equal random_b, find('#random-number-b').text
+    assert_equal iterative_number_a, find('#iterative-number-a').text
+    assert_equal iterative_number_b, find('#iterative-number-b').text
   end
 
   test "can refresh just one section at a time" do
-    random_a = find('#random-number-a').text
-    random_b = find('#random-number-b').text
+    iterative_number_a = find('#iterative-number-a').text
+    iterative_number_b = find('#iterative-number-b').text
 
-    assert random_a
-    assert random_b
+    assert iterative_number_a
+    assert iterative_number_b
 
     click_button "Refresh Section A"
     page.assert_text("page 1")
-    assert_not_equal random_a, find('#random-number-a').text
-    assert_equal random_b, find('#random-number-b').text
+    assert_not_equal iterative_number_a, find('#iterative-number-a').text
+    assert_equal iterative_number_b, find('#iterative-number-b').text
 
-    random_a = find('#random-number-a').text
+    iterative_number_a = find('#iterative-number-a').text
     click_button "Refresh Section B"
     page.assert_text("page 1")
-    assert_equal random_a, find('#random-number-a').text
-    assert_not_equal random_b, find('#random-number-b').text
+    assert_equal iterative_number_a, find('#iterative-number-a').text
+    assert_not_equal iterative_number_b, find('#iterative-number-b').text
 
-    random_b = find('#random-number-b').text
+    iterative_number_b = find('#iterative-number-b').text
     click_button "Refresh Section A and B"
     page.assert_text("page 1")
-    assert_not_equal random_a, find('#random-number-a').text
-    assert_not_equal random_b, find('#random-number-b').text
+    assert_not_equal iterative_number_a, find('#iterative-number-a').text
+    assert_not_equal iterative_number_b, find('#iterative-number-b').text
   end
 
   test "when I use an XHR and POST to an endpoint that returns me a 302, I should see the URL reflecting that redirect too" do
@@ -72,7 +72,7 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
   end
 
   test "data-tg-remote on a link with GET and data-tg-full-refresh-on-success-except and status 200" do
-    random_a = find('#random-number-a').text
+    iterative_number_a = find('#iterative-number-a').text
 
     assert page.has_content?("page 1")
     old_location = current_url
@@ -81,7 +81,7 @@ class PartialPageRefreshTest < ActionDispatch::IntegrationTest
 
     new_location = current_url
     page.assert_no_text("Page 1")
-    assert_equal random_a, find('#random-number-a').text
+    assert_equal iterative_number_a, find('#iterative-number-a').text
     assert_equal new_location, old_location
   end
 
