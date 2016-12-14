@@ -14,16 +14,20 @@ module TurboGraft
     self.controllers = ["ActionController::Base"]
   end
 
+  def self.included(controller)
+    controller.class_eval do
+      include XHRHeaders, Cookies, XDomainBlocker, Redirection
+      before_action :set_xhr_redirected_to, :set_request_method_cookie
+      after_action :abort_xdomain_redirect
+    end
+  end
+
   class Engine < ::Rails::Engine
 
     initializer :turbograft do |config|
       ActiveSupport.on_load(:action_controller) do
-        Config.controllers.each do |klass|
-          klass.constantize.class_eval do
-            include XHRHeaders, Cookies, XDomainBlocker, Redirection
-            before_action :set_xhr_redirected_to, :set_request_method_cookie
-            after_action :abort_xdomain_redirect
-          end
+        Config.controllers.each do |class_name|
+          class_name.constantize.include(::TurboGraft)
         end
 
         ActionDispatch::Request.class_eval do
