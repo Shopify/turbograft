@@ -111,15 +111,31 @@ describe 'Turbolinks', ->
     assert(Turbolinks)
 
   describe '#visit', ->
+    it 'returns a promise resolved with a list of nodes that are new', () ->
+      visit(url: 'noScriptsOrLinkInHead')
+        .then (nodes) ->
+          assert.instanceOf(nodes, Array)
+          assert.lengthOf(nodes, 2)
+          node = nodes[0]
+
     it 'subsequent visits abort previous XHRs', (done) ->
       pageReceive = stub()
       $(testDocument).on('page:receive', pageReceive)
-      visit url: 'noScriptsOrLinkInHead', -> true
-      visit url: 'noScriptsOrLinkInHead', ->
-        assert(pageReceive.calledOnce, 'page:receive should only be emitted once!')
+      visit(url: 'noScriptsOrLinkInHead', -> true)
+      visit(url: 'noScriptsOrLinkInHead', ->
+        assert(pageReceive.calledOnce, 'page:receive should be emitted once!')
         done()
+      )
 
-    it 'returns if pageChangePrevented', (done) ->
+    it 'visits with aborted XHRs yield promise rejection', () ->
+      pageReceive = stub()
+      $(testDocument).on('page:receive', pageReceive)
+      visit(url: 'noScriptsOrLinkInHead', -> true)
+      visit(url: 'noScriptsOrLinkInHead')
+        .then(-> assert.fail('Aborted visits should not resolve'))
+        .catch(-> Promise.resolve())
+
+    it 'rejects if pageChangePrevented', (done) ->
       $(testDocument).one 'page:before-change', (event) ->
         event.preventDefault()
         assert.equal('/noScriptsOrLinkInHead', event.originalEvent.data)
@@ -127,6 +143,8 @@ describe 'Turbolinks', ->
         done()
 
       visit(url: 'noScriptsOrLinkInHead', options: { partialReplace: true, onlyKeys: ['turbo-area'] })
+        .then(-> assert.fail('pageChangePrevented visits should not resolve'))
+        .catch(-> Promise.resolve())
 
     it 'supports passing request headers', (done) ->
       visit url: 'noScriptsOrLinkInHead', options: { headers: {'foo': 'bar', 'fizz': 'buzz'} }, ->

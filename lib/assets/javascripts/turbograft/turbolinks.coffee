@@ -70,7 +70,7 @@ class window.Turbolinks
   referer = null
 
   fetch = (url, options = {}) ->
-    return if pageChangePrevented(url)
+    return Promise.reject() if pageChangePrevented(url)
     url = new ComponentUrl(url)
 
     rememberReferer()
@@ -121,10 +121,11 @@ class window.Turbolinks
     for k,v of options.headers
       xhr.setRequestHeader k, v
 
-    new Promise (resolve) => 
+    new Promise (resolve, reject) =>
       xhr.onload = ->
         if xhr.status >= 500
           Turbolinks.fullPageNavigate(url)
+          reject()
         else
           resolve(Turbolinks.loadPage(url, xhr, options))
         xhr = null
@@ -134,6 +135,7 @@ class window.Turbolinks
         if xhr.statusText == "abort"
           xhr = null
           return
+
         Turbolinks.fullPageNavigate(url)
 
       xhr.send()
@@ -146,14 +148,14 @@ class window.Turbolinks
 
     unless upstreamDocument = response.document()
       triggerEvent 'page:error', xhr
-      return Turbolinks.fullPageNavigate(response.finalURL);
+      return Promise.reject(Turbolinks.fullPageNavigate(response.finalURL))
 
     if options.partialReplace
-      return Promise.resolve(updateBody(upstreamDocument, response, options));
+      return Promise.resolve(updateBody(upstreamDocument, response, options))
 
     turbohead = new TurboHead(activeDocument, upstreamDocument)
     if turbohead.hasAssetConflicts()
-      return Turbolinks.fullPageNavigate(response.finalURL)
+      return Promise.reject(Turbolinks.fullPageNavigate(response.finalURL))
 
     turbohead.waitForAssets().then((result) ->
       updateBody(upstreamDocument, response, options) unless result?.isCanceled
@@ -173,7 +175,7 @@ class window.Turbolinks
 
     options.callback?()
     triggerEvent('page:load', nodes)
-    
+
     Promise.resolve(nodes)
 
   changePage = (title, body, csrfToken, runScripts, options = {}) ->
@@ -201,7 +203,7 @@ class window.Turbolinks
       triggerEvent 'page:change'
       triggerEvent 'page:update'
 
-    return
+    return [].slice.call(body.children)
 
   getNodesMatchingRefreshKeys = (keys) ->
     matchingNodes = []
