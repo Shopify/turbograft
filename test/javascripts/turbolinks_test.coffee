@@ -389,6 +389,17 @@ describe 'Turbolinks', ->
         assert.include(testDocument.body.textContent, 'Hi bob')
         done()
 
+    it 'returns a promise resolved with a list of nodes that are new (freshly replaced)', (done) ->
+      visit(url: 'noScriptsOrLinkInHead', options: {partialReplace: true, onlyKeys: ['turbo-area']})
+        .then (nodes) ->
+          assert.instanceOf(nodes, Array)
+          assert.lengthOf(nodes, 1)
+          node = nodes[0]
+
+          assert.equal('turbo-area', node.id)
+          assert.equal('turbo-area', node.getAttribute('refresh'))
+          done()
+
     it 'triggers the page:load event with a list of nodes that are new (freshly replaced)', (done) ->
       visit url: 'noScriptsOrLinkInHead', options: {partialReplace: true, onlyKeys: ['turbo-area']}, (event) ->
         ev = event.originalEvent

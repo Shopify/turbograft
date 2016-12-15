@@ -121,23 +121,22 @@ class window.Turbolinks
     for k,v of options.headers
       xhr.setRequestHeader k, v
 
-    xhr.onload = ->
-      if xhr.status >= 500
-        Turbolinks.fullPageNavigate(url)
-      else
-        Turbolinks.loadPage(url, xhr, options)
-      xhr = null
-
-    xhr.onerror = ->
-      # Workaround for sinon xhr.abort()
-      if xhr.statusText == "abort"
+    new Promise (resolve) => 
+      xhr.onload = ->
+        if xhr.status >= 500
+          Turbolinks.fullPageNavigate(url)
+        else
+          resolve(Turbolinks.loadPage(url, xhr, options))
         xhr = null
-        return
-      Turbolinks.fullPageNavigate(url)
 
-    xhr.send()
+      xhr.onerror = ->
+        # Workaround for sinon xhr.abort()
+        if xhr.statusText == "abort"
+          xhr = null
+          return
+        Turbolinks.fullPageNavigate(url)
 
-    return
+      xhr.send()
 
   @loadPage: (url, xhr, options = {}) ->
     triggerEvent 'page:receive'
@@ -147,12 +146,10 @@ class window.Turbolinks
 
     unless upstreamDocument = response.document()
       triggerEvent 'page:error', xhr
-      Turbolinks.fullPageNavigate(response.finalURL)
-      return
+      return Turbolinks.fullPageNavigate(response.finalURL);
 
     if options.partialReplace
-      updateBody(upstreamDocument, response, options)
-      return
+      return Promise.resolve(updateBody(upstreamDocument, response, options));
 
     turbohead = new TurboHead(activeDocument, upstreamDocument)
     if turbohead.hasAssetConflicts()
@@ -175,7 +172,9 @@ class window.Turbolinks
     Turbolinks.resetScrollPosition() unless options.partialReplace
 
     options.callback?()
-    triggerEvent 'page:load', nodes
+    triggerEvent('page:load', nodes)
+    
+    Promise.resolve(nodes)
 
   changePage = (title, body, csrfToken, runScripts, options = {}) ->
     activeDocument.title = title if title
