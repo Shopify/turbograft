@@ -180,7 +180,11 @@ class window.Turbolinks
   changePage = (title, body, csrfToken, runScripts, options = {}) ->
     activeDocument.title = title if title
 
-    if options.onlyKeys?.length
+    if options.onlyRefreshAlways
+      nodes = refreshNodes(getNodesWithRefreshAlways(), body)
+      setAutofocusElement() if anyAutofocusElement(nodes)
+      return nodes
+    else if options.onlyKeys?.length
       nodesToRefresh = [].concat(getNodesWithRefreshAlways(), getNodesMatchingRefreshKeys(options.onlyKeys))
       nodes = refreshNodes(nodesToRefresh, body)
       setAutofocusElement() if anyAutofocusElement(nodes)
