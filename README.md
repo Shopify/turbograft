@@ -177,6 +177,19 @@ If an asset with a different `src`/`href` but the same `data-turbolinks-track` v
 
 As of version `0.4.0`, this functionality has been made backwards compatible. If `data-turbolinks-track="true"` head assets are present, turbograft will cause a full page refresh when the set is changed in any way.
 
+### tg-remote-noserialize
+
+When serializing forms for tg-remote calls, turbograft will check to ensure inputs meet the following criteria:
+
+- the input has a `name` attribute
+- the input does not have the `disabled` attribute
+
+and
+
+- the input does not have the `tg-remote-noserialize`
+
+The `tg-remote-noserialize` is useful in scenarios where the input should be editable, i.e. not `disabled`, but should also not be submitted to the server.
+
 ## Example App
 
 There is an example app that you can boot to play with TurboGraft.  Open the console and network inspector and see it in action!  This same app is also used in the TurboGraft browser testing suite.

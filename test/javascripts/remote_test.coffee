@@ -570,6 +570,18 @@ describe 'Remote', ->
       remote = new TurboGraft.Remote({}, form)
       assert.equal "foo=bar", remote.formData
 
+    it 'will not URL encode fields which have tg-no-serialize', ->
+      formDesc = """
+      <form>
+        <input type="text" name="foo" value="bar">
+        <input type="text" name="faa" value="bat" tg-remote-noserialize>
+      </form>
+      """
+      form = $(formDesc)[0]
+
+      remote = new TurboGraft.Remote({}, form)
+      assert.equal "foo=bar", remote.formData
+
     it 'properly URL encodes multiple fields in the form', ->
       formDesc = """
       <form>
