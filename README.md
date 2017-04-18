@@ -96,6 +96,7 @@ It requires your `<form>`, `<a>`, or `<button>` to be marked up with:
 * `data-tg-remote-once`: (optional) The action will only be performed once. Removes `data-tg-remote-method` and `data-tg-remote-once` from element after consumption
 * `data-tg-full-refresh`: Rather than using the content of the XHR response for partial page replacement, a full page refresh is performed. If `data-tg-refresh-on-success` or `data-tg-refresh-on-error` is defined, the page will be reloaded on those keys. If both `data-tg-refresh-on-success` and `data-tg-refresh-on-error` are not defined, a full page refresh is performed. Defaults to true if neither refresh-on-success nor refresh-on-error are provided
 * `data-tg-remote-norefresh`: Prevents `Page.refresh()` from being called, allowing methods to be executed without updating client state
+* `updatePushState`: Defaults to true. When set to false it prevents `Page.refresh()` from updating the url in the browser.
 
 Note that as `data-tg-refresh-on-*` pertains to partial refreshes and `data-tg-full-refresh-on-*-except` pertains to full refreshes, they are incompatible with each other and should not be combined.
 
