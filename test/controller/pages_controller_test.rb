@@ -15,7 +15,7 @@ class PagesControllerTest < ActionController::TestCase
     get :index
     assert_response :ok
     assert_equal "Turbolinks.visit('http://test.host/pages/1');", response.body
-    assert_equal Mime::JS, response.content_type
+    assert_equal Mime[:js], response.content_type
   end
 
   test "abort_xdomain_redirect returns 403 when cross origin" do
