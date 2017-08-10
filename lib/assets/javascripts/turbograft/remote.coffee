@@ -12,6 +12,8 @@ class TurboGraft.Remote
     @refreshOnSuccessExcept = @opts.refreshOnSuccessExcept.split(" ") if @opts.refreshOnSuccessExcept
     @refreshOnError         = @opts.refreshOnError.split(" ")         if @opts.refreshOnError
     @refreshOnErrorExcept   = @opts.refreshOnErrorExcept.split(" ")   if @opts.refreshOnErrorExcept
+    @updatePushState        = true
+    @updatePushState        = @opts.updatePushState                   if @opts.updatePushState?
 
     xhr = new XMLHttpRequest
     if @actualRequestType == 'GET'
@@ -116,6 +118,12 @@ class TurboGraft.Remote
       enabledInputs.push(input)
     enabledInputs
 
+  refresh: (options) =>
+    opts = $.extend({
+      updatePushState: @updatePushState
+    }, options);
+    Page.refresh(opts);
+
   onSuccess: (ev) =>
     @opts.success?()
 
@@ -130,21 +138,21 @@ class TurboGraft.Remote
 
     unless TurboGraft.hasTGAttribute(@initiator, 'tg-remote-norefresh')
       if @opts.fullRefresh && @refreshOnSuccess
-        Page.refresh(onlyKeys: @refreshOnSuccess)
+        @refresh(onlyKeys: @refreshOnSuccess)
       else if @opts.fullRefresh
-        Page.refresh()
+        @refresh()
       else if @refreshOnSuccess
-        Page.refresh(
+        @refresh(
           response: xhr
           onlyKeys: @refreshOnSuccess
         )
       else if @refreshOnSuccessExcept
-        Page.refresh(
+        @refresh(
           response: xhr
           exceptKeys: @refreshOnSuccessExcept
         )
       else
-        Page.refresh(
+        @refresh(
           response: xhr
         )
 
@@ -161,16 +169,16 @@ class TurboGraft.Remote
         xhr: xhr
     else
       if @opts.fullRefresh && @refreshOnError
-        Page.refresh(onlyKeys: @refreshOnError)
+        @refresh(onlyKeys: @refreshOnError)
       else if @opts.fullRefresh
-        Page.refresh()
+        @refresh()
       else if @refreshOnError
-        Page.refresh(
+        @refresh(
           response: xhr
           onlyKeys: @refreshOnError
         )
       else if @refreshOnErrorExcept
-        Page.refresh(
+        @refresh(
           response: xhr
           exceptKeys: @refreshOnErrorExcept
         )

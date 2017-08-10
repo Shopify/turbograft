@@ -293,8 +293,9 @@ describe 'Remote', ->
       remote.submit()
 
       server.respond()
-      assert @refreshStub.calledWith
+      assert.calledWith @refreshStub,
         response: sinon.match.has('responseText', '<div>Hey there</div>')
+        updatePushState: true
 
     it 'XHR=200: will trigger Page.refresh using XHR and refresh-on-success', ->
       server = sinon.fakeServer.create()
@@ -310,9 +311,30 @@ describe 'Remote', ->
       remote.submit()
 
       server.respond()
-      assert @refreshStub.calledWith
+      assert.calledWith @refreshStub,
         response: sinon.match.has('responseText', '<div>Hey there</div>')
         onlyKeys: ['a', 'b', 'c']
+        updatePushState: true
+
+    it 'XHR=200: will trigger Page.refresh with updatePushState=false if provided', ->
+      server = sinon.fakeServer.create()
+      server.respondWith("POST", "/foo/bar",
+            [200, { "Content-Type": "text/html" },
+             '<div>Hey there</div>'])
+
+      remote = new TurboGraft.Remote
+        httpRequestType: "POST"
+        httpUrl: "/foo/bar"
+        refreshOnSuccess: "a b c"
+        updatePushState: false
+      , @initiating_target
+      remote.submit()
+
+      server.respond()
+      assert.calledWith @refreshStub,
+        response: sinon.match.has('responseText', '<div>Hey there</div>')
+        onlyKeys: ['a', 'b', 'c']
+        updatePushState: false
 
     it 'XHR=200: will trigger Page.refresh using XHR and refresh-on-success-except', ->
       server = sinon.fakeServer.create()
@@ -328,9 +350,10 @@ describe 'Remote', ->
       remote.submit()
 
       server.respond()
-      assert @refreshStub.calledWith
+      assert.calledWith @refreshStub,
         response: sinon.match.has('responseText', '<div>Hey there</div>')
         exceptKeys: ['a', 'b', 'c']
+        updatePushState: true
 
     it 'XHR=200: will trigger Page.refresh with refresh-on-success when full-refresh is provided', ->
       server = sinon.fakeServer.create()
@@ -347,10 +370,11 @@ describe 'Remote', ->
 
       server.respond()
 
-      assert @refreshStub.calledWith
+      assert.calledWith @refreshStub,
         onlyKeys: ['a', 'b', 'c']
+        updatePushState: true
 
-    it 'XHR=200: will trigger Page.refresh with no arguments when full-refresh is present and refresh-on-success is not provided', ->
+    it 'XHR=200: will trigger Page.refresh with no additional arguments when full-refresh is present and refresh-on-success is not provided', ->
       server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [200, { "Content-Type": "text/html" },
@@ -364,8 +388,8 @@ describe 'Remote', ->
 
       server.respond()
 
-      assert.equal 1, @refreshStub.callCount
-      assert.equal 0, @refreshStub.args[0].length
+      assert.calledWith @refreshStub,
+        updatePushState: true
 
     it 'XHR=200: will not trigger Page.refresh when tg-remote-norefresh is present on the initiator', ->
       server = sinon.fakeServer.create()
@@ -399,9 +423,10 @@ describe 'Remote', ->
 
       server.respond()
 
-      assert @refreshStub.calledWith
+      assert.calledWith @refreshStub,
         response: sinon.match.has('responseText', '<div id="foo" refresh="foo">Error occured</div>')
         onlyKeys: ['a', 'b', 'c']
+        updatePushState: true
 
     it 'XHR=422: will trigger Page.refresh using XHR and refresh-on-error-except', ->
       server = sinon.fakeServer.create()
@@ -417,9 +442,10 @@ describe 'Remote', ->
 
       server.respond()
 
-      assert @refreshStub.calledWith
+      assert.calledWith @refreshStub,
         response: sinon.match.has('responseText', '<div id="foo" refresh="foo">Error occured</div>')
         exceptKeys: ['a', 'b', 'c']
+        updatePushState: true
 
     it 'XHR=422: will trigger Page.refresh with refresh-on-error when full-refresh is provided', ->
       server = sinon.fakeServer.create()
@@ -436,8 +462,9 @@ describe 'Remote', ->
 
       server.respond()
 
-      assert @refreshStub.calledWith
+      assert.calledWith @refreshStub,
         onlyKeys: ['a', 'b', 'c']
+        updatePushState: true
 
     it 'XHR=422: will not trigger Page.refresh if no refresh-on-error is present', ->
       server = sinon.fakeServer.create()
@@ -454,7 +481,7 @@ describe 'Remote', ->
 
       assert.equal 0, @refreshStub.callCount
 
-    it 'XHR=422: will trigger Page.refresh with no arguments when full-refresh is present and refresh-on-error is not provided', ->
+    it 'XHR=422: will trigger Page.refresh with no additional arguments when full-refresh is present and refresh-on-error is not provided', ->
       server = sinon.fakeServer.create()
       server.respondWith("POST", "/foo/bar",
             [422, { "Content-Type": "text/html" },
@@ -468,8 +495,8 @@ describe 'Remote', ->
 
       server.respond()
 
-      assert.equal 1, @refreshStub.callCount
-      assert.equal 0, @refreshStub.args[0].length
+      assert.calledWith @refreshStub,
+        updatePushState: true
 
     it 'XHR=422: will not trigger Page.refresh when tg-remote-norefresh is present on the initiator', ->
       server = sinon.fakeServer.create()

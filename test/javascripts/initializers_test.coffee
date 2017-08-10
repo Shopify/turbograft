@@ -31,6 +31,35 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: "zap"
         refreshOnError: "bar"
         refreshOnErrorExcept: "zar"
+        updatePushState: true
+      )
+      $form.remove()
+
+    it 'passes through updatePushState=false if tg-remote-nopushstate', ->
+      $form = $("<form>")
+        .attr("tg-remote", "true")
+        .attr("method", "put")
+        .attr("refresh-on-success", "foo")
+        .attr("refresh-on-error", "bar")
+        .attr("full-refresh-on-error-except", "zar")
+        .attr("full-refresh-on-success-except", "zap")
+        .attr("tg-remote-nopushstate", "")
+        .attr("action", "somewhere")
+      $form.append("<input type='submit'>")
+
+      $("body").append($form)
+      $form.find("input").trigger("click")
+
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
+        httpRequestType: "put"
+        httpUrl: "somewhere"
+        fullRefresh: false
+        refreshOnSuccess: "foo"
+        refreshOnSuccessExcept: "zap"
+        refreshOnError: "bar"
+        refreshOnErrorExcept: "zar"
+        updatePushState: false
       )
       $form.remove()
 
@@ -61,6 +90,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: 'zap'
         refreshOnError: 'bar'
         refreshOnErrorExcept: 'zar'
+        updatePushState: true
       )
 
     it 'passes through null for missing refresh-on-success', ->
@@ -80,6 +110,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
+        updatePushState: true
       )
 
     it 'respects tg-remote supplied', ->
@@ -99,6 +130,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
+        updatePushState: true
       )
 
     it 'passes through null for missing refresh-on-error', ->
@@ -118,6 +150,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: null
         refreshOnErrorExcept: null
+        updatePushState: true
       )
 
     it 'passes through null for missing full-refresh-on-error-except', ->
@@ -137,6 +170,28 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: null
         refreshOnErrorExcept: 'zew'
+        updatePushState: true
+      )
+
+    it 'passes through updatePushState=false if tg-remote-nopushstate', ->
+      $link = $("<a>")
+        .attr("tg-remote", "GET")
+        .attr("refresh-on-success", "foo")
+        .attr("href", "somewhere")
+        .attr("tg-remote-nopushstate", "")
+
+      $("body").append($link)
+      $link[0].click()
+      assert.called(@Remote)
+      assert.calledWith(@Remote,
+        httpRequestType: "GET"
+        httpUrl: "somewhere"
+        fullRefresh: false
+        refreshOnSuccess: "foo"
+        refreshOnSuccessExcept: null
+        refreshOnError: null
+        refreshOnErrorExcept: null
+        updatePushState: false
       )
 
     it 'respects full-refresh-on-success-except', ->
@@ -156,6 +211,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: 'zew'
         refreshOnError: null
         refreshOnErrorExcept: null
+        updatePushState: true
       )
 
     it 'respects full-refresh', ->
@@ -177,6 +233,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
+        updatePushState: true
       )
 
     it 'does nothing if disabled', ->
@@ -210,6 +267,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
+        updatePushState: true
       )
 
       $link.remove()
@@ -233,6 +291,7 @@ describe 'Initializers', ->
         refreshOnSuccessExcept: null
         refreshOnError: "bar"
         refreshOnErrorExcept: null
+        updatePushState: true
       )
 
       $link.remove()

@@ -21,6 +21,7 @@ setupRemoteFromTarget = (target, httpRequestType, form = null) ->
     refreshOnSuccessExcept: TurboGraft.getTGAttribute(target, 'full-refresh-on-success-except')
     refreshOnError: TurboGraft.getTGAttribute(target, 'refresh-on-error')
     refreshOnErrorExcept: TurboGraft.getTGAttribute(target, 'full-refresh-on-error-except')
+    updatePushState: !TurboGraft.hasTGAttribute(target, 'tg-remote-nopushstate')
 
   new TurboGraft.Remote(options, form, target)
 
