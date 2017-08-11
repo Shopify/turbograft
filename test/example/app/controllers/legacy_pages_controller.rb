@@ -16,7 +16,7 @@ class LegacyPagesController < ApplicationController
   end
 
   def error_500
-    render text: "Error 500!", status: 500
+    render plain: "Error 500!", status: 500
   end
 
   def error_404
