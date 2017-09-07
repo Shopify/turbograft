@@ -1,4 +1,5 @@
 xhr = null
+turboRoot = document.body
 
 installDocumentReadyPageEventTriggers = ->
   document.addEventListener 'DOMContentLoaded', ( ->
@@ -65,6 +66,9 @@ class window.Turbolinks
   currentState = null
   referer = null
 
+  @setTurboRoot = (node) ->
+    turboRoot = node
+
   fetch = (url, options = {}) ->
     return if pageChangePrevented(url)
     url = new ComponentUrl url
@@ -104,6 +108,7 @@ class window.Turbolinks
     xhr.open 'GET', url.withoutHashForIE10compatibility(), true
     xhr.setRequestHeader 'Accept', 'text/html, application/xhtml+xml, application/xml'
     xhr.setRequestHeader 'X-XHR-Referer', referer
+    xhr.withCredentials = true
     options.headers ?= {}
 
     for k,v of options.headers
@@ -177,7 +182,7 @@ class window.Turbolinks
         deleteRefreshNeverNodes(body)
 
       triggerEvent 'page:before-replace'
-      replaceNode(body, document.body)
+      replaceNode(body, turboRoot)
       CSRFToken.update csrfToken if csrfToken?
       setAutofocusElement()
       executeScriptTags() if runScripts
