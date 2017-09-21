@@ -150,6 +150,30 @@ describe 'Turbolinks', ->
         assert.calledOnce(resetScrollStub)
         done()
 
+  describe 'loadPage', () ->
+    PAGE_CONTENT = 'Oh hi, mark!'
+
+    it 'is synchronous when a partial replace', ->
+      startFromFixture('noScriptsOrLinkInHead')
+      xhr = new sinon.FakeXMLHttpRequest()
+      xhr.open('POST', '/my/endpoint', true)
+      xhr.respond(200, {'Content-Type':'text/html'}, PAGE_CONTENT)
+
+      Turbolinks.loadPage(null, xhr, {partialReplace: true})
+
+      assert.include(testDocument.body.textContent, PAGE_CONTENT)
+
+    it 'is asynchronous when not a partial replace', (done) ->
+      startFromFixture('noScriptsOrLinkInHead')
+      xhr = new sinon.FakeXMLHttpRequest()
+      xhr.open('POST', '/my/endpoint', true)
+      xhr.respond(200, {'Content-Type':'text/html'}, PAGE_CONTENT)
+
+      Turbolinks.loadPage(null, xhr).then () ->
+        assert.include(testDocument.body.textContent, PAGE_CONTENT)
+        done()
+      assert.notInclude(testDocument.body.textContent, PAGE_CONTENT)
+
   describe 'head asset tracking', ->
     it 'refreshes page when moving from a page with tracked assets to a page with none', (done) ->
       startFromFixture('singleScriptInHead')

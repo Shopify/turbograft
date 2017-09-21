@@ -82,7 +82,7 @@ class window.Turbolinks
       options.partialReplace ||
       options.onlyKeys?.length ||
       options.exceptKeys?.length
-    ) && !response.redirectedToNewUrl()
+    )
 
   @fullPageNavigate: (url) ->
     if url?

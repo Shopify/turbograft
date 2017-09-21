@@ -1,11 +1,11 @@
 class TurboGraft.Response
   constructor: (@xhr, intendedURL) ->
     if intendedURL && intendedURL.withoutHash() != @xhr.responseURL
-      @redirectedTo = @xhr.responseURL
+      redirectedTo = @xhr.responseURL
     else
-      @redirectedTo = @xhr.getResponseHeader('X-XHR-Redirected-To')
+      redirectedTo = @xhr.getResponseHeader('X-XHR-Redirected-To')
 
-    @finalURL = @redirectedTo || intendedURL
+    @finalURL = redirectedTo || intendedURL
 
   valid: -> @hasRenderableHttpStatus() && @hasValidContent()
 
@@ -22,12 +22,6 @@ class TurboGraft.Response
       contentType.match(/^(?:text\/html|application\/xhtml\+xml|application\/xml)(?:;|$)/)
     else
       throw new Error("Error encountered for XHR Response: #{this}")
-
-  redirectedToNewUrl: () ->
-    Boolean(
-      @redirectedTo &&
-      @redirectedTo != TurboGraft.location()
-    )
 
   toString: () ->
     "URL: #{@xhr.responseURL}, " +
