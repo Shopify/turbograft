@@ -108,6 +108,7 @@ class window.Turbolinks
     xhr.open 'GET', url.withoutHashForIE10compatibility(), true
     xhr.setRequestHeader 'Accept', 'text/html, application/xhtml+xml, application/xml'
     xhr.setRequestHeader 'X-XHR-Referer', referer
+    xhr.setRequestHeader 'X-admin-next', 'yes please!'
     xhr.withCredentials = true
     options.headers ?= {}
 
@@ -133,7 +134,7 @@ class window.Turbolinks
     return
 
   @loadPage: (url, xhr, options = {}) ->
-    triggerEvent 'page:receive'
+    triggerEvent 'page:receive', {xhr: xhr, url: url}
     options.updatePushState ?= true
     if upstreamDocument = processResponse(xhr)
       if options.partialReplace
