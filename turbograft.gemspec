@@ -18,7 +18,9 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = '~> 2.1'
+  spec.metadata['allowed_push_host'] = 'https://rubygems.org'
+
+  spec.required_ruby_version = '>= 2.1'
 
   spec.add_dependency "coffee-rails"
 
