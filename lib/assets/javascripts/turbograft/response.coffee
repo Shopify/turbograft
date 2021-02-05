@@ -14,8 +14,8 @@ class TurboGraft.Response
       TurboGraft.Document.create(@xhr.responseText)
 
   hasRenderableHttpStatus: ->
-    return true if @xhr.status == 422 # we want to render form validations
-    !(400 <= @xhr.status < 600)
+    return true if 200 <= @xhr.status < 600
+    false
 
   hasValidContent: ->
     if contentType = @xhr.getResponseHeader('Content-Type')

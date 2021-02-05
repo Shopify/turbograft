@@ -175,5 +175,4 @@ class TurboGraft.Remote
           exceptKeys: @refreshOnErrorExcept
         )
       else
-        triggerEventFor 'turbograft:remote:fail:unhandled', @initiator,
-          xhr: xhr
+        Page.refresh(response: xhr)
