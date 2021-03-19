@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata['allowed_push_host'] = 'https://rubygems.org'
 
-  spec.required_ruby_version = '>= 2.1'
+  spec.required_ruby_version = '>= 2.5'
 
   spec.add_dependency "coffee-rails"
 
