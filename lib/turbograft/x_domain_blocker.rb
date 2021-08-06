@@ -5,8 +5,8 @@ module TurboGraft
   module XDomainBlocker
     private
       def same_origin?(a, b)
-        a = URI.parse URI.escape(a)
-        b = URI.parse URI.escape(b)
+        a = URI.parse CGI.escape(a)
+        b = URI.parse CGI.escape(b)
         [a.scheme, a.host, a.port] == [b.scheme, b.host, b.port]
       end
 
