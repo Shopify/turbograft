@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "teaspoon-mocha"
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "thin"
+  spec.add_development_dependency "webrick"
   spec.add_development_dependency "byebug"
   spec.add_development_dependency "pry"
   spec.add_development_dependency "pry-byebug"
