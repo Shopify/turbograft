@@ -20,7 +20,7 @@ Turbograft was built with simplicity in mind. It intends to offer the smallest a
 
 ## Status
 [![Gem Version](https://badge.fury.io/rb/turbograft.svg)](http://badge.fury.io/rb/turbograft)
-[![Build Status](https://travis-ci.org/Shopify/turbograft.svg?branch=master)](http://travis-ci.org/Shopify/turbograft)
+[![Build](https://github.com/Shopify/turbograft/actions/workflows/build.yml/badge.svg)](https://github.com/Shopify/turbograft/actions/workflows/build.yml)
 
 ## Installation
 
@@ -189,9 +189,10 @@ There is an example app that you can boot to play with TurboGraft.  Open the con
 
 When turbograft replaces or removes a node it uses native DOM API to do so. If any objects use jQuery to listen to events on a node then these objects will leak when the node is replaced because jQuery will still have references to it. To clean these up you'll need to tell jQuery that they're removed. This can be done with something like:
 
-```coffeescript
-document.addEventListener 'page:after-node-removed', (event) ->
-  $(event.data).remove()
+```js
+document.addEventListener('page:after-node-removed', function(event) {
+  $(event.data).remove();
+});
 ```
 
 ## Contributing

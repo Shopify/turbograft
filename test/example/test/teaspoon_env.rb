@@ -12,7 +12,7 @@ Teaspoon.configure do |config|
 
   config.suite do |suite|
     suite.use_framework :mocha
-    suite.matcher = "{test/javascripts,app/assets}/**/*_test.{js,js.coffee,coffee}"
+    suite.matcher = "{test/javascripts,app/assets}/**/*_test.js"
     suite.helper = "test_helper"
     suite.stylesheets = ["teaspoon"]
   end
